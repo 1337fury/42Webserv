@@ -16,5 +16,12 @@
 #include <fstream>
 #include <sstream>
 
+#include <string>
+#include <cstring>
+#include <cstdlib>
+#include <arpa/inet.h>
+#include <sys/socket.h>
+
 #include <vector>
+#include <map>
 #include "Lexer.hpp"
