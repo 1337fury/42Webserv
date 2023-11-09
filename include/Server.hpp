@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/10/30 15:43:25 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/10/31 18:47:43 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,6 @@ class Server
 	// Constructors
 		Server( void );
 		~Server( void );
-	// Member functions
-	void	parseConfig( std::vector<t_token> tokens );
 	
 	// Getters
 	std::string 				getHost( void ) const;
@@ -54,6 +52,8 @@ class Server
 	std::string 				getDefaultErrorPage( void ) const;
 	int 						getClientBodySizeLimit( void ) const;
 	std::vector<RouteConfig> 	getRoutes( void ) const;
+	RouteConfig					getRoute( int index ) const;
+	
 	
 	// Setters
 	void	setHost( std::string host );
@@ -62,6 +62,7 @@ class Server
 	void	setDefaultErrorPage( std::string defaultErrorPage );
 	void	setClientBodySizeLimit( int clientBodySizeLimit );
 	void	setRoutes( std::vector<RouteConfig> routes );
+	void	setRoute( RouteConfig route );
 	
 	// Operators
 	Server &operator=( Server const &rhs );
