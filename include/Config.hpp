@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/10/28 12:24:23 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/08 19:29:05 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,43 @@
 #pragma once
 
 // Libraries
-#include "Webserv.hpp"
 #include "Lexer.hpp"
+#include "Webserv.hpp"
+
+struct Block;
+
+struct Directive {
+    std::string name;
+    std::vector<std::string> parameters;
+	std::vector<Block> block;
+};
+
+struct Block {
+	std::string name;
+	std::vector<Directive> directives;
+	std::vector<Block> block;
+};
 
 class Config
 {
 	private:
 	// Properties
-		std::string				_content;
-		Lexer					_lexer;
-		std::vector<t_token>	_tockens;
+		std::string					_content;
+		Lexer						_lexer;
+		std::vector<t_token>		_tockens;
+		t_token 					_currentToken;
+    	t_token 					_followingToken;
+		std::vector<std::string>	_serverdir;
+		std::vector<std::string>	_routedir;
+	// Wrapper functions
+		// std::map<std::string, std::function<Directive(Directive)>> _blockWrappers;
+		// std::map<std::string, std::function<Directive(Directive)>> _directiveWrappers;
 	// Methods
 		std::string	_getFileContent(std::string const &filename) const;
+		Directive 	_parseStatement( void );
+		bool		_curTokenIs(std::string type) const;
+		void		_nextToken( void );
+		
 
 	public:
 	// Constructors
@@ -34,6 +59,12 @@ class Config
 	// Copy constructor and assignation operator
 		// Config(const Config&);
 		// Config& operator=(const Config&);
+	
+	// Member functions
+	Block	parseConfig( void );
+	bool		isValidDirective(const std::string &directive, 
+									std::vector<std::string> context) const;
+	Block 	parseBlock( void );
 
 	// Getters
 		std::string const &getContent() const;
