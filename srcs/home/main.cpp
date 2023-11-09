@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 12:39:26 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/09 18:50:16 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/09 19:35:16 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	printBlock(Block block, int depth)
 		printBlock(block.block[i], depth + 1);
 }
 
+// main function
 int	main(int argc, char *argv[])
 {
     std::string configFile = "config/default_config.conf";
