@@ -4,7 +4,7 @@ NAME 		:= webserv
 
 CC			:= c++
 
-FLAGS 		:= -Wall -Wextra -Werror --std=c++98
+FLAGS 		:= -Wall -Wextra -Werror --std=c++98 #-fsanitize=address
 
 INC 		:= -I include/
 
@@ -13,7 +13,7 @@ HSL			:= main.cpp
 #HOME SRCS PATH
 HSP			:= $(addprefix srcs/home/,$(HSL))
 #CORE SRCS LIST
-CSL			:= lexer.cpp config.cpp
+CSL			:= lexer.cpp config.cpp server.cpp
 #CORE SRCS PATH
 CSP			:= $(addprefix srcs/core/,$(CSL))
 
