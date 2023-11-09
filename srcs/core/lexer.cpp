@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 12:15:42 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/10/28 12:11:02 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/10/31 15:34:00 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,8 +105,8 @@ t_token	Lexer::_getNextToken( void )
 	{
 		case '\n':
 			this->_read();
-			// return this->getNextToken();
-			return this->_newToken("EOL", "");
+			return this->_getNextToken();
+			// return this->_newToken("EOL", "");
 		case ' ':
 		case '\t':
 			this->_skipWhitespace();
@@ -145,9 +145,9 @@ std::vector<t_token>	Lexer::all( void )
 	while (true)
 	{
 		t_token	token = this->scan();
+		tokens.push_back(token);
 		if (token.type == "EOF" || token.type == "-1")
 			break;
-		tokens.push_back(token);
 	}
 	return tokens;
 }
