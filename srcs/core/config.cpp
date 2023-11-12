@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/09 19:23:27 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/12 11:07:45 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,11 @@ _tockens(_lexer.all()),
 _currentToken(),
 _followingToken()
 {
-	_serverdir.push_back("host");
-	_serverdir.push_back("port");
-	_serverdir.push_back("server_names");
+	_serverdir.push_back("listen");
+	_serverdir.push_back("server_name");
 	_serverdir.push_back("default_error_page");
 	_serverdir.push_back("client_body_size_limit");
-	_serverdir.push_back("routes");
+	_serverdir.push_back("location");
 	_routedir.push_back("path");
 	_routedir.push_back("accepted_methods");
 	_routedir.push_back("redirection");
@@ -76,7 +75,7 @@ void	Config::printTokens( void )
 		std::cout << it->type << " " << it->literal << std::endl;
 }
 
-bool Config::isValidDirective(const std::string &directive, std::vector<std::string> context) const {
+bool Config::_isValidDirective(const std::string &directive, std::vector<std::string> context) const {
 	return std::find(context.begin(), context.end(), directive) != context.end();
 }
 
@@ -102,7 +101,7 @@ Directive Config::_parseStatement( void )
 {
 	Directive directive;
 	directive.name = _currentToken.literal;
-
+	
 	while (true)
 	{
 		_nextToken();
@@ -116,7 +115,11 @@ Directive Config::_parseStatement( void )
 	if (_curTokenIs("Semicolon"))
 		return directive;
 	if (_curTokenIs("BlockStart"))
-		directive.block.push_back(parseBlock());
+	{
+		_nextToken();
+		directive.block.push_back(_parseBlock());
+		directive.block[0].name = directive.name + " block";
+	}
 
 	return directive;
 }
@@ -133,7 +136,7 @@ Directive Config::_parseStatement( void )
 	BlockEnd }
 */
 
-Block	Config::parseBlock()
+Block	Config::_parseBlock()
 {
 	Block context;
 	Directive statement;
@@ -146,14 +149,36 @@ Block	Config::parseBlock()
 			context.directives.push_back(statement);
 		}
 		if (_curTokenIs("EOF"))
-			throw std::runtime_error("Missing `}`"); //handle error: missing block end } 
+			throw std::runtime_error("WebServ: unexpected end of file, expecting `}`"); //handle error: missing block end }
+		else if (_curTokenIs("BlockStart"))
+			throw std::runtime_error("WebServ: unexpected `{`"); //handle error: {{
+		
 		_nextToken();
 	}
     return context;
 }
 
 Block	Config::parseConfig( void ) {
+	Block root;
 	_nextToken();
 	_nextToken();
-    return parseBlock();
+    root = _parseBlock();
+	_syntaxCheck(root);
+	return root;
+}
+
+void	Config::_syntaxCheck( Block &root )
+{
+	if (root.directives.size() == 0)
+		throw std::runtime_error("WebServ: No server found");
+	for (size_t i = 0; i < root.directives.size(); i++)
+	{
+		if (root.directives[i].name != "server")
+			throw std::runtime_error("WebServ: unknown directive or wrong scope");
+		if (!root.directives[i].block.size())
+			throw std::runtime_error("WebServ: Server must have a block");
+		if (root.directives[i].parameters.size() != 0)
+			throw std::runtime_error("WebServ: Server must not have parameters");
+	}
+	// to be continued ...
 }
