@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 12:39:26 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/09 19:35:16 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/11 19:30:06 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ void	printBlock(Block block, int depth)
 	std::cout << "directives: " << block.directives.size() << std::endl;
 	for (int i = 0; i < depth; i++)
 		std::cout << "\t";
-	std::cout << "blocks: " << block.block.size() << std::endl;
-	for (int i = 0; i < depth; i++)
-		std::cout << "\t";
+	// std::cout << "blocks: " << block.block.size() << std::endl;
+	// for (int i = 0; i < depth; i++)
+	// 	std::cout << "\t";
 	std::cout << "----------------" << std::endl;
 	for (size_t i = 0; i < block.directives.size(); i++)
 	{
@@ -44,8 +44,8 @@ void	printBlock(Block block, int depth)
 		for (size_t k = 0; k < block.directives[i].block.size(); k++)
 			printBlock(block.directives[i].block[k], depth + 1);
 	}
-	for (size_t i = 0; i < block.block.size(); i++)
-		printBlock(block.block[i], depth + 1);
+	// for (size_t i = 0; i < block.block.size(); i++)
+	// 	printBlock(block.block[i], depth + 1);
 }
 
 // main function
@@ -59,10 +59,11 @@ int	main(int argc, char *argv[])
 		Config		config(configFile);
 		// config.printTokens();
 		Block block = config.parseConfig();
+		block.name = "root";
 		printBlock(block, 0);
 	} catch (std::exception &e)
 	{
-		std::cerr << "Error: " << e.what() << std::endl;
+		std::cerr << e.what() << std::endl;
 		return (1);
 	}
 	return (0);
