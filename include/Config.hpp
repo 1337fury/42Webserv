@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/08 19:29:05 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/12 11:08:10 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ struct Directive {
 struct Block {
 	std::string name;
 	std::vector<Directive> directives;
-	std::vector<Block> block;
+	// std::vector<Block> block;
 };
 
 class Config
@@ -50,7 +50,10 @@ class Config
 		Directive 	_parseStatement( void );
 		bool		_curTokenIs(std::string type) const;
 		void		_nextToken( void );
-		
+		bool		_isValidDirective(const std::string &directive, 
+										std::vector<std::string> context) const;
+		Block 		_parseBlock( void );
+		void		_syntaxCheck( Block &block );
 
 	public:
 	// Constructors
@@ -61,16 +64,13 @@ class Config
 		// Config& operator=(const Config&);
 	
 	// Member functions
-	Block	parseConfig( void );
-	bool		isValidDirective(const std::string &directive, 
-									std::vector<std::string> context) const;
-	Block 	parseBlock( void );
+		Block	parseConfig( void );
 
 	// Getters
 		std::string const &getContent() const;
 		Lexer const &getLexer() const;
 		std::vector<t_token> const &getTockens() const;
-		
+
 	// Exceptions
 		class FileNotFound : public std::exception {
 			const char* what() const throw();
