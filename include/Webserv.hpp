@@ -22,6 +22,19 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
+#include <unistd.h>
+#include <sys/stat.h>
+
 #include <vector>
 #include <map>
 #include "Lexer.hpp"
+
+#define REG_FILE 0
+#define DIRECTORY 1
+#define OTHER 2
+#define ERROR -1
+
+bool		isNumber(std::string str);
+std::string status_code( short statusCode );
+int			checks_type(std::string const path);
+bool		checks_permissions(std::string const path);
