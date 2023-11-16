@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/12 11:08:10 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/13 10:39:17 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 // Libraries
 #include "Lexer.hpp"
 #include "Webserv.hpp"
+#include "Server.hpp"
 
 struct Block;
 
@@ -42,6 +43,7 @@ class Config
     	t_token 					_followingToken;
 		std::vector<std::string>	_serverdir;
 		std::vector<std::string>	_routedir;
+		std::vector<Server>			_servers;
 	// Wrapper functions
 		// std::map<std::string, std::function<Directive(Directive)>> _blockWrappers;
 		// std::map<std::string, std::function<Directive(Directive)>> _directiveWrappers;
@@ -54,6 +56,8 @@ class Config
 										std::vector<std::string> context) const;
 		Block 		_parseBlock( void );
 		void		_syntaxCheck( Block &block );
+
+		void		_parseServer( Block &block );
 
 	public:
 	// Constructors
