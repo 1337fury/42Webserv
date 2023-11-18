@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 12:39:26 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/11 19:30:06 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/12 13:29:26 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ int	main(int argc, char *argv[])
 		// config.printTokens();
 		Block block = config.parseConfig();
 		block.name = "root";
-		printBlock(block, 0);
+		// printBlock(block, 0);
 	} catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
