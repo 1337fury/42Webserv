@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/15 13:16:59 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/16 11:15:38 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,19 @@
 #pragma once
 
 #include "Webserv.hpp"
+#include "Location.hpp"
 
-struct RouteConfig {
-    std::string 				path;
-    std::vector<std::string>	acceptedMethods;
-    std::string 				redirection;
-    std::string 				rootDirectory;
-    bool 						directoryListing;
-    std::string 				defaultFile;
-    std::string 				cgiExtension;
-    bool 						acceptUploads;
-    std::string 				uploadDirectory;
-};      
+// struct RouteConfig {
+//     std::string 				path;
+//     std::vector<std::string>	acceptedMethods;
+//     std::string 				redirection;
+//     std::string 				rootDirectory;
+//     bool 						directoryListing;
+//     std::string 				defaultFile;
+//     std::string 				cgiExtension;
+//     bool 						acceptUploads;
+//     std::string 				uploadDirectory;
+// }; // to be deleted
 
 class Server
 {
@@ -35,13 +36,14 @@ class Server
 		uint16_t 						_port;
 		std::vector<std::string> 		_serverNames;
 		unsigned long 					_clientBodySizeLimit;
-		std::vector<RouteConfig> 		_routes;
+		// std::vector<RouteConfig> 		_routes; // to be deleted
 		std::string 					_root;
 		std::string 					_index;
 		bool 							_autoindex;
-		// struct sockaddr_in 			_server_address;
+		// struct sockaddr_in 			_server_address; // to be deleted
 		std::map<short, std::string>	_error_pages;
         int     						_listen_fd;
+		std::vector<Location>			_locations;
 		
 	public:
 	// Constructors
@@ -53,8 +55,10 @@ class Server
 	int 							getPort( void ) const;
 	std::vector<std::string> 		getServerNames( void ) const;
 	int 							getClientBodySizeLimit( void ) const;
-	std::vector<RouteConfig> 		getRoutes( void ) const;
-	RouteConfig						getRoute( int index ) const;
+	std::vector<Location>			getLocations( void ) const;
+	Location						getLocation( int index ) const;
+	// std::vector<RouteConfig> 		getRoutes( void ) const; // to be deleted
+	// RouteConfig						getRoute( int index ) const; // to be deleted
 	std::string 					getRoot( void ) const;
 	std::string 					getIndex( void ) const;
 	bool 							getAutoindex( void ) const;
@@ -66,10 +70,11 @@ class Server
 	void	setHost( std::string );
 	void	setPort( std::string );
 	void	setServerNames( std::vector<std::string> );
-	void	setDefaultErrorPage( std::string );
 	void	setClientBodySizeLimit( std::string );
-	void	setRoutes( std::vector<RouteConfig> );
-	void	setRoute( RouteConfig );
+	void	setLocations( std::vector<Location> );
+	void	setLocation( Location );
+	// void	setRoutes( std::vector<RouteConfig> ); // to be deleted
+	// void	setRoute( RouteConfig ); // to be deleted
 	void	setRoot( std::string );
 	void	setIndex( std::string );
 	void	setAutoindex( bool );
