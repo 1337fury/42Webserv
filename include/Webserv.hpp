@@ -38,3 +38,4 @@ bool		isNumber(std::string str);
 std::string status_code( short statusCode );
 int			checks_type(std::string const path);
 bool		checks_permissions(std::string const path);
+bool		check_methods(std::vector<std::string>& methods);
