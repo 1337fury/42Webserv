@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/15 13:54:03 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/16 11:16:41 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,13 @@ Server::Server( void ) {
 	this->_port = 0;
 	this->_serverNames = std::vector<std::string>();
 	this->_clientBodySizeLimit = 0;
-	this->_routes = std::vector<RouteConfig>();
+	// this->_routes = std::vector<RouteConfig>(); // to be deleted
 	this->_listen_fd = 0;
 	this->_root = "";
 	this->_index = "";
 	this->_autoindex = false;
 	this->_error_pages = std::map<short, std::string>();
+	this->_locations = std::vector<Location>();
 }
 
 Server::Server( Server const &rhs ) {
@@ -35,7 +36,7 @@ Server &Server::operator=( Server const &rhs ) {
 		this->_port = rhs._port;
 		this->_serverNames = rhs._serverNames;
 		this->_clientBodySizeLimit = rhs._clientBodySizeLimit;
-		this->_routes = rhs._routes;
+		// this->_routes = rhs._routes;
 		this->_root = rhs._root;
 		this->_index = rhs._index;
 		this->_autoindex = rhs._autoindex;
@@ -60,12 +61,18 @@ std::vector<std::string>	Server::getServerNames( void ) const {
 int	Server::getClientBodySizeLimit( void ) const {
 	return this->_clientBodySizeLimit;
 }
-std::vector<RouteConfig>	Server::getRoutes( void ) const {
-	return this->_routes;
+std::vector<Location>	Server::getLocations( void ) const {
+	return this->_locations;
 }
-RouteConfig	Server::getRoute( int index ) const {
-	return this->_routes[index];
+Location	Server::getLocation( int index ) const {
+	return this->_locations[index];
 }
+// std::vector<RouteConfig>	Server::getRoutes( void ) const {
+// 	return this->_routes;
+// } // to be deleted
+// RouteConfig	Server::getRoute( int index ) const {
+// 	return this->_routes[index];
+// } // to be deleted
 std::string	Server::getRoot( void ) const {
 	return this->_root;
 }
@@ -108,12 +115,18 @@ void	Server::setClientBodySizeLimit( std::string clientBodySizeLimit ) {
 		throw std::runtime_error("WebServ: client_max_body_size directive invalid value");
 	this->_clientBodySizeLimit = atoi(clientBodySizeLimit.c_str());
 }
-void	Server::setRoutes( std::vector<RouteConfig> routes ) {
-	this->_routes = routes;
+void	Server::setLocations( std::vector<Location> locations ) {
+	this->_locations = locations;
 }
-void	Server::setRoute( RouteConfig route ) {
-	this->_routes.push_back(route);
+void	Server::setLocation( Location location ) {
+	this->_locations.push_back(location);
 }
+// void	Server::setRoutes( std::vector<RouteConfig> routes ) {
+// 	this->_routes = routes;
+// } // to be deleted
+// void	Server::setRoute( RouteConfig route ) {
+// 	this->_routes.push_back(route);
+// } // to be deleted
 void	Server::setRoot( std::string root ) {
 	this->_root = root;
 }
