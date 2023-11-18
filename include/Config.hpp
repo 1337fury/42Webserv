@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/13 10:39:17 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/16 12:04:12 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,7 @@ class Config
 		void		_syntaxCheck( Block &block );
 
 		void		_parseServer( Block &block );
+		void		_parseLocation( std::string& path, Block &block, Server &server );
 
 	public:
 	// Constructors
