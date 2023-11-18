@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/14 18:13:33 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/16 16:21:37 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -177,4 +177,18 @@ bool	checks_permissions(std::string const path)
 	if (access(path.c_str(), R_OK) == -1)
 		return (false); // file is not readable
 	return (true);
+}
+
+bool	check_methods(std::vector<std::string>& methods)
+{
+	std::vector<std::string> validMethods;
+	validMethods.push_back("GET");
+	validMethods.push_back("HEAD");
+	validMethods.push_back("DELETE");
+	for (size_t i = 0; i < methods.size(); i++)
+	{
+		if (std::find(validMethods.begin(), validMethods.end(), methods[i]) == validMethods.end())
+			throw std::invalid_argument("WebServ: [location] Invalid or not supported method `" +  methods[i] + "`");
+	}
+	return true;
 }
