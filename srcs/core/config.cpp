@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/18 13:06:35 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/19 12:39:24 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,9 @@ Lexer const& Config::getLexer() const {
 }
 std::vector<t_token> const& Config::getTockens() const {
 	return _tockens;
+}
+std::vector<Server> const& Config::getServers() const {
+	return _servers;
 }
 
 // Exceptions
@@ -160,14 +163,18 @@ Block	Config::_parseBlock()
     return context;
 }
 
-Block	Config::parseConfig( void ) {
-	Block root;
+void		Config::parseConfig( void ) {
 	_nextToken();
 	_nextToken();
-    root = _parseBlock();
+    Block root = _parseBlock();
+	root.name = "root";
 	_syntaxCheck(root);
-	_parseServer(root.directives[0].block[0]);
-	return root;
+	size_t i = 0;
+	while (i < root.directives.size())
+	{
+		_parseServer(root.directives[i].block[0]);
+		i++;
+	}
 }
 
 void	Config::_syntaxCheck( Block &root )
@@ -278,24 +285,7 @@ void Config::_parseServer( Block &block )
 	// ...
 	_servers.push_back(server);
 }
-/*
-• Setup routes with one or multiple of the following rules/configuration (routes wont be using regexp):
-	◦ Define a list of accepted HTTP methods for the route.
-	◦ Define a HTTP redirection.
-	◦ Define a directory or a file from where the file should be searched (for example, if url /kapouet is rooted to /tmp/www, url /kapouet/pouic/toto/pouet is /tmp/www/pouic/toto/pouet).
-	◦ Turn on or off directory listing.
-	◦ Set a default file to answer if the request is a directory.
-	◦ Execute CGI based on certain file extension (for example .php).
-	◦ Make it work with POST and GET methods.
-	◦ Make the route able to accept uploaded files and configure where they should be saved.
-∗ Because you won’t call the CGI directly, use the full path as PATH_INFO.
-∗ Just remember that, for chunked request, your server needs to unchunk it, the CGI will expect EOF as end of the body.
-∗ Same things for the output of the CGI. If no content_length is returned from the CGI, EOF will mark the end of the returned data.
-∗ Your program should call the CGI with the file requested as first argument.
-∗ The CGI should be run in the correct directory for relative path file access.
-∗ Your server should work with one CGI (php-CGI, Python, and so forth).
 
-*/
 void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 {
 	Location	location;
@@ -396,7 +386,7 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 		if (location.getPath() != "/cgi-bin" && location.getDefaultFile() == "")
 			location.setDefaultFile(server.getIndex());
 		if (!maxBodyDone)
-			location.setClientMaxBodySize(std::to_string(server.getClientBodySizeLimit()));...
+			location.setClientMaxBodySize(std::to_string(server.getClientBodySizeLimit()));
 		/*
 			[] check if location is valid
 			[] check if location is unique
