@@ -6,12 +6,13 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 12:39:26 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/12 13:29:26 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/19 17:46:32 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Lexer.hpp"
 #include "Config.hpp"
+#include "Http.hpp"
 
 void	printBlock(Block block, int depth)
 {
@@ -56,11 +57,11 @@ int	main(int argc, char *argv[])
         configFile = argv[1];
 	try
 	{
-		Config		config(configFile);
-		// config.printTokens();
-		Block block = config.parseConfig();
-		block.name = "root";
-		// printBlock(block, 0);
+		Config			 config(configFile);
+		config.parseConfig();
+		Http			 http(config.getServers());
+		http.initServers();
+		
 	} catch (std::exception &e)
 	{
 		std::cerr << e.what() << std::endl;
