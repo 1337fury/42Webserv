@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/16 12:04:12 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/19 12:38:56 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,12 +69,13 @@ class Config
 		// Config& operator=(const Config&);
 	
 	// Member functions
-		Block	parseConfig( void );
+		void		parseConfig( void );
 
 	// Getters
 		std::string const &getContent() const;
 		Lexer const &getLexer() const;
 		std::vector<t_token> const &getTockens() const;
+		std::vector<Server> const &getServers() const;
 
 	// Exceptions
 		class FileNotFound : public std::exception {
