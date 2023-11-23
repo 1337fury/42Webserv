@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/18 12:22:00 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/18 19:48:04 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@ Location::Location( void ) {
 	this->_autoindex = false;
 	this->_alias = "";
 	this->_cgiExtension = std::vector<std::string>();
+	this->_cgiPath = std::vector<std::string>();
+	this->_client_max_body_size = 0;
 }
 
 Location::Location( Location const &rhs ) {
@@ -43,6 +45,8 @@ Location &Location::operator=( Location const &rhs ) {
 		this->_autoindex = rhs._autoindex;
 		this->_alias = rhs._alias;
 		this->_cgiExtension = rhs._cgiExtension;
+		this->_cgiPath = rhs._cgiPath;
+		this->_client_max_body_size = rhs._client_max_body_size;
 	}
 	return *this;
 }
