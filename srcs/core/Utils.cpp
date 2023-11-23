@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/16 16:21:37 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/22 15:30:46 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,4 +191,14 @@ bool	check_methods(std::vector<std::string>& methods)
 			throw std::invalid_argument("WebServ: [location] Invalid or not supported method `" +  methods[i] + "`");
 	}
 	return true;
+}
+
+int set_non_blocking(int fd)
+{
+	int flags;
+
+	flags = fcntl(fd, F_GETFL, 0); // get current file status flags
+	if (flags == -1)
+		return -1;
+	return fcntl(fd, F_SETFL, flags | O_NONBLOCK); // set new file status flags
 }
