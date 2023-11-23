@@ -13,7 +13,7 @@ HSL			:= main.cpp
 #HOME SRCS PATH
 HSP			:= $(addprefix srcs/home/,$(HSL))
 #CORE SRCS LIST
-CSL			:= Lexer.cpp Config.cpp Server.cpp Location.cpp Utils.cpp
+CSL			:= Lexer.cpp Config.cpp Server.cpp Location.cpp Utils.cpp Http.cpp Logger.cpp
 #CORE SRCS PATH
 CSP			:= $(addprefix srcs/core/,$(CSL))
 
