@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/16 11:15:38 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/23 14:36:42 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,9 @@
 #include "Webserv.hpp"
 #include "Location.hpp"
 
-// struct RouteConfig {
-//     std::string 				path;
-//     std::vector<std::string>	acceptedMethods;
-//     std::string 				redirection;
-//     std::string 				rootDirectory;
-//     bool 						directoryListing;
-//     std::string 				defaultFile;
-//     std::string 				cgiExtension;
-//     bool 						acceptUploads;
-//     std::string 				uploadDirectory;
-// }; // to be deleted
+#define SOCKET int
+#define ISVALIDSOCKET(s) ((s) != -1)
+#define CLOSESOCKET(s) close(s)
 
 class Server
 {
@@ -36,13 +28,12 @@ class Server
 		uint16_t 						_port;
 		std::vector<std::string> 		_serverNames;
 		unsigned long 					_clientBodySizeLimit;
-		// std::vector<RouteConfig> 		_routes; // to be deleted
 		std::string 					_root;
 		std::string 					_index;
 		bool 							_autoindex;
-		// struct sockaddr_in 			_server_address; // to be deleted
+		struct sockaddr_in 				_server_address; 
 		std::map<short, std::string>	_error_pages;
-        int     						_listen_fd;
+        SOCKET     						_listen_socket;
 		std::vector<Location>			_locations;
 		
 	public:
@@ -57,8 +48,6 @@ class Server
 	int 							getClientBodySizeLimit( void ) const;
 	std::vector<Location>			getLocations( void ) const;
 	Location						getLocation( int index ) const;
-	// std::vector<RouteConfig> 		getRoutes( void ) const; // to be deleted
-	// RouteConfig						getRoute( int index ) const; // to be deleted
 	std::string 					getRoot( void ) const;
 	std::string 					getIndex( void ) const;
 	bool 							getAutoindex( void ) const;
@@ -73,8 +62,6 @@ class Server
 	void	setClientBodySizeLimit( std::string );
 	void	setLocations( std::vector<Location> );
 	void	setLocation( Location );
-	// void	setRoutes( std::vector<RouteConfig> ); // to be deleted
-	// void	setRoute( RouteConfig ); // to be deleted
 	void	setRoot( std::string );
 	void	setIndex( std::string );
 	void	setAutoindex( bool );
@@ -85,6 +72,8 @@ class Server
 	Server &operator=( Server const &rhs );
 	Server( Server const &rhs );
 	
+	// Methods
+	void init( void ); // init server
 
 	// to be deleted
 	void printErrorPages() ;
