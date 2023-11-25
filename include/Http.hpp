@@ -24,6 +24,10 @@ class Http
 		fd_set					_write_set;
 		int						_max_fd;
 		std::map<int, Server>	_fd_server_map;
+		std::map<int, Client>	_fd_client_map;
+		struct timeval			_timeout;
+		fd_set					_read_set_copy;
+		fd_set					_write_set_copy;
 	// Methods
 		
 		Http( void );
