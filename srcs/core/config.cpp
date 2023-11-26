@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/19 12:39:24 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/26 10:56:09 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ _tockens(_lexer.all()),
 _currentToken(),
 _followingToken()
 {
+	//! Useless
 	_serverdir.push_back("listen");
 	_serverdir.push_back("host");
 	_serverdir.push_back("root");
