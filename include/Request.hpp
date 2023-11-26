@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:46:52 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/24 12:19:09 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/26 16:50:41 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,38 +18,14 @@
 enum Method
 {
 	GET,
-	HEAD,
 	POST,
-	PUT,
 	DELETE
 };
 
-enum Version
+struct Header
 {
-	HTTP_1_0,
-	HTTP_1_1
-};
-
-enum Header
-{
-	Accept_Charsets,
-	Accept_Language,
-	Allow,
-	Authorization,
-	Content_Language,
-	Content_Length,
-	Content_Location,
-	Content_Type,
-	Date,
-	Host,
-	Last_Modified,
-	Location,
-	Referer,
-	Retry_After,
-	Server,
-	Transfer_Encoding,
-	User_Agent,
-	WWW_Authenticate
+	std::string		key;
+	std::string		value;
 };
 
 
@@ -57,17 +33,18 @@ class Request
 {
 	private:
 	// Properties
-		std::string		_method;
-		std::string		_uri;
-		std::string		_version;
-		std::string		_body;
-		std::map<Header, std::string>	_headers;
-		std::string		_raw_request;
-	// Methods
-		
-
+		// std::string				_method;
+		// std::string				_uri;
+		// int 					_versionMajor;
+		// int 					_versionMinor;
+		// std::vector<Header> 	_headers;
+		// std::vector<char> 		_content;
+		// bool 					_keepAlive;
 	public:
-	// Constructors & Destructors
+	// constructors
 		Request( void );
+		Request( Request const &rhs );
+		Request &operator=( Request const &rhs );
 		~Request( void );
+	
 };
