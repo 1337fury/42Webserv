@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 12:39:26 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/19 17:46:32 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/25 13:46:47 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ int	main(int argc, char *argv[])
 		config.parseConfig();
 		Http			 http(config.getServers());
 		http.initServers();
+		http.run();
 		
 	} catch (std::exception &e)
 	{
