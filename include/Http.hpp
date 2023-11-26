@@ -14,19 +14,21 @@
 
 #include "Server.hpp"
 #include "Webserv.hpp"
+#include "Client.hpp"
 
 class Http
 {
+	public:
+		static std::map<int, Client>	fd_client_map; // TODO: Handle client connection []
+		static fd_set					read_set;
+		static int						max_fd;
 	private:
 	// Properties
 		std::vector<Server> 	_servers;
-		fd_set					_read_set;
 		fd_set					_write_set;
-		int						_max_fd;
 		std::map<int, Server>	_fd_server_map;
-		std::map<int, Client>	_fd_client_map;
 		struct timeval			_timeout;
-		fd_set					_read_set_copy;
+		fd_set					read_set_copy;
 		fd_set					_write_set_copy;
 	// Methods
 		
@@ -36,7 +38,10 @@ class Http
 		Http( std::vector<Server> servers );
 		~Http( void );
 	// Mtethods
-		void	initServers( void );
-		void	run( void );
-		void 	addFDToSet( int fd, fd_set *set );
+		void			initServers( void );
+		void			run( void );
+	// Static Methods
+		static void 	addFDToSet( int fd, fd_set *set );
+		static void 	removeFDFromSet( int fd, fd_set *set );
+		static void 	closeConnection( int fd );
 };
