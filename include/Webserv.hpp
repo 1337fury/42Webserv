@@ -36,6 +36,15 @@
 #define OTHER 2
 #define ERROR -1
 
+#define COLOR_RESET 5
+#define COLOR_RED 6
+#define COLOR_YELLOW 7
+#define COLOR_GREEN 8
+#define COLOR_BLUE 9
+#define COLOR_CYAN 10
+#define COLOR_GRAY 11
+#define COLOR_LIGHT_GRAY 12
+
 bool		isNumber(std::string str);
 std::string status_code( short statusCode );
 int			checks_type(std::string const path);
