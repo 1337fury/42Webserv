@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/23 14:36:42 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/26 12:29:08 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 #define SOCKET int
 #define ISVALIDSOCKET(s) ((s) != -1)
 #define CLOSESOCKET(s) close(s)
+
+#define REQUEST_BUFFER_SIZE 65536
 
 class Server
 {
@@ -74,6 +76,8 @@ class Server
 	
 	// Methods
 	void init( void ); // init server
+	void acceptConnection( fd_set &set ); // accept connection
+	void handleRequest( int fd ); // handle request
 
 	// to be deleted
 	void printErrorPages() ;
