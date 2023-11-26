@@ -13,6 +13,10 @@
 #include "Http.hpp"
 #include "Logger.hpp"
 
+std::map<int, Client> Http::fd_client_map = std::map<int, Client>();
+fd_set Http::read_set = fd_set(); // creates an empty fd_set
+int Http::max_fd = 0;
+
 // Constructors & Destructors
 Http::Http( void )
 {
@@ -21,11 +25,11 @@ Http::Http( std::vector<Server> servers ) : _servers(servers)
 {
 	_timeout.tv_sec = 1;
 	_timeout.tv_usec = 500000;
-	FD_ZERO(&_read_set);
+	FD_ZERO(&Http::read_set);
 	FD_ZERO(&_write_set);
-	_max_fd = 0;
-	FD_ZERO(&_read_set_copy);
+	FD_ZERO(&read_set_copy);
 	FD_ZERO(&_write_set_copy);
+	_fd_server_map = std::map<int, Server>();
 }
 Http::~Http( void )
 {
@@ -33,59 +37,83 @@ Http::~Http( void )
 // Methods
 void	Http::initServers( void )
 {
-	Logger::getInstance().log("Initializing servers...", 2);
+	Logger::getInstance().log(COLOR_BLUE, "Initializing servers...");
 	for (u_short i = 0; i < _servers.size(); i++)
 	{
 		_servers[i].init();
 		_fd_server_map[_servers[i].getListenFd()] = _servers[i];
-		addFDToSet(_servers[i].getListenFd(), &_read_set);
+		addFDToSet(_servers[i].getListenFd(), &read_set);
 	}
-	_max_fd = _servers[_servers.size() - 1].getListenFd();
-	/*[Debug]*/ std::cout << "max_fd: " << _max_fd << std::endl;
+	Http::max_fd = _servers[_servers.size() - 1].getListenFd();
+	// /*[Debug]*/ std::cout << "max_fd: " << _max_fd << std::endl;
 }
 
-void   Http::acceptConnection( int listen_fd )
-{
-	struct sockaddr_in  client_addr;
-	socklen_t           client_addr_len = sizeof(client_addr);
-	int                 client_fd;
-
-	client_fd = accept(listen_fd, (struct sockaddr *)&client_addr, &client_addr_len);
-	if (client_fd == -1)
-		throw std::runtime_error("accept() failed");
-	Logger::getInstance().log("New connection accepted", 2);
-	addFDToSet(client_fd, &_read_set);
-}
+/*
+	TODO : 
+		[] Handle client connection
+	TODO : 
+		[] Handle client request
+	TODO : 
+		[] Handle client response
+*/
 
 void	Http::run( void )
 {
-	Logger::getInstance().log("Running servers...", 2);
+	Logger::getInstance().log(COLOR_BLUE, "Running servers...");
 	while (true)
 	{
-		_read_set_copy = _read_set;
+		read_set_copy = read_set;
 		_write_set_copy = _write_set;
-		if (select(_max_fd + 1, &_read_set_copy, &_write_set_copy, NULL, &_timeout) == -1)
-			throw std::runtime_error("select() failed");
-		for (int i = 0; i <= _max_fd; i++)
+		if (select(Http::max_fd + 1, &read_set_copy, &_write_set_copy, NULL, &_timeout) == -1)
 		{
-			if (FD_ISSET(i, &_read_set_copy))
+			Logger::getInstance().log(COLOR_RED, "Error: select() failed");
+			exit(1);
+		}
+		for (int i = 0; i <= Http::max_fd; i++)
+		{
+			if (FD_ISSET(i, &read_set_copy))
 			{
-				if (i == _servers[0].getListenFd())
-					_servers[0].acceptConnection();
+				if (_fd_server_map.count(i))
+					_fd_server_map[i].acceptConnection(read_set);
 				else
 					_fd_server_map[i].handleRequest(i);
 			}
 			if (FD_ISSET(i, &_write_set_copy))
 			{
-				_fd_server_map[i].handleResponse(i);
+				// _fd_server_map[i].handleResponse(i);
+				pause();
+			}
+		} // end of for
+	} // end of while
+}
+
+// Static Methods
+void 	Http::addFDToSet( int fd, fd_set *set)
+{
+	if (fd > Http::max_fd)
+		Http::max_fd = fd;
+	FD_SET(fd, set);
+}
+
+void 	Http::removeFDFromSet( int fd, fd_set *set)
+{
+	FD_CLR(fd, set);
+	if (fd == Http::max_fd)
+	{
+		for (int i = Http::max_fd - 1; i >= 0; i--)
+		{
+			if (FD_ISSET(i, set))
+			{
+				Http::max_fd = i;
+				break ;
 			}
 		}
 	}
 }
 
-void 	Http::addFDToSet( int fd, fd_set *set )
+void 	Http::closeConnection( int fd )
 {
-	if (fd > _max_fd)
-		_max_fd = fd;
-	FD_SET(fd, set);
+	close(fd);
+	removeFDFromSet(fd, &read_set);
+	Http::fd_client_map.erase(fd);
 }
