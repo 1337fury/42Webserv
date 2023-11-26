@@ -6,19 +6,26 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 12:36:36 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/23 15:48:17 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/25 16:33:36 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Logger.hpp"
+#include "Webserv.hpp"
+
 Logger& Logger::getInstance() {
 	static Logger instance;
 	return instance;
 }
 
-void Logger::log(const std::string& message, int colorCode = 0) {
+void Logger::log(int colorCode, const char *format, ...) {
+	char buffer[BUFFER_SIZE];
+	va_list args;
+	va_start(args, format);
+	vsnprintf(buffer, BUFFER_SIZE, format, args);
 	setColor(colorCode);
-	std::cout << getTimestamp() << " " << message << std::endl;
+	std::cout << getTimestamp() << " ";
+	std::cout << buffer << std::endl;
 }
 
 std::string	Logger::getTimestamp( void )
@@ -37,9 +44,14 @@ void Logger::setColor( int colorCode )
 {
 	const char* color = "";
 	switch (colorCode) {
-		case 1: color = "\033[1;31m"; break; // Red
-		case 2: color = "\033[1;32m"; break; // Green
-		default: color = "\033[0m"; break;   // Default (reset)
+		case COLOR_RED: color = "\x1b[31m"; break; // Red
+		case COLOR_GREEN: color = "\x1b[32m"; break; // Green
+		case COLOR_YELLOW: color = "\x1b[33m"; break; // Yellow
+		case COLOR_BLUE: color = "\x1b[34m"; break; // Blue
+		case COLOR_CYAN: color = "\x1b[36m"; break; // Cyan
+		case COLOR_GRAY: color = "\x1b[90m"; break; // Gray
+		case COLOR_LIGHT_GRAY: color = "\x1b[37m"; break; // Light Gray
+		default: color = "\x1b[0m"; break;   // Default (reset)
 	}
 	std::cout << color;
 }
