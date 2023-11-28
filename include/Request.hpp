@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:46:52 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/26 16:50:41 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/28 16:18:15 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,20 +31,19 @@ struct Header
 
 class Request
 {
-	private:
-	// Properties
-		// std::string				_method;
-		// std::string				_uri;
-		// int 					_versionMajor;
-		// int 					_versionMinor;
-		// std::vector<Header> 	_headers;
-		// std::vector<char> 		_content;
-		// bool 					_keepAlive;
 	public:
 	// constructors
 		Request( void );
 		Request( Request const &rhs );
 		Request &operator=( Request const &rhs );
 		~Request( void );
-	
+
+	// Properties
+		std::string				method;
+		std::string				uri;
+		int 					versionMajor;
+		int 					versionMinor;
+		std::vector<Header> 	headers;
+		std::vector<char> 		content;
+		bool 					keepAlive;
 };
