@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:52:17 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/28 16:16:16 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/11/30 17:01:39 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,26 +40,22 @@ enum RequestState
 	HTTP_VERSION_CR,
 
 	HEADER_LINE_START,
-	HEADER_LWS, //? Linear White Space
+	HEADER_LWS,
 	HEADER_KEY,
 	SPACE_BEFORE_HEADER_VALUE,
 	HEADER_VALUE,
 	EXPECTING_NEWLINE_2,
 	EXPECTING_NEWLINE_3,
 
-	POST_BODY
-	// CHUNKED_BODY_SIZE, //? Chunked body size Example: 4\r\n
-	// CHUNKED_EXTENSION_NAME, 
-	// CHUNKED_EXTENSION_VALUE, //? Chunked extension value Example: key=value\r\n
-	// CHUNKED_SIZE_NEWLINE, //? Chunked size newline Example: \r\n
-	// CHUNKED_SIZE_NEWLINE_2, //? Chunked size newline Example: \r\n
-	// CHUNKED_SIZE_NEWLINE_3, //? Chunked size newline Example: \r\n
-	// CHUNKED_TRAILER_KEY, //? Chunked trailer key Example: key
-	// CHUNKED_TRAILER_VALUE, //? Chunked trailer value Example: value\r\n
+	POST_BODY,
+	CHUNKED_BODY_SIZE,
+	CHUNKED_SIZE_NEWLINE,
+	CHUNKED_SIZE_NEWLINE_2,
+	CHUNKED_SIZE_NEWLINE_3,
 	
-	// CHUNKED_DATA_NEWLINE, //? Chunked data newline Example: \r\n
-	// CHUNKED_DATA_NEWLINE_2, //? Chunked data newline Example: \r\n
-	// CHUNKED_DATA, //? Chunked data Example: data\r\n
+	CHUNKED_DATA_NEWLINE,
+	CHUNKED_DATA_NEWLINE_2,
+	CHUNKED_DATA
 };
 
 class RequestParser
@@ -86,5 +82,3 @@ class RequestParser
 	"GET /uri.cgi HTTP/1.1\r\n\r..."; //!ExpectingNewline_3
 	"GET /uri.cgi HTTP/1.1\r\nUser-Agent: Mozilla/5.0\r\nAccept: text/html\r\nHost: 127.0.0.1\r\n\r\n";
 */
-
-// line feed: \n
