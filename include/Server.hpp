@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/26 12:29:08 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/02 13:22:59 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 #define CLOSESOCKET(s) close(s)
 
 #define REQUEST_BUFFER_SIZE 65536
+
+class Client;
 
 class Server
 {
@@ -77,7 +79,8 @@ class Server
 	// Methods
 	void init( void ); // init server
 	void acceptConnection( fd_set &set ); // accept connection
-	void handleRequest( int fd ); // handle request
+	void handleRequest( int fd, Client& client ); // handle request
+	void handleResponse( int fd, Client& client ); // handle response
 
 	// to be deleted
 	void printErrorPages() ;
