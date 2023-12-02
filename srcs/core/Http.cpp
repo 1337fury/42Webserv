@@ -15,6 +15,7 @@
 
 std::map<int, Client> Http::fd_client_map = std::map<int, Client>();
 fd_set Http::read_set = fd_set(); // creates an empty fd_set
+fd_set Http::write_set = fd_set(); // creates an empty fd_set
 int Http::max_fd = 0;
 
 // Constructors & Destructors
@@ -26,7 +27,7 @@ Http::Http( std::vector<Server> servers ) : _servers(servers)
 	_timeout.tv_sec = 1;
 	_timeout.tv_usec = 500000;
 	FD_ZERO(&Http::read_set);
-	FD_ZERO(&_write_set);
+	FD_ZERO(&Http::write_set);
 	FD_ZERO(&read_set_copy);
 	FD_ZERO(&_write_set_copy);
 	_fd_server_map = std::map<int, Server>();
@@ -45,16 +46,15 @@ void	Http::initServers( void )
 		addFDToSet(_servers[i].getListenFd(), &read_set);
 	}
 	Http::max_fd = _servers[_servers.size() - 1].getListenFd();
-	// /*[Debug]*/ std::cout << "max_fd: " << _max_fd << std::endl;
 }
 
 /*
 	TODO : 
-		[] Handle client connection
+		[√] Handle client connection
 	TODO : 
-		[] Handle client request
+		[.] Handle client request
 	TODO : 
-		[] Handle client response
+		[X] Handle client response
 */
 
 void	Http::run( void )
@@ -63,7 +63,7 @@ void	Http::run( void )
 	while (true)
 	{
 		read_set_copy = read_set;
-		_write_set_copy = _write_set;
+		_write_set_copy = write_set;
 		if (select(Http::max_fd + 1, &read_set_copy, &_write_set_copy, NULL, &_timeout) == -1)
 		{
 			Logger::getInstance().log(COLOR_RED, "Error: select() failed");
@@ -76,15 +76,16 @@ void	Http::run( void )
 				if (_fd_server_map.count(i))
 					_fd_server_map[i].acceptConnection(read_set);
 				else
-					_fd_server_map[i].handleRequest(i);
+					_fd_server_map[GET(i)].handleRequest(i, fd_client_map[i]); // [SIMPLE REQUEST[√] | //! CGI REQUEST[X]
 			}
-			if (FD_ISSET(i, &_write_set_copy))
+			else if (FD_ISSET(i, &_write_set_copy)) //! In progress
 			{
-				// _fd_server_map[i].handleResponse(i);
+				// _fd_server_map[GET(i)].handleResponse(i);
+				std::cout << "handle response" << std::endl;
 				pause();
 			}
-		} // end of for
-	} // end of while
+		}
+	}
 }
 
 // Static Methods
@@ -116,4 +117,9 @@ void 	Http::closeConnection( int fd )
 	close(fd);
 	removeFDFromSet(fd, &read_set);
 	Http::fd_client_map.erase(fd);
+}
+
+SOCKET 	Http::getclientServer( int fd )
+{
+	return (Http::fd_client_map[fd].getServer().getListenFd());
 }
