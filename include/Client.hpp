@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:43:53 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/26 16:48:23 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/01 12:40:27 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,11 @@ class Client
 		sockaddr_in		_clientAddr;
 		socklen_t		_addrLen;
 		Request			_request; //! [NOT VERIFIED]
+		Server			_server; //! [NOT VERIFIED]
 	public:
 	// Constructors & Destructors
 		Client( void );
-		Client( SOCKET, sockaddr_in );
+		Client( SOCKET, sockaddr_in, Server& );
 		~Client( void );
 		Client( const Client & src );
 		Client & operator=( const Client & rhs );
@@ -35,9 +36,11 @@ class Client
 		sockaddr_in		getClientAddr( void ) const;
 		socklen_t		getClientAddrLen( void ) const;
 		Request			getRequest( void ) const; //! [NOT VERIFIED]
+		Server			getServer( void ) const; //! [NOT VERIFIED]
 	// Setters
 		void			setClientSock( SOCKET );
 		void			setClientAddr( sockaddr_in );
 		void			setClientAddrLen( socklen_t );
 		void			setRequest( Request& ); //! [NOT VERIFIED]
+		void			setServer( Server& ); //! [NOT VERIFIED]
 };
