@@ -16,16 +16,18 @@
 #include "Webserv.hpp"
 #include "Client.hpp"
 
+#define GET(fd) Http::getclientServer(fd)
+
 class Http
 {
 	public:
 		static std::map<int, Client>	fd_client_map; // TODO: Handle client connection []
 		static fd_set					read_set;
+		static fd_set					write_set;
 		static int						max_fd;
 	private:
 	// Properties
 		std::vector<Server> 	_servers;
-		fd_set					_write_set;
 		std::map<int, Server>	_fd_server_map;
 		struct timeval			_timeout;
 		fd_set					read_set_copy;
@@ -44,4 +46,5 @@ class Http
 		static void 	addFDToSet( int fd, fd_set *set );
 		static void 	removeFDFromSet( int fd, fd_set *set );
 		static void 	closeConnection( int fd );
+		static SOCKET 	getclientServer( int fd );
 };
