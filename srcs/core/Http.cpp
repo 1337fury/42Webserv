@@ -52,7 +52,7 @@ void	Http::initServers( void )
 	TODO : 
 		[√] Handle client connection
 	TODO : 
-		[.] Handle client request
+		[I] Handle client request
 	TODO : 
 		[X] Handle client response
 */
@@ -80,7 +80,7 @@ void	Http::run( void )
 			}
 			else if (FD_ISSET(i, &_write_set_copy)) //! In progress
 			{
-				// _fd_server_map[GET(i)].handleResponse(i);
+				_fd_server_map[GET(i)].handleResponse(i, fd_client_map[i]);
 				std::cout << "handle response" << std::endl;
 				pause();
 			}
