@@ -6,14 +6,20 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:28:11 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/30 18:18:28 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/05 12:05:58 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Request.hpp"
 
 Request::Request( void ) {
-
+	this->method = "";
+	this->uri = "";
+	this->versionMajor = 1;
+	this->versionMinor = 1;
+	this->headers = std::vector<Header>();
+	this->content = std::vector<char>();
+	this->keepAlive = false;
 }
 
 Request::Request( Request const &rhs ) {
@@ -22,6 +28,13 @@ Request::Request( Request const &rhs ) {
 
 Request &Request::operator=( Request const &rhs ) {
 	if ( this != &rhs ) {
+		this->method = rhs.method;
+		this->uri = rhs.uri;
+		this->versionMajor = rhs.versionMajor;
+		this->versionMinor = rhs.versionMinor;
+		this->headers = rhs.headers;
+		this->content = rhs.content;
+		this->keepAlive = rhs.keepAlive;
 	}
 	return *this;
 }
