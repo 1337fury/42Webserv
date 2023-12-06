@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:52:17 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/30 17:01:39 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/05 10:16:42 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,8 @@ class RequestParser
 {
 	private:
 		__unused RequestState	_state;
-		__unused size_t 			_contentSize;
-    	__unused std::string		_chunkSizeStr;
+		__unused size_t 		_contentSize;
+    	__unused std::string	_chunkSizeStr;
     	__unused size_t			_chunkSize;
     	__unused bool 			_chunked;
 		
