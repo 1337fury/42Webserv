@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/26 16:49:52 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/05 12:51:46 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 #include "Logger.hpp"
 #include "Http.hpp"
 #include "Client.hpp"
+#include "Request.hpp"
+#include "RequestParser.hpp"
 
 Server::Server( void ) {
 	this->_host = 0;
@@ -184,7 +186,8 @@ void	Server::init( void ) {
 	// if (set_non_blocking(this->_listen_socket) == -1) {
 	// 	Logger::getInstance().log(COLOR_RED, "WebServ: Socket non-blocking failed");
 	// 	exit(EXIT_FAILURE);
-	// } //? what Happens if we don't set the client socket to non-blocking? : we will have to wait for the client to send data before we can send data to it
+	// } //? what Happens if we don't the server socket to non-blocking? : we will have to wait for the client to send data before we can send data to it, and we will have to wait for the client to send data before we can accept another client connection
+
 }
 
 void   Server::acceptConnection( fd_set &read_set)
@@ -193,19 +196,12 @@ void   Server::acceptConnection( fd_set &read_set)
 	socklen_t           client_addr_len = sizeof(client_addr); // get the size of the structure
 	int                 client_fd; // create a file descriptor for the client socket
 
-	/*[debug]*/for (int i = 0; i <= 9; i++)
-		{
-			if (FD_ISSET(i, &Http::read_set))
-				std::cout << "read set[accept]: " << i << std::endl;
-		}
-
 	client_fd = accept(_listen_socket, (struct sockaddr *)&client_addr, &client_addr_len);
 	if (!ISVALIDSOCKET(client_fd))
 	{
 		Logger::getInstance().log(COLOR_RED, "WebServ: Socket accept failed");
 		exit(EXIT_FAILURE);
 	}
-	/*[debug]*/std::cout << "client_fd [accept]: " << client_fd << std::endl;
 	Logger::getInstance().log(COLOR_GREEN, "A connection to `%s` has been established from %s", _serverNames[0].c_str() ,inet_ntoa(client_addr.sin_addr));
 
 	Http::addFDToSet(client_fd, &read_set); //? Can be better
@@ -216,35 +212,23 @@ void   Server::acceptConnection( fd_set &read_set)
 	// 	exit(EXIT_FAILURE);
 	// } //? what Happens if we don't set the client socket to non-blocking? : we will have to wait for the client to send data before we can send data to it
 
-	Client client(client_fd, client_addr);
+	Client client(client_fd, client_addr, *this);
 	client.setClientAddrLen(client_addr_len);
 
 	if (Http::fd_client_map.count(client_fd) == 1)
-		// Http::fd_client_map[client_fd] = client; //! To be checked
-		return ;
+		Http::fd_client_map[client_fd] = client; // update client info because it already exists in the map (client disconnected and reconnected)
+		// return ;
 	else
 		Http::fd_client_map.insert(std::pair<SOCKET, Client>(client_fd, client));
 }
 
-void	Server::handleRequest( __unused int fd ) {
-		/*[debug]*/std::cout << "client_fd: " << fd << std::endl;
-		/*[debug]*/for (int i = 0; i <= 9; i++)
-		{
-			if (FD_ISSET(i, &Http::read_set))
-				std::cout << "read set: " << i << std::endl;
-		}
-	Logger::getInstance().log(COLOR_YELLOW, "Handling request...");
+void	Server::handleRequest( int fd, Client& client ) {
+	Request request; //! Create a request object
+	RequestParser requestParser; //! Create a request parser object
+	int parseResult = PARSE_INCOMPLETE;
 	char buffer[REQUEST_BUFFER_SIZE];
 	int bytes_received = 0;
-	bytes_received = recv(fd, buffer, REQUEST_BUFFER_SIZE, 0);
-		/*[debug]*/std::cout << "Request " <<  buffer << std::endl;
-	// TODO: Handle request 
-	// - if request is empty close connection because client closed connection without sending request,it send an ACK to the server and the server recv() returns 0
-	// - if request is not empty parse it
-	// - if request is not valid send error response
-	// - if request is valid send response
-	// - if request is valid and connection is keep-alive wait for another request
-	// - if request is valid and connection is not keep-alive close connection
+	bytes_received = recv(fd, buffer, REQUEST_BUFFER_SIZE, 0); //* the difference between recv() and read() is that recv() is more flexible and can be used with flags like MSG_DONTWAIT and MSG_WAITALL to make it non-blocking and blocking respectively while read() is always blocking and can't be used with flags (it's a system call)
 	if (bytes_received == 0)
 	{
 		Logger::getInstance().log(COLOR_YELLOW, "Connection closed by peer");
@@ -258,7 +242,64 @@ void	Server::handleRequest( __unused int fd ) {
 	else if (bytes_received > 0)
 	{
 		//? parse request [...]
+		parseResult = requestParser.parse(request, buffer, buffer + bytes_received);
 		memset(buffer, 0, REQUEST_BUFFER_SIZE);
 	}
+	if (parseResult == PARSE_SUCCESS || parseResult == PARSE_ERROR)
+	{
+		client.setRequest(request);
+		if (parseResult == PARSE_ERROR)
+		{
+			Logger::getInstance().log(COLOR_RED, "Sending 400 Bad Request");
+			send_400(fd, client);
+			return ;
+		}
+		// TODO: Check if request for CGI process later
+		Http::removeFDFromSet(fd, &Http::read_set); // remove fd from read_set because we don't need to read from it anymore
+		Http::addFDToSet(fd, &Http::write_set);
+	}
 	//send response
+}
+
+/*
+	TODO: Handle request 
+	- if request is empty close connection because client closed connection without sending request,it send an ACK to the server and the server recv() returns 0
+	- if request is not empty parse it
+	- if request is not valid send error response
+	- if request is valid send response
+	- if request is valid and connection is keep-alive wait for another request
+	- if request is valid and connection is not keep-alive close connection
+*/
+
+/*
+The following steps list a simplified overview of what happens when a client requests a CGI process.
+
+- The client (a web browser) sends a request to the server for a document. If it can, the server responds to the request directly by sending the document.
+- If the server determines the request isn't for a document it can simply deliver, the server creates a CGI process.
+- The CGI process turns the request information into environment variables. Next, it establishes a current working directory for the child process. Finally, it establishes pipes (data pathways) between the server and an external CGI program.
+- After the external CGI program processes the request, it uses the data pathway to send a response back to the server, which in turn, sends the response back to the client.
+*/
+
+void	Server::handleResponse( __unused int fd, __unused Client& client )
+{
+	Request Req;
+	Response response(Req); //! Create a response object
+	
+	
+}
+
+void	Server::send_400( int fd, Client& client )
+{
+	Response response;
+	response.setStatusCode(400);
+	response.setStatusMessage("Bad Request");
+	response.setVersion(client.getRequest().versionMajor, client.getRequest().versionMinor);
+	response.setHeader("Content-Type", "text/html");
+	response.setHeader("Content-Length", "0");
+	response.setHeader("Connection", "close");
+	response.setBody();
+	response.setResponseString();
+	std::string response_str = response.getResponseString();
+	send(fd, response_str.c_str(), response_str.length(), 0);
+	Http::closeConnection(fd);
 }
