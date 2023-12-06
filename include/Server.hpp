@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/02 13:22:59 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/05 11:32:03 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,9 @@ class Server
 	void acceptConnection( fd_set &set ); // accept connection
 	void handleRequest( int fd, Client& client ); // handle request
 	void handleResponse( int fd, Client& client ); // handle response
+
+	// Error Response
+	void send_400( int fd, Client& client );
 
 	// to be deleted
 	void printErrorPages() ;
