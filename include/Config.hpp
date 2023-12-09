@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/19 12:38:56 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/08 09:52:53 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,12 +41,7 @@ class Config
 		std::vector<t_token>		_tockens;
 		t_token 					_currentToken;
     	t_token 					_followingToken;
-		std::vector<std::string>	_serverdir;
-		std::vector<std::string>	_routedir;
 		std::vector<Server>			_servers;
-	// Wrapper functions
-		// std::map<std::string, std::function<Directive(Directive)>> _blockWrappers;
-		// std::map<std::string, std::function<Directive(Directive)>> _directiveWrappers;
 	// Methods
 		std::string	_getFileContent(std::string const &filename) const;
 		Directive 	_parseStatement( void );
