@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:46:52 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/30 17:39:55 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/09 12:23:45 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ struct Header
 {
 	std::string		key;
 	std::string		value;
+	Header(const std::string& key, const std::string& value)
+        : key(key), value(value) {}
 };
 
 
