@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/05 11:56:25 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/09 18:15:24 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,22 @@
 #include "Webserv.hpp"
 #include "Server.hpp"
 #include "Request.hpp"
+#include <sstream>
+
+// Example for an http response:
+// HTTP/1.1 200 OK
+// Server: Nginy/1.0
+// Content-Type: text/html
+// Content-Length: 123
+// Connection: keep-alive
+//
+// <html><body><h1>Hello, World!</h1></body></html>
 
 class Response
 {
 	private:
 	// Properties
+		Server					_server; //? GETTER & SETTER
 		unsigned int			_statusCode; // 200, 404, 500, etc...
 		std::string				_status; // 200 OK, 404 Not Found, 500 Internal Server Error, etc...
 		std::vector<Header> 	_headers; // Content-Type: text/html, Content-Length: 123, etc...
@@ -30,11 +41,13 @@ class Response
 		std::string				_version; // HTTP/1.1
 		
 		std::string				_response_string; // the response string that we will send to the client
+		
+		std::stringstream		_page; // the page that we will send to the client //? GETTER & SETTER
 
 	public:
 		Response( void );
 	// Constructors & Destructors
-		Response( Request &request );
+		Response( Request &request, Server &server );
 		Response( Response const &rhs );
 		Response &operator=( Response const &rhs );
 		~Response( void );
@@ -62,5 +75,12 @@ class Response
 		void					setBody( void );
 		void					setResponseString( void );
 	// Methods
-		void	create( void );
+		std::string			getCurrentTime();
+		void 					init_headers( void );
+		void					searchForErrorPage( void );
+		void					create(  Client& client );
+		void					reset( void );
+
+	// Response
+	void sendMethodNotAllowedResponse( SOCKET clientSock );
 };
