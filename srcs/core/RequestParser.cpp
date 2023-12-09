@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:51:44 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/05 09:50:05 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/09 18:18:50 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 					return PARSE_ERROR;
 				else
 				{
-					request.headers.push_back(Header());
+					request.headers.push_back(Header("", "")); //! TESTING
 					request.headers.back().key.push_back(*current);
 					_state = HEADER_KEY;
 				}
@@ -190,7 +190,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 					return PARSE_ERROR;
 				else
 				{
-					request.headers.push_back(Header());
+					request.headers.push_back(Header("", ""));
 					request.headers.back().key.push_back(*current);
 					_state = HEADER_KEY;
 				}
@@ -242,7 +242,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 				else if (_contentSize == 0)
 				
 				{
-					if (*current == '\n' && request.method == "GET")
+					if (*current == '\n')
 						return PARSE_SUCCESS;
 					else
 						return PARSE_ERROR;
@@ -313,7 +313,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 		}
 		current++;
 	}
-	return PARSE_SUCCESS;
+	return PARSE_INCOMPLETE;
 }
 
 //  g++ -std=c++98 -I include srcs/core/RequestParser.cpp srcs/home/RequestParse.cpp srcs/core/Request.cpp -o requestParseTest
