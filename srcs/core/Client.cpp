@@ -6,22 +6,30 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:12 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/04 12:40:53 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/08 09:46:49 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Client.hpp"
 
 Client::Client( void ) {
+	this->request = Request();
 	this->_clientSock = -1;
 	this->_clientAddr = sockaddr_in();
+	this->_addrLen = 0;
+	this->_server = Server();
+	this->_response = Response();
+	this->reqParser = RequestParser();
 }
 
 Client::Client( SOCKET clientSock, sockaddr_in clientAddr, Server& server ) {
+	this->request = Request();
 	this->_clientSock = clientSock;
 	this->_clientAddr = clientAddr;
 	this->_addrLen = sizeof(this->_clientAddr);
 	this->_server = server;
+	this->_response = Response();
+	this->reqParser = RequestParser();
 }
 
 Client::~Client( void ) {
@@ -36,9 +44,10 @@ Client & Client::operator=( const Client & rhs ) {
 		this->_clientSock = rhs._clientSock;
 		this->_clientAddr = rhs._clientAddr;
 		this->_addrLen = rhs._addrLen;
-		this->_request = rhs._request;
+		this->request = rhs.request;
 		this->_server = rhs._server;
 		this->_response = rhs._response;
+		this->reqParser = rhs.reqParser;
 	}
 	return *this;
 }
@@ -56,8 +65,8 @@ socklen_t		Client::getClientAddrLen( void ) const {
 	return this->_addrLen;
 }
 
-Request			Client::getRequest( void ) const {
-	return this->_request;
+Request&			Client::getRequest( void ) {
+	return this->request;
 } //! [NOT VERIFIED]
 
 Server			Client::getServer( void ) const {
@@ -80,10 +89,6 @@ void			Client::setClientAddr( sockaddr_in clientAddr ) {
 void			Client::setClientAddrLen( socklen_t addrLen ) {
 	this->_addrLen = addrLen;
 }
-
-void			Client::setRequest( Request& request ) {
-	this->_request = request;
-} //! [NOT VERIFIED]
 
 void			Client::setServer( Server& server ) {
 	this->_server = server;
