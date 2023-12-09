@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/05 12:51:46 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/09 17:16:03 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,8 @@ std::map<short, std::string>	Server::getErrorPages( void ) const {
 	return this->_error_pages;
 }
 std::string	Server::getErrorPage( short number ) const {
+	if (this->_error_pages.count(number) == 0)
+		return "";
 	return this->_error_pages.at(number);
 }
 int	Server::getListenFd( void ) const {
@@ -223,8 +225,7 @@ void   Server::acceptConnection( fd_set &read_set)
 }
 
 void	Server::handleRequest( int fd, Client& client ) {
-	Request request; //! Create a request object
-	RequestParser requestParser; //! Create a request parser object
+	// static RequestParser requestParser; //! Create a request parser object
 	int parseResult = PARSE_INCOMPLETE;
 	char buffer[REQUEST_BUFFER_SIZE];
 	int bytes_received = 0;
@@ -242,12 +243,12 @@ void	Server::handleRequest( int fd, Client& client ) {
 	else if (bytes_received > 0)
 	{
 		//? parse request [...]
-		parseResult = requestParser.parse(request, buffer, buffer + bytes_received);
+		parseResult = client.reqParser.parse(client.request, buffer, buffer + bytes_received);
 		memset(buffer, 0, REQUEST_BUFFER_SIZE);
 	}
 	if (parseResult == PARSE_SUCCESS || parseResult == PARSE_ERROR)
 	{
-		client.setRequest(request);
+		Logger::getInstance().log(COLOR_GREEN, "Request parsed successfully");
 		if (parseResult == PARSE_ERROR)
 		{
 			Logger::getInstance().log(COLOR_RED, "Sending 400 Bad Request");
@@ -283,9 +284,10 @@ The following steps list a simplified overview of what happens when a client req
 void	Server::handleResponse( __unused int fd, __unused Client& client )
 {
 	Request Req;
-	Response response(Req); //! Create a response object
+	Req = client.getRequest(); //! Get the request object from the client object
+	Response response(Req, *this); //! Create a response object
 	
-	
+	response.create(client);
 }
 
 void	Server::send_400( int fd, Client& client )
