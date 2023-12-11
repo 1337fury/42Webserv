@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/09 17:16:03 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/11 12:17:35 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,35 @@ void	Server::setErrorPage( std::vector<std::string> parameters ) {
 }
 void	Server::setListenFd( int listen_fd ) {
 	this->_listen_socket = listen_fd;
+}
+
+// match a location to a path, by comparing the common prefix between the two strings, the location with the longest common prefix is the one that matches the path
+/*
+- uri : /static/index.html
+- lo1 : /static/		   [X]
+- lo2 : /static/index.html [√]
+*/
+Location	*Server::getMatchingLocation( std::string uri ) { 
+	Location *location = NULL;
+	size_t longest_prefix = 0;
+	for ( std::vector<Location>::iterator it = this->_locations.begin(); it != this->_locations.end(); it++ )
+	{
+		if ( uri.find(it->getPath()) == 0 && it->getPath().length() > longest_prefix )
+		{
+			longest_prefix = it->getPath().length();
+			location = &(*it);
+		}
+	}
+	// if no location matches the path, then the location is the root location
+	if ( location == NULL && this->getRoot().empty() == false )
+	{
+		location = new Location(); //! Leaked memory
+		location->setPath("/");
+		location->setRootDirectory(_root);
+		location->setDefaultFile(_index);
+		location->setAutoindex(_autoindex);
+	}
+	return location;
 }
 
 // to be deleted
