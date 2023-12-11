@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/05 11:32:03 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/10 15:37:11 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ class Server
 	void	setAutoindex( bool );
 	void	setErrorPage( std::vector<std::string> );
 	void	setListenFd( int );
+	
+	Location	*getMatchingLocation( std::string uri );
 	
 	// Operators
 	Server &operator=( Server const &rhs );
