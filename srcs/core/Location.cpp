@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/18 19:48:04 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/11 11:48:45 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,10 @@ std::string 				Location::getRedirection( void ) const {
 	return this->_redirection;
 }
 std::string 				Location::getRootDirectory( void ) const {
-	return this->_rootDirectory;
+	return this->_rootDirectory; // root directory is the directory that contains the files that we want to serve, example: /var/www/html
 }
 std::string 				Location::getDefaultFile( void ) const {
-	return this->_defaultFile;
+	return this->_defaultFile; // default file is the file that we want to serve if the client requests a directory, example: index.html, the directive name is index
 }
 std::vector<std::string>	Location::getCgiExtension( void ) const {
 	return this->_cgiExtension;
