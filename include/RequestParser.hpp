@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:52:17 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/05 10:16:42 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/07 17:01:52 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ enum RequestState
 {
 	REQUEST_METHOD_START,
 	REQUEST_METHOD,
-	URI_START,
+	URI_START, // 2
 	URI,
 	HTTP_VERSION_H,
 	HTTP_VERSION_HT,
@@ -34,7 +34,7 @@ enum RequestState
 	HTTP_VERSION_HTTP,
 	HTTP_VERSION_SLASH,
 	HTTP_VERSION_MAJOR_START,
-	HTTP_VERSION_MAJOR,
+	HTTP_VERSION_MAJOR, // 10
 	HTTP_VERSION_MINOR_START,
 	HTTP_VERSION_MINOR,
 	HTTP_VERSION_CR,
@@ -43,11 +43,11 @@ enum RequestState
 	HEADER_LWS,
 	HEADER_KEY,
 	SPACE_BEFORE_HEADER_VALUE,
-	HEADER_VALUE,
-	EXPECTING_NEWLINE_2,
-	EXPECTING_NEWLINE_3,
+	HEADER_VALUE, // 18
+	EXPECTING_NEWLINE_2, // 19
+	EXPECTING_NEWLINE_3, // 20
 
-	POST_BODY,
+	POST_BODY, // 21
 	CHUNKED_BODY_SIZE,
 	CHUNKED_SIZE_NEWLINE,
 	CHUNKED_SIZE_NEWLINE_2,
