@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/26 10:56:09 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/08 09:52:25 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,6 @@ _tockens(_lexer.all()),
 _currentToken(),
 _followingToken()
 {
-	//! Useless
-	_serverdir.push_back("listen");
-	_serverdir.push_back("host");
-	_serverdir.push_back("root");
-	_serverdir.push_back("server_name");
-	_serverdir.push_back("default_error_page");
-	_serverdir.push_back("client_body_size_limit");
-	_serverdir.push_back("location");
-	_routedir.push_back("path");
-	_routedir.push_back("accepted_methods");
-	_routedir.push_back("redirection");
-	_routedir.push_back("root_directory");
-	_routedir.push_back("directory_listing");
-	_routedir.push_back("default_file");
-	_routedir.push_back("cgi_extension");
-	_routedir.push_back("accept_uploads");
-	_routedir.push_back("upload_directory");
 }
 
 std::string	Config::_getFileContent(std::string const &filename) const {
@@ -299,7 +282,7 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 	{
 		if (blockDirectives[i].name == "root")
 		{
-			if (location.getPath() != "")
+			if (location.getRootDirectory() != "")
 				throw std::runtime_error("WebServ: [location] root directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `root`");
@@ -340,14 +323,14 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 		else if (blockDirectives[i].name == "redirect")
 		{
 			if (path == "/cgi-bin")
-				throw std::runtime_error("WebServ: [location] redirect directive not allowed in cgi-bin");
+				throw std::runtime_error("WebServ: [location] redirect directive not allowed in cgi-bin"); 
 			if (location.getRedirection() != "")
 				throw std::runtime_error("WebServ: [location] redirect directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `redirect`");
 			location.setRedirection(blockDirectives[i].parameters[0]);
 		}
-		else if (blockDirectives[i].name == "alias") // ambiguous ...
+		else if (blockDirectives[i].name == "alias") //! ambiguous ...
 		{
 			if (path == "/cgi-bin")
 				throw std::runtime_error("WebServ: [location] alias directive not allowed in cgi-bin");
