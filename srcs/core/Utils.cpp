@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/26 12:11:14 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/11 17:17:58 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ bool	isNumber( std::string str )
 	return true;
 }
 
-std::string status_code( short statusCode )
+std::string status_code( u_short statusCode )
 {
 	switch (statusCode)
 	{
@@ -160,7 +160,7 @@ int	checks_type(std::string const path)
 	struct stat		filestat;
 	int				ret;
 
-	ret = stat(path.c_str(), &filestat);
+	ret = stat(path.c_str(), &filestat); // stat function used to get file status (type, size, permissions, etc.), returns -1 on error and 0 on success, and fills the struct stat pointed to by filestat with the file status information
 	if (ret == -1)
 		return (ERROR);
 	if (S_ISDIR(filestat.st_mode))
