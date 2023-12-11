@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/09 18:15:24 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/11 17:21:00 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "Webserv.hpp"
 #include "Server.hpp"
 #include "Request.hpp"
+#include "Location.hpp"
 #include <sstream>
 
 // Example for an http response:
@@ -25,13 +26,18 @@
 // Connection: keep-alive
 //
 // <html><body><h1>Hello, World!</h1></body></html>
+enum reqStatus
+{
+	LOCATION_NOT_FOUND,
+	OK
+};
 
 class Response
 {
 	private:
 	// Properties
 		Server					_server; //? GETTER & SETTER
-		unsigned int			_statusCode; // 200, 404, 500, etc...
+		u_short					_statusCode; // 200, 404, 500, etc...
 		std::string				_status; // 200 OK, 404 Not Found, 500 Internal Server Error, etc...
 		std::vector<Header> 	_headers; // Content-Type: text/html, Content-Length: 123, etc...
 		std::vector<char> 		_content; // <html><body><h1>Hello, World!</h1></body></html>
@@ -43,6 +49,8 @@ class Response
 		std::string				_response_string; // the response string that we will send to the client
 		
 		std::stringstream		_page; // the page that we will send to the client //? GETTER & SETTER
+		
+		Location				*_location; //! [during testing]
 
 	public:
 		Response( void );
@@ -52,7 +60,7 @@ class Response
 		Response &operator=( Response const &rhs );
 		~Response( void );
 	// Getters
-		unsigned int			getStatusCode( void ) const;
+		u_short					getStatusCode( void ) const;
 		std::string				getStatus( void ) const;
 		std::vector<Header> 	getHeaders( void ) const;
 		Header					getHeader( std::string key ) const;
@@ -64,7 +72,7 @@ class Response
 		std::string				getResponseString( void ) const;
 	
 	// Setters
-		void					setStatusCode( unsigned int statusCode );
+		void					setStatusCode( u_short statusCode );
 		void					setStatusMessage( std::string status );
 		void					setHeaders( std::vector<Header> headers );
 		void					setHeader( std::string key, std::string value  );
@@ -78,9 +86,11 @@ class Response
 		std::string			getCurrentTime();
 		void 					init_headers( void );
 		void					searchForErrorPage( void );
+		reqStatus				analyzeRequest( void );
 		void					create(  Client& client );
 		void					reset( void );
 
 	// Response
-	void sendMethodNotAllowedResponse( SOCKET clientSock );
+	void sendMethodNotAllowedResponse( SOCKET clientSock, u_short statusCode );
+	void	handleGETrequest( SOCKET clientSock );
 };
