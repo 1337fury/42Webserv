@@ -46,7 +46,7 @@
 #define COLOR_LIGHT_GRAY 12
 
 bool		isNumber(std::string str);
-std::string status_code( short statusCode );
+std::string status_code( u_short statusCode );
 int			checks_type(std::string const path);
 bool		checks_permissions(std::string const path);
 bool		check_methods(std::vector<std::string>& methods);
