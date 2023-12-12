@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/18 12:17:59 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/12 10:38:57 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,16 @@ class Location
 {
 	private:
 	// Properties
-		std::string 				_path;
-		std::vector<std::string>	_acceptedMethods;
-		std::string 				_redirection;
-		std::string 				_rootDirectory;
-		std::string 				_defaultFile;
-		std::vector<std::string> 	_cgiExtension;
-		std::vector<std::string> 	_cgiPath;
-		bool						_autoindex;
-		std::string 				_alias;
-		unsigned long				_client_max_body_size;
+		std::string 						_path;
+		std::vector<std::string>			_acceptedMethods;
+		std::vector<std::string> 			_redirection; //! change type to std::vector<std::string>
+		std::string 						_rootDirectory;
+		std::string 						_defaultFile;
+		std::vector<std::string> 			_cgiExtension;
+		std::vector<std::string> 			_cgiPath;
+		bool								_autoindex;
+		std::string 						_alias;
+		unsigned long						_client_max_body_size;
 		// bool 						_directoryListing;
 		// bool 						_acceptUploads;
 		// std::string 				_uploadDirectory;
@@ -42,7 +42,7 @@ class Location
 	// Getters
 		std::string 				getPath( void ) const;
 		std::vector<std::string>	getAcceptedMethods( void ) const;
-		std::string 				getRedirection( void ) const;
+		std::vector<std::string> 	getRedirection( void ) const; //! change return type to std::vector<std::string>
 		std::string 				getRootDirectory( void ) const;
 		std::string 				getDefaultFile( void ) const;
 		bool						getAutoindex( void ) const;
@@ -56,7 +56,7 @@ class Location
 	// Setters
 		void		setPath( std::string path );
 		void		setAcceptedMethods( std::vector<std::string> acceptedMethods );
-		void		setRedirection( std::string redirection );
+		void		setRedirection( std::vector<std::string> red ); //! change arg type to std::vector<std::string>
 		void		setRootDirectory( std::string rootDirectory );
 		void		setDefaultFile( std::string defaultFile );
 		void		setAutoindex( bool autoindex );
