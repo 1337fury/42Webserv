@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/08 09:52:25 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/12 10:13:49 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -320,17 +320,17 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `index`");
 			location.setDefaultFile(blockDirectives[i].parameters[0]);
 		}
-		else if (blockDirectives[i].name == "redirect")
+		else if (blockDirectives[i].name == "return") //! Work with redirection 12/12/2023: 10:00	
 		{
-			if (path == "/cgi-bin")
-				throw std::runtime_error("WebServ: [location] redirect directive not allowed in cgi-bin"); 
-			if (location.getRedirection() != "")
-				throw std::runtime_error("WebServ: [location] redirect directive is duplicate");
-			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `redirect`");
-			location.setRedirection(blockDirectives[i].parameters[0]);
+			if (path == "/cgi-bin") //! we can't redirect to a cgi-bin location because it's a script and not a file
+				throw std::runtime_error("WebServ: [location] return directive not allowed in cgi-bin"); 
+			if (location.getRedirection() != std::vector<std::string>())
+				throw std::runtime_error("WebServ: [location] return directive is duplicate");
+			if (blockDirectives[i].parameters.size() != 2) //! change the number of arguments to 2
+				throw std::runtime_error("WebServ: [location] invalid number of arguments in `return`");
+			location.setRedirection(blockDirectives[i].parameters);
 		}
-		else if (blockDirectives[i].name == "alias") //! ambiguous ...
+		else if (blockDirectives[i].name == "alias") //? the alias directive is used to replace the path of the request with the specified path example: /tours/1.html -> docs/fusion_web/1.html, when the request is /tours/1.html the server will return docs/fusion_web/1.html
 		{
 			if (path == "/cgi-bin")
 				throw std::runtime_error("WebServ: [location] alias directive not allowed in cgi-bin");
