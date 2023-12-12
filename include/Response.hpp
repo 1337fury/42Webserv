@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/11 17:21:00 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/12 10:36:06 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@
 enum reqStatus
 {
 	LOCATION_NOT_FOUND,
+	LOCATIONS_IS_REDIRECTING,
 	OK
 };
 
