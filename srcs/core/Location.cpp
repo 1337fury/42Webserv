@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/11 11:48:45 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/12 10:09:01 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 Location::Location( void ) {
 	this->_path = "";
 	this->_acceptedMethods = std::vector<std::string>();
-	this->_redirection = "";
+	this->_redirection = std::vector<std::string>();
 	this->_rootDirectory = "";
 	// this->_directoryListing = false;
 	this->_defaultFile = "";
@@ -61,7 +61,7 @@ std::string 				Location::getPath( void ) const {
 std::vector<std::string>	Location::getAcceptedMethods( void ) const {
 	return this->_acceptedMethods;
 }
-std::string 				Location::getRedirection( void ) const {
+std::vector<std::string> 	Location::getRedirection( void ) const {
 	return this->_redirection;
 }
 std::string 				Location::getRootDirectory( void ) const {
@@ -103,7 +103,7 @@ void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
 	check_methods(acceptedMethods);
 	this->_acceptedMethods = acceptedMethods;
 }
-void		Location::setRedirection( std::string redirection ) {
+void		Location::setRedirection( std::vector<std::string> redirection) {
 	this->_redirection = redirection;
 }
 void		Location::setRootDirectory( std::string rootDirectory ) {
