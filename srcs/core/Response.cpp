@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/11 17:20:54 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/12 10:43:10 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,6 +231,8 @@ reqStatus	Response::analyzeRequest( void )
 	
 	if (!_location)
 		return LOCATION_NOT_FOUND;
+	if (_location->getRedirection().size())
+		return LOCATIONS_IS_REDIRECTING;
 	return OK;
 }
 
@@ -241,6 +243,9 @@ void	Response::create( __unused Client& client )
 	{
 		case LOCATION_NOT_FOUND:
 			sendMethodNotAllowedResponse(client.getClientSock(), 404);
+			break;
+		case LOCATIONS_IS_REDIRECTING:
+			
 			break;
 		default:
 			break;
