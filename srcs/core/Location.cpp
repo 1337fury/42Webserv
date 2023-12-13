@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/12 10:09:01 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 17:23:39 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,9 +103,16 @@ void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
 	check_methods(acceptedMethods);
 	this->_acceptedMethods = acceptedMethods;
 }
+
 void		Location::setRedirection( std::vector<std::string> redirection) {
+	// check  if the first element is a valid status code and the second element is a valid url
+	if (redirection[0].length() != 3 || !isNumber(redirection[0]))
+		throw std::invalid_argument("WebServ: [location] redirection directive invalid value");
+	if (atoi(redirection[0].c_str()) < 300 || atoi(redirection[0].c_str()) > 308)
+		throw std::invalid_argument("WebServ: [location] redirection directive invalid value");
 	this->_redirection = redirection;
 }
+
 void		Location::setRootDirectory( std::string rootDirectory ) {
 	if (checks_type(rootDirectory) != DIRECTORY)
 		throw std::invalid_argument("WebServ: Invalid root directory");
