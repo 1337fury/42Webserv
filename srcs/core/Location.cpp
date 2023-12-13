@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 17:23:39 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 18:02:17 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ Location::Location( void ) {
 	this->_cgiExtension = std::vector<std::string>();
 	this->_cgiPath = std::vector<std::string>();
 	this->_client_max_body_size = 0;
+	this->_isRederecting = false;
 }
 
 Location::Location( Location const &rhs ) {
@@ -47,6 +48,7 @@ Location &Location::operator=( Location const &rhs ) {
 		this->_cgiExtension = rhs._cgiExtension;
 		this->_cgiPath = rhs._cgiPath;
 		this->_client_max_body_size = rhs._client_max_body_size;
+		this->_isRederecting = rhs._isRederecting;
 	}
 	return *this;
 }
@@ -61,8 +63,9 @@ std::string 				Location::getPath( void ) const {
 std::vector<std::string>	Location::getAcceptedMethods( void ) const {
 	return this->_acceptedMethods;
 }
-std::vector<std::string> 	Location::getRedirection( void ) const {
-	return this->_redirection;
+Redirection 				Location::getRedirection( void ) const {
+	Redirection redirection(atoi(this->_redirection[0].c_str()), this->_redirection[1]);
+	return redirection;
 }
 std::string 				Location::getRootDirectory( void ) const {
 	return this->_rootDirectory; // root directory is the directory that contains the files that we want to serve, example: /var/www/html
@@ -94,6 +97,11 @@ unsigned long				Location::getClientMaxBodySize( void ) const {
 // std::string 				Location::getUploadDirectory( void ) const {
 // 	return this->_uploadDirectory;
 // }
+bool						Location::isRederecting( void ) const {
+	return this->_isRederecting;
+}
+
+
 // Setters
 void		Location::setPath( std::string path ) {
 	this->_path = path;
@@ -105,11 +113,11 @@ void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
 }
 
 void		Location::setRedirection( std::vector<std::string> redirection) {
-	// check  if the first element is a valid status code and the second element is a valid url
 	if (redirection[0].length() != 3 || !isNumber(redirection[0]))
 		throw std::invalid_argument("WebServ: [location] redirection directive invalid value");
-	if (atoi(redirection[0].c_str()) < 300 || atoi(redirection[0].c_str()) > 308)
-		throw std::invalid_argument("WebServ: [location] redirection directive invalid value");
+	if (atoi(redirection[0].c_str()) < 301 || atoi(redirection[0].c_str()) > 302)
+		throw std::invalid_argument("WebServ: [location] the redirection directive only accepts 301 and 302");
+	_isRederecting = true;
 	this->_redirection = redirection;
 }
 
