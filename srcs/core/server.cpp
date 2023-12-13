@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/11 12:17:35 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 19:58:37 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ Server::Server( void ) {
 	this->_autoindex = false;
 	this->_error_pages = std::map<short, std::string>();
 	this->_locations = std::vector<Location>();
+	this->_host_string = "localhost";
+	this->_port_string = "";
 }
 
 Server::Server( Server const &rhs ) {
@@ -46,6 +48,8 @@ Server &Server::operator=( Server const &rhs ) {
 		this->_autoindex = rhs._autoindex;
 		this->_error_pages = rhs._error_pages;
 		this->_locations = rhs._locations;
+		this->_host_string = rhs._host_string;
+		this->_port_string = rhs._port_string;
 	}
 	return *this;
 }
@@ -92,6 +96,12 @@ std::string	Server::getErrorPage( short number ) const {
 int	Server::getListenFd( void ) const {
 	return this->_listen_socket;
 }
+std::string	Server::getHostString( void ) const {
+	return this->_host_string;
+}
+std::string	Server::getPortString( void ) const {
+	return this->_port_string;
+}
 
 // Setters
 void	Server::setHost( std::string host ) {
@@ -100,11 +110,13 @@ void	Server::setHost( std::string host ) {
 		host = "127.0.0.1";
 	if (host.length() > 9 || !inet_pton(AF_INET, host.c_str(), &addr)) // inet_pton() converts the IP address from text to binary form
 		throw std::runtime_error("WebServ: Invalid host address");
+	this->_host_string = host;
 	this->_host = inet_addr(host.c_str()); // Convert the IP address to network byte order
 }
 void	Server::setPort(std::string port) {
     if (port.length() > 5 || !isNumber(port))
 		throw std::runtime_error("WebServ: Invalid port number");
+	this->_port_string = port;
     this->_port = atoi(port.c_str());
 }
 void	Server::setServerNames( std::vector<std::string> serverNames ) {
