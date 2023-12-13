@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/10 15:37:11 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 18:50:56 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #pragma once
 
 #include "Webserv.hpp"
-#include "Location.hpp"
 
 #define SOCKET int
 #define ISVALIDSOCKET(s) ((s) != -1)
@@ -24,12 +23,16 @@
 
 class Client;
 
+class Location;
+
 class Server
 {
 	private:
 	// proberties
 		in_addr_t 						_host;
+		std::string 					_host_string;
 		uint16_t 						_port;
+		std::string 					_port_string;
 		std::vector<std::string> 		_serverNames;
 		unsigned long 					_clientBodySizeLimit;
 		std::string 					_root;
@@ -58,6 +61,8 @@ class Server
 	int 							getListenFd( void ) const;
 	std::map<short, std::string>	getErrorPages( void ) const;
 	std::string 					getErrorPage( short number ) const;
+	std::string 					getHostString( void ) const;
+	std::string 					getPortString( void ) const;
 	
 	// Setters
 	void	setHost( std::string );
