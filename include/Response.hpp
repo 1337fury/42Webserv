@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/12 10:36:06 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 17:47:11 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,5 +93,6 @@ class Response
 
 	// Response
 	void sendMethodNotAllowedResponse( SOCKET clientSock, u_short statusCode );
-	void	handleGETrequest( SOCKET clientSock );
+	void handleRedircetiveLocation( SOCKET clientSock, Redirection red );
+	// void	handleGETrequest( SOCKET clientSock );
 };
