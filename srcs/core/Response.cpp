@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/12 10:43:10 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 19:50:14 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,7 +231,7 @@ reqStatus	Response::analyzeRequest( void )
 	
 	if (!_location)
 		return LOCATION_NOT_FOUND;
-	if (_location->getRedirection().size())
+	if (_location->isRederecting())
 		return LOCATIONS_IS_REDIRECTING;
 	return OK;
 }
@@ -245,11 +245,50 @@ void	Response::create( __unused Client& client )
 			sendMethodNotAllowedResponse(client.getClientSock(), 404);
 			break;
 		case LOCATIONS_IS_REDIRECTING:
-			
+			handleRedircetiveLocation(client.getClientSock(), _location->getRedirection());
 			break;
 		default:
 			break;
 	}
+}
+//  handle the setup and sending of an HTTP redirect response to the client. It performs a series of steps to set up the necessary HTTP headers, check for successful redirection, build appropriate content for the redirect page, and manage the status of the response object itself.
+void	Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused Redirection redirection )
+{
+	Logger::getInstance().log(COLOR_CYAN, "Handling Redircetive Location...");
+	setKeepAlive(false);
+	setStatusCode(redirection.statusCode);
+	setStatusMessage(status_code(redirection.statusCode));
+	setVersion(1, 1);
+	init_headers();
+	if (redirection.url.find("http://") != std::string::npos
+		|| redirection.url.find("https://") != std::string::npos)
+	{
+		this->setHeader("Location", redirection.url);
+	}
+	else if (redirection.url[0] == '/')
+	{
+		std::string host = _server.getHostString();
+		std::cout << "host: " << host << std::endl;
+		std::cout << "server name: " << _server.getServerNames()[0] << std::endl;
+		std::string port = _server.getPortString();
+		std::string url = "http://" + host + ":" + port;
+		url += redirection.url;
+		this->setHeader("Location", url);
+	}
+	else
+	{
+		std::string host = _server.getHostString();
+		std::string port = _server.getPortString();
+		std::string url = "http://" + host + ":" + port;
+		url += "/" + redirection.url;
+		this->setHeader("Location", url);
+	}
+	// the Location header field specifies the URL of the resource to which the client is redirected (Section 7.1.2) https://tools.ietf.org/html/rfc7231#section-7.1.2
+	this->setBody();
+	this->setResponseString();
+	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+	Http::closeConnection(clientSock);
+	Http::removeFDFromSet(clientSock, &Http::write_set);
 }
 
 /*void	Response::create( Client& client )
@@ -316,11 +355,11 @@ void	Response::sendMethodNotAllowedResponse( SOCKET clientSock, u_short statusCo
 // image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
 
 // process request and send appropriate response
-void	Response::handleGETrequest( __unused SOCKET clientSock )
-{
-	Logger::getInstance().log(COLOR_CYAN, "Responding to GET request...");
-	std::string uri = _request.uri;
+// void	Response::handleGETrequest( __unused SOCKET clientSock )
+// {
+// 	Logger::getInstance().log(COLOR_CYAN, "Responding to GET request...");
+// 	std::string uri = _request.uri;
 	
-	Http::closeConnection(clientSock);
-	Http::removeFDFromSet(clientSock, &Http::write_set);
-}
+// 	Http::closeConnection(clientSock);
+// 	Http::removeFDFromSet(clientSock, &Http::write_set);
+// }
