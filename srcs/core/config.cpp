@@ -6,12 +6,13 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/12 10:13:49 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 20:04:09 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 #include <Server.hpp>
+#include "location.hpp"
 
 Config::Config(std::string const &filename) :
 _content(_getFileContent(filename)),
@@ -324,7 +325,7 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 		{
 			if (path == "/cgi-bin") //! we can't redirect to a cgi-bin location because it's a script and not a file
 				throw std::runtime_error("WebServ: [location] return directive not allowed in cgi-bin"); 
-			if (location.getRedirection() != std::vector<std::string>())
+			if (location.isRederecting())
 				throw std::runtime_error("WebServ: [location] return directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 2) //! change the number of arguments to 2
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `return`");
