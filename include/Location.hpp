@@ -6,13 +6,21 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/12 10:38:57 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/13 20:04:34 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "Webserv.hpp"
+#include "Server.hpp"
+
+typedef struct Redirection
+{
+	Redirection(u_short statusCode, std::string url) : statusCode(statusCode), url(url) {}
+	u_short			statusCode;
+	std::string		url;
+}				Redirection;
 
 class Location
 {
@@ -31,6 +39,7 @@ class Location
 		// bool 						_directoryListing;
 		// bool 						_acceptUploads;
 		// std::string 				_uploadDirectory;
+		bool								_isRederecting;
 
 
 	public:
@@ -42,7 +51,7 @@ class Location
 	// Getters
 		std::string 				getPath( void ) const;
 		std::vector<std::string>	getAcceptedMethods( void ) const;
-		std::vector<std::string> 	getRedirection( void ) const; //! change return type to std::vector<std::string>
+		Redirection 				getRedirection( void ) const;
 		std::string 				getRootDirectory( void ) const;
 		std::string 				getDefaultFile( void ) const;
 		bool						getAutoindex( void ) const;
@@ -53,6 +62,7 @@ class Location
 		// bool 					getDirectoryListing( void ) const;
 		// bool 					getAcceptUploads( void ) const;
 		// std::string 				getUploadDirectory( void ) const;
+		bool						isRederecting( void ) const;
 	// Setters
 		void		setPath( std::string path );
 		void		setAcceptedMethods( std::vector<std::string> acceptedMethods );
