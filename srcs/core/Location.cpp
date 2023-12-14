@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 18:02:17 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 13:14:18 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,8 @@ bool						Location::isRederecting( void ) const {
 
 // Setters
 void		Location::setPath( std::string path ) {
+	if (path[0] != '/')
+		path = "/" + path;
 	this->_path = path;
 }
 void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
