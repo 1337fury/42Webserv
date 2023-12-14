@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 19:58:37 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 13:31:56 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ int	Server::getPort( void ) const {
 std::vector<std::string>	Server::getServerNames( void ) const {
 	return this->_serverNames;
 }
-int	Server::getClientBodySizeLimit( void ) const {
+unsigned long	Server::getClientBodySizeLimit( void ) const {
 	return this->_clientBodySizeLimit;
 }
 std::vector<Location>	Server::getLocations( void ) const {
@@ -160,6 +160,27 @@ void	Server::setErrorPage( std::vector<std::string> parameters ) {
 }
 void	Server::setListenFd( int listen_fd ) {
 	this->_listen_socket = listen_fd;
+}
+
+std::string	Server::getMimeType( std::string extension ) {
+	std::map<std::string, std::string> mime_types;
+	mime_types["css"] = "text/css";
+	mime_types["csv"] = "text/csv";
+	mime_types["gif"] = "image/gif";
+	mime_types["htm"] = "text/html";
+	mime_types["html"] = "text/html";
+	mime_types["ico"] = "image/x-icon";
+	mime_types["jpeg"] = "image/jpeg";
+	mime_types["jpg"] = "image/jpeg";
+	mime_types["js"] = "application/javascript";
+	mime_types["json"] = "application/json";
+	mime_types["png"] = "image/png";
+	mime_types["pdf"] = "application/pdf";
+	mime_types["svg"] = "image/svg+xml";
+	mime_types["txt"] = "text/plain";
+	if (mime_types.count(extension) == 0) // This MIME type is a generic binary file type that indicates that the server doesn't have specific information about the nature of the file.
+		return "application/octet-stream"; // default mime type for unknown extensions
+	return mime_types[extension];
 }
 
 // match a location to a path, by comparing the common prefix between the two strings, the location with the longest common prefix is the one that matches the path
