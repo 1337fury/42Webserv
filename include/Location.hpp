@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 20:04:34 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 17:23:18 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Location
 		std::string 				getPath( void ) const;
 		std::vector<std::string>	getAcceptedMethods( void ) const;
 		Redirection 				getRedirection( void ) const;
-		std::string 				getRootDirectory( void ) const;
+		std::string 				getRootDirectory( void );
 		std::string 				getDefaultFile( void ) const;
 		bool						getAutoindex( void ) const;
 		std::string 				getAlias( void ) const;
