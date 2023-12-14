@@ -6,13 +6,13 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 20:04:09 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 09:42:09 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Config.hpp"
 #include <Server.hpp>
-#include "location.hpp"
+#include "Location.hpp"
 
 Config::Config(std::string const &filename) :
 _content(_getFileContent(filename)),
