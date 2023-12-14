@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 13:35:06 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 17:26:33 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -205,7 +205,6 @@ void 					Response::searchForErrorPage( void )
 			while ( getline(file, line) )
 				_page << line;
 			file.close();
-			// set mime type
 			std::string extension = error_page.substr(error_page.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character in the string example: if the string is "hello world" and we call find_last_of('l') it will return 9
 			std::string mime_type = _server.getMimeType(extension);
 			setHeader("Content-Type", mime_type);
@@ -217,12 +216,14 @@ void 					Response::searchForErrorPage( void )
 			_statusCode = 500;
 			_status = "Internal Server Error";
 			_body = "<html><body><h1>500 Internal Server Error</h1></body></html>";
+			setHeader("Content-Type", _server.getMimeType("html"));
 			_content = std::vector<char>(_body.begin(), _body.end());
 		}
 	}
 	else // if the error page is not found
 	{
 		_body = "<html><body><h1>EMMMMMMMMMMMMM!</h1></body></html>";
+		setHeader("Content-Type", _server.getMimeType("html"));
 		_content = std::vector<char>(_body.begin(), _body.end());
 	}
 }
@@ -244,6 +245,7 @@ reqStatus				Response::analyzeRequest( void )
 	// check if request content is too large 413
 	if (_request.content.size() > _server.getClientBodySizeLimit())
 		return REQUEST_TO_LARGE;
+	path = _location->getRootDirectory() + path;
 	return OK;
 }
 
