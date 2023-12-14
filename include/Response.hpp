@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 17:47:11 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 13:28:52 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ enum reqStatus
 {
 	LOCATION_NOT_FOUND,
 	LOCATIONS_IS_REDIRECTING,
+	METHOD_NOT_ALLOWED,
+	REQUEST_TO_LARGE,
 	OK
 };
 
@@ -84,7 +86,7 @@ class Response
 		void					setBody( void );
 		void					setResponseString( void );
 	// Methods
-		std::string			getCurrentTime();
+		std::string				getCurrentTime();
 		void 					init_headers( void );
 		void					searchForErrorPage( void );
 		reqStatus				analyzeRequest( void );
@@ -92,7 +94,9 @@ class Response
 		void					reset( void );
 
 	// Response
-	void sendMethodNotAllowedResponse( SOCKET clientSock, u_short statusCode );
+	void sendNotFound( SOCKET clientSock, u_short statusCode );
 	void handleRedircetiveLocation( SOCKET clientSock, Redirection red );
+	void sendMethodNotAllowed( SOCKET clientSock, u_short statusCode );
+	void sendRequestToLarge( SOCKET clientSock, u_short statusCode );
 	// void	handleGETrequest( SOCKET clientSock );
 };
