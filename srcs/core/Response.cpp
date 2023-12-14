@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 19:50:14 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 13:35:06 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ Response &Response::operator=( Response const &rhs )
 }
 
 // Getters
-u_short			Response::getStatusCode( void ) const
+u_short					Response::getStatusCode( void ) const
 {
 	return _statusCode;
 }
@@ -134,7 +134,7 @@ void					Response::setHeaders( std::vector<Header> headers )
 
 void					Response::setHeader( std::string key, std::string value  )
 {
-	Header header("", "");
+	Header header("", ""); //! switch to Header header(key, value); later ...
 	header.key = key;
 	header.value = value;
 	_headers.push_back(header);
@@ -162,7 +162,7 @@ void					Response::setVersion( int major, int minor )
 
 void					Response::setBody( void )
 {
-	_body = std::string(_content.begin(), _content.end());
+	_body = std::string(_content.begin(), _content.end()); // convert vector<char> to string
 }
 
 void					Response::setResponseString( void )
@@ -174,7 +174,7 @@ void					Response::setResponseString( void )
 	_response_string += _body;
 }
 
-std::string Response::getCurrentTime() {
+std::string 			Response::getCurrentTime() {
     time_t currentTime = time(nullptr);
     char buffer[50]; 
 
@@ -193,7 +193,7 @@ void					Response::init_headers( void )
 }
 
 // Methods
-void Response::searchForErrorPage( void )
+void 					Response::searchForErrorPage( void )
 {
 	std::string error_page = _server.getErrorPage(_statusCode);
 	if ( error_page != "" )
@@ -205,6 +205,10 @@ void Response::searchForErrorPage( void )
 			while ( getline(file, line) )
 				_page << line;
 			file.close();
+			// set mime type
+			std::string extension = error_page.substr(error_page.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character in the string example: if the string is "hello world" and we call find_last_of('l') it will return 9
+			std::string mime_type = _server.getMimeType(extension);
+			setHeader("Content-Type", mime_type);
 			_body = _page.str();
 			_content = std::vector<char>(_body.begin(), _body.end());
 		}
@@ -216,16 +220,14 @@ void Response::searchForErrorPage( void )
 			_content = std::vector<char>(_body.begin(), _body.end());
 		}
 	}
-	else
+	else // if the error page is not found
 	{
-		_statusCode = 500;
-		_status = "Internal Server Error";
-		_body = "<html><body><h1>500 Internal Server Error</h1></body></html>";
+		_body = "<html><body><h1>EMMMMMMMMMMMMM!</h1></body></html>";
 		_content = std::vector<char>(_body.begin(), _body.end());
 	}
 }
 
-reqStatus	Response::analyzeRequest( void )
+reqStatus				Response::analyzeRequest( void )
 {
 	std::string path = _request.uri;
 	
@@ -233,26 +235,44 @@ reqStatus	Response::analyzeRequest( void )
 		return LOCATION_NOT_FOUND;
 	if (_location->isRederecting())
 		return LOCATIONS_IS_REDIRECTING;
+	if (_location->getAcceptedMethods().size() > 0)
+	{
+		std::vector<std::string> acceptedMethods = _location->getAcceptedMethods();
+		if (std::find(acceptedMethods.begin(), acceptedMethods.end(), _request.method) == acceptedMethods.end())
+			return METHOD_NOT_ALLOWED;
+	}
+	// check if request content is too large 413
+	if (_request.content.size() > _server.getClientBodySizeLimit())
+		return REQUEST_TO_LARGE;
 	return OK;
 }
 
-void	Response::create( __unused Client& client )
+void					Response::create( __unused Client& client )
 {
 	reqStatus requestStatus = analyzeRequest();
 	switch (requestStatus)
 	{
 		case LOCATION_NOT_FOUND:
-			sendMethodNotAllowedResponse(client.getClientSock(), 404);
+			sendNotFound(client.getClientSock(), 404);
 			break;
 		case LOCATIONS_IS_REDIRECTING:
 			handleRedircetiveLocation(client.getClientSock(), _location->getRedirection());
+			break;
+		case METHOD_NOT_ALLOWED:
+			sendMethodNotAllowed(client.getClientSock(), 405);
+			break;
+		case REQUEST_TO_LARGE:
+			sendRequestToLarge(client.getClientSock(), 413);
+			break;
+		case OK:
+			exit(0);
 			break;
 		default:
 			break;
 	}
 }
 //  handle the setup and sending of an HTTP redirect response to the client. It performs a series of steps to set up the necessary HTTP headers, check for successful redirection, build appropriate content for the redirect page, and manage the status of the response object itself.
-void	Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused Redirection redirection )
+void					Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused Redirection redirection )
 {
 	Logger::getInstance().log(COLOR_CYAN, "Handling Redircetive Location...");
 	setKeepAlive(false);
@@ -268,8 +288,6 @@ void	Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused R
 	else if (redirection.url[0] == '/')
 	{
 		std::string host = _server.getHostString();
-		std::cout << "host: " << host << std::endl;
-		std::cout << "server name: " << _server.getServerNames()[0] << std::endl;
 		std::string port = _server.getPortString();
 		std::string url = "http://" + host + ":" + port;
 		url += redirection.url;
@@ -291,29 +309,7 @@ void	Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused R
 	Http::removeFDFromSet(clientSock, &Http::write_set);
 }
 
-/*void	Response::create( Client& client )
-{
-	analyzeRequest();
-	if ( _request.method == "GET" )
-		goto getResponse;
-	else if ( _request.method == "POST" )
-		goto postResponse;
-	else if ( _request.method == "DELETE" )
-		goto deleteResponse;
-	else
-		goto methodNotAllowedResponse;
-
-	getResponse:
-		handleGETrequest(client.getClientSock());
-	postResponse:
-		return ;
-	deleteResponse:
-		return ;
-	methodNotAllowedResponse:
-		sendMethodNotAllowedResponse(client.getClientSock());
-}*/
-
-void	Response::reset( void )
+void					Response::reset( void )
 {
 	_statusCode = 200;
 	_status = "OK";
@@ -327,9 +323,41 @@ void	Response::reset( void )
 }
 
 // response
-void	Response::sendMethodNotAllowedResponse( SOCKET clientSock, u_short statusCode )
+void					Response::sendNotFound( SOCKET clientSock, u_short statusCode )
+{
+	Logger::getInstance().log(COLOR_CYAN, "Sending Not Found Response");
+	setVersion(1, 1);
+	setStatusCode(statusCode);
+	setStatusMessage(status_code(statusCode));
+	setKeepAlive(false);
+	init_headers();	
+	searchForErrorPage();
+	setBody();
+	setResponseString();
+	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+	Http::closeConnection(clientSock);
+	Http::removeFDFromSet(clientSock, &Http::write_set);
+}
+
+void					Response::sendMethodNotAllowed( SOCKET clientSock, u_short statusCode )
 {
 	Logger::getInstance().log(COLOR_CYAN, "Sending Method Not Allowed Response");
+	setVersion(1, 1);
+	setStatusCode(statusCode);
+	setStatusMessage(status_code(statusCode));
+	setKeepAlive(false);
+	init_headers();	
+	searchForErrorPage();
+	setBody();
+	setResponseString();
+	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+	Http::closeConnection(clientSock);
+	Http::removeFDFromSet(clientSock, &Http::write_set);
+}
+
+void					Response::sendRequestToLarge( SOCKET clientSock, u_short statusCode )
+{
+	Logger::getInstance().log(COLOR_CYAN, "Sending Request To Large Response");
 	setVersion(1, 1);
 	setStatusCode(statusCode);
 	setStatusMessage(status_code(statusCode));
@@ -354,12 +382,10 @@ void	Response::sendMethodNotAllowedResponse( SOCKET clientSock, u_short statusCo
 // Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,
 // image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
 
-// process request and send appropriate response
-// void	Response::handleGETrequest( __unused SOCKET clientSock )
-// {
-// 	Logger::getInstance().log(COLOR_CYAN, "Responding to GET request...");
-// 	std::string uri = _request.uri;
-	
-// 	Http::closeConnection(clientSock);
-// 	Http::removeFDFromSet(clientSock, &Http::write_set);
-// }
+
+// Example for an HTTP POST request:
+// POST / HTTP/1.1
+// Host: www.example.com
+// Content-Length: 13
+//
+// name=abdelouah&age=23
