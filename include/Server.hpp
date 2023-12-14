@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/13 18:50:56 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 13:31:54 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ class Server
 	in_addr_t						getHost( void ) const;
 	int 							getPort( void ) const;
 	std::vector<std::string> 		getServerNames( void ) const;
-	int 							getClientBodySizeLimit( void ) const;
+	unsigned long 					getClientBodySizeLimit( void ) const;
 	std::vector<Location>			getLocations( void ) const;
 	Location						getLocation( int index ) const;
 	std::string 					getRoot( void ) const;
@@ -82,6 +82,8 @@ class Server
 	// Operators
 	Server &operator=( Server const &rhs );
 	Server( Server const &rhs );
+
+	std::string getMimeType( std::string extension );
 	
 	// Methods
 	void init( void ); // init server
