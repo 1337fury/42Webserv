@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 17:26:33 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/15 10:06:52 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,6 +246,9 @@ reqStatus				Response::analyzeRequest( void )
 	if (_request.content.size() > _server.getClientBodySizeLimit())
 		return REQUEST_TO_LARGE;
 	path = _location->getRootDirectory() + path;
+	// check if the path is existing
+	if (access(path.c_str(), F_OK) == -1)
+		return LOCATION_NOT_FOUND;
 	return OK;
 }
 
