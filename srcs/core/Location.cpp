@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 13:14:18 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/14 17:23:10 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,9 @@ Redirection 				Location::getRedirection( void ) const {
 	Redirection redirection(atoi(this->_redirection[0].c_str()), this->_redirection[1]);
 	return redirection;
 }
-std::string 				Location::getRootDirectory( void ) const {
+std::string 				Location::getRootDirectory( void ) {
+	if (this->_rootDirectory.back() == '/')
+		this->_rootDirectory.pop_back();
 	return this->_rootDirectory; // root directory is the directory that contains the files that we want to serve, example: /var/www/html
 }
 std::string 				Location::getDefaultFile( void ) const {
