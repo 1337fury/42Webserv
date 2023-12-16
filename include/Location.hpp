@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 17:23:18 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/16 10:50:33 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ class Location
 		std::vector<std::string> 			_cgiPath;
 		bool								_autoindex;
 		std::string 						_alias;
-		unsigned long						_client_max_body_size;
 		// bool 						_directoryListing;
 		// bool 						_acceptUploads;
 		// std::string 				_uploadDirectory;
@@ -58,7 +57,6 @@ class Location
 		std::string 				getAlias( void ) const;
 		std::vector<std::string>	getCgiExtension( void ) const;
 		std::vector<std::string>	getCgiPath( void ) const;
-		unsigned long				getClientMaxBodySize( void ) const;
 		// bool 					getDirectoryListing( void ) const;
 		// bool 					getAcceptUploads( void ) const;
 		// std::string 				getUploadDirectory( void ) const;
@@ -73,7 +71,6 @@ class Location
 		void		setAlias( std::string alias );
 		void		setCgiExtension( std::vector<std::string> cgiExtension );
 		void		setCgiPath( std::vector<std::string> cgiPath );
-		void		setClientMaxBodySize( std::string clientBodySizeLimit );
 		// void		setDirectoryListing( bool directoryListing );
 		// void		setAcceptUploads( bool acceptUploads );
 		// void		setUploadDirectory( std::string uploadDirectory );

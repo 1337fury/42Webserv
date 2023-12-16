@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 17:23:10 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/16 10:52:28 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ Location::Location( void ) {
 	this->_alias = "";
 	this->_cgiExtension = std::vector<std::string>();
 	this->_cgiPath = std::vector<std::string>();
-	this->_client_max_body_size = 0;
 	this->_isRederecting = false;
 }
 
@@ -47,7 +46,6 @@ Location &Location::operator=( Location const &rhs ) {
 		this->_alias = rhs._alias;
 		this->_cgiExtension = rhs._cgiExtension;
 		this->_cgiPath = rhs._cgiPath;
-		this->_client_max_body_size = rhs._client_max_body_size;
 		this->_isRederecting = rhs._isRederecting;
 	}
 	return *this;
@@ -86,9 +84,6 @@ std::string 				Location::getAlias( void ) const {
 }
 std::vector<std::string>	Location::getCgiPath( void ) const {
 	return this->_cgiPath;
-}
-unsigned long				Location::getClientMaxBodySize( void ) const {
-	return this->_client_max_body_size;
 }
 // bool 						Location::getDirectoryListing( void ) const {
 // 	return this->_directoryListing;
@@ -145,11 +140,6 @@ void		Location::setCgiPath( std::vector<std::string> cgiPath ) {
 void		Location::setCgiExtension( std::vector<std::string> cgiExtension ) {
 	this->_cgiExtension = cgiExtension;
 }
-void	Location::setClientMaxBodySize( std::string clientBodySizeLimit ) {
-	if (clientBodySizeLimit.length() > 10 || !isNumber(clientBodySizeLimit))
-		throw std::runtime_error("WebServ: [location] client_max_body_size directive invalid value");
-	this->_client_max_body_size = atoi(clientBodySizeLimit.c_str());
-}
 // void		Location::setDirectoryListing( bool directoryListing ) {
 // 	this->_directoryListing = directoryListing;
 // }
@@ -159,3 +149,6 @@ void	Location::setClientMaxBodySize( std::string clientBodySizeLimit ) {
 // void		Location::setUploadDirectory( std::string uploadDirectory ) {
 // 	this->_uploadDirectory = uploadDirectory;
 // }
+// check if the location is has a root directory if else get the root directory from the server if else throw an exception
+// check if the location has a autoindex if else get the autoindex from the server if else throw an exception
+// check if the location has a index if else get the index from the server if else throw an exception
