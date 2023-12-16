@@ -51,3 +51,4 @@ int			checks_type(std::string const path);
 bool		checks_permissions(std::string const path);
 bool		check_methods(std::vector<std::string>& methods);
 int			set_non_blocking(int fd);
+std::string normalizePath(std::string& path);
