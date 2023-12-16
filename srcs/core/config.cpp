@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 09:42:09 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/16 11:42:25 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,14 @@ std::vector<t_token> const& Config::getTockens() const {
 	return _tockens;
 }
 std::vector<Server> const& Config::getServers() const {
+	// check if server has the mandatory directives (listen, root)
+	for (size_t i = 0; i < _servers.size(); i++)
+	{
+		if (_servers[i].getPort() == 0)
+			throw std::runtime_error("WebServ: server must have a listen directive");
+		if (_servers[i].getRoot() == "")
+			throw std::runtime_error("WebServ: server must have a root directive");
+	}
 	return _servers;
 }
 
@@ -276,7 +284,6 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 	Location	location;
 	std::vector<Directive> blockDirectives = block.directives;
 	bool	 autoindexDone = false;
-	bool	 maxBodyDone = false;
 	
 	location.setPath(path);
 	for (size_t i = 0; i < blockDirectives.size(); i++)
@@ -357,25 +364,19 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `cgi_path`");
 			location.setCgiPath(blockDirectives[i].parameters);
 		}
-		else if (blockDirectives[i].name == "client_max_body_size")
-		{
-			if (maxBodyDone)
-				throw std::runtime_error("WebServ: [location] client_max_body_size directive is duplicate");
-			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `client_max_body_size`");
-			location.setClientMaxBodySize(blockDirectives[i].parameters[0]);
-			maxBodyDone = true;
-		}
 		else
 			throw std::runtime_error("WebServ: [location] unknown directive `" + blockDirectives[i].name + "`");
+		if (location.getPath() != "/cgi-bin" && location.getRootDirectory() == "")
+			location.setRootDirectory(server.getRoot());
 		if (location.getPath() != "/cgi-bin" && location.getDefaultFile() == "")
 			location.setDefaultFile(server.getIndex());
-		if (!maxBodyDone)
-			location.setClientMaxBodySize(std::to_string(server.getClientBodySizeLimit()));
+		if (location.getPath() != "/cgi-bin" && !autoindexDone)
+			location.setAutoindex(server.getAutoindex());
 		/*
 			[] check if location is valid
 			[] check if location is unique
 		*/
 	}
+	
 	server.setLocation(location);
 }
