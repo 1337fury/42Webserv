@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/15 10:06:52 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/16 17:33:46 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,9 +246,12 @@ reqStatus				Response::analyzeRequest( void )
 	if (_request.content.size() > _server.getClientBodySizeLimit())
 		return REQUEST_TO_LARGE;
 	path = _location->getRootDirectory() + path;
+	// normalize the path
+	path = normalizePath(path);
 	// check if the path is existing
-	if (access(path.c_str(), F_OK) == -1)
-		return LOCATION_NOT_FOUND;
+	if (access(path.c_str(), F_OK) == -1) // Explanation: the access() function checks whether the calling process can access the file pathname. If pathname is a symbolic link, it is dereferenced. it works by checking the file's inode permission bits, not the file's mode bits. This allows the check to be made without actually attempting to open the file.
+		return PATH_NOT_EXISTING;
+	
 	return OK;
 }
 
@@ -269,9 +272,11 @@ void					Response::create( __unused Client& client )
 		case REQUEST_TO_LARGE:
 			sendRequestToLarge(client.getClientSock(), 413);
 			break;
-		case OK:
-			exit(0);
+		case PATH_NOT_EXISTING:
+			sendNotFound(client.getClientSock(), 404);
 			break;
+		case OK:
+			exit(1);
 		default:
 			break;
 	}
@@ -390,7 +395,7 @@ void					Response::sendRequestToLarge( SOCKET clientSock, u_short statusCode )
 
 // Example for an HTTP POST request:
 // POST / HTTP/1.1
-// Host: www.example.com
+// Host: localhost
 // Content-Length: 13
-//
+
 // name=abdelouah&age=23

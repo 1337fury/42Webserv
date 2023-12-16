@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 12:13:22 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/16 17:15:39 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,4 +201,32 @@ int set_non_blocking(int fd)
 	if (flags == -1)
 		return -1;
 	return fcntl(fd, F_SETFL, flags | O_NONBLOCK); // set new file status flags
+}
+
+// this function is used to normalize the path, example: /var/www/html/../../ -> /var/www, /var/www/html/./ -> /var/www/html, /var/www/html/ -> /var/www/html, because we don't want to serve files outside the root directory, and we don't want to serve the same file twice, example: /var/www/html/index.html and /var/www/html/./index.html are the same file but with different paths so we need to normalize the path to avoid serving the same file twice and to avoid serving files outside the root directory.
+std::string normalizePath(std::string& path)
+{
+	// example: /var/www/html/../../
+	std::string normalizedPath;
+	std::vector<std::string> tokens;
+	std::string token;
+
+	std::istringstream iss(path);
+	while (std::getline(iss, token, '/'))
+	{
+		if (token == "..")
+		{
+			if (tokens.size() > 0)
+				tokens.pop_back();
+		}
+		else if (token != ".")
+			tokens.push_back(token);
+	}
+	for (size_t i = 0; i < tokens.size(); i++)
+	{
+		normalizedPath += tokens[i] + "/";
+	}
+	if (normalizedPath.empty()) // if the path is empty, example: /var/www/html/../../../
+		normalizedPath = "/";
+	return normalizedPath;
 }
