@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:51:44 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/09 18:18:50 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/17 12:55:46 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 					request.method.push_back(*current);
 				break;
 			case URI_START:
-				if (isCtl(*current))
+				if (isCtl(*current) || *current != '/')
 					return PARSE_ERROR;
 				else
 				{

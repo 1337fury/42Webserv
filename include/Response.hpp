@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 13:28:52 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/17 12:05:54 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@ enum reqStatus
 	LOCATIONS_IS_REDIRECTING,
 	METHOD_NOT_ALLOWED,
 	REQUEST_TO_LARGE,
+	PATH_NOT_EXISTING,
+	PATH_IS_DIRECTORY,
+	PATH_IS_FILE,
 	OK
 };
 
@@ -98,5 +101,7 @@ class Response
 	void handleRedircetiveLocation( SOCKET clientSock, Redirection red );
 	void sendMethodNotAllowed( SOCKET clientSock, u_short statusCode );
 	void sendRequestToLarge( SOCKET clientSock, u_short statusCode );
+
+	void work_with_directory( SOCKET clientSock );
 	// void	handleGETrequest( SOCKET clientSock );
 };
