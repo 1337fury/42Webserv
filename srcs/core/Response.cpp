@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/16 17:33:46 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/17 17:26:53 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,7 @@ void 					Response::searchForErrorPage( void )
 			std::string extension = error_page.substr(error_page.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character in the string example: if the string is "hello world" and we call find_last_of('l') it will return 9
 			std::string mime_type = _server.getMimeType(extension);
 			setHeader("Content-Type", mime_type);
+			setHeader("Content-Length", std::to_string(_page.str().length()));
 			_body = _page.str();
 			_content = std::vector<char>(_body.begin(), _body.end());
 		}
@@ -217,6 +218,7 @@ void 					Response::searchForErrorPage( void )
 			_status = "Internal Server Error";
 			_body = "<html><body><h1>500 Internal Server Error</h1></body></html>";
 			setHeader("Content-Type", _server.getMimeType("html"));
+			setHeader("Content-Length", std::to_string(_body.length()));
 			_content = std::vector<char>(_body.begin(), _body.end());
 		}
 	}
@@ -248,10 +250,15 @@ reqStatus				Response::analyzeRequest( void )
 	path = _location->getRootDirectory() + path;
 	// normalize the path
 	path = normalizePath(path);
+	/*[debug]*/std::cout << "path: " << path << std::endl;
 	// check if the path is existing
 	if (access(path.c_str(), F_OK) == -1) // Explanation: the access() function checks whether the calling process can access the file pathname. If pathname is a symbolic link, it is dereferenced. it works by checking the file's inode permission bits, not the file's mode bits. This allows the check to be made without actually attempting to open the file.
 		return PATH_NOT_EXISTING;
-	
+	// check if the path is directory
+	if (checks_type(path) == DIRECTORY)
+		return PATH_IS_DIRECTORY;
+	if (checks_type(path) == REG_FILE)
+		return PATH_IS_FILE;
 	return OK;
 }
 
@@ -275,6 +282,9 @@ void					Response::create( __unused Client& client )
 		case PATH_NOT_EXISTING:
 			sendNotFound(client.getClientSock(), 404);
 			break;
+		case PATH_IS_DIRECTORY:
+			work_with_directory(client.getClientSock());
+			break;
 		case OK:
 			exit(1);
 		default:
@@ -290,8 +300,8 @@ void					Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unus
 	setStatusMessage(status_code(redirection.statusCode));
 	setVersion(1, 1);
 	init_headers();
-	if (redirection.url.find("http://") != std::string::npos
-		|| redirection.url.find("https://") != std::string::npos)
+	if (redirection.url.find("http://", 0) != std::string::npos
+		|| redirection.url.find("https://", 0) != std::string::npos)
 	{
 		this->setHeader("Location", redirection.url);
 	}
@@ -379,6 +389,50 @@ void					Response::sendRequestToLarge( SOCKET clientSock, u_short statusCode )
 	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
 	Http::closeConnection(clientSock);
 	Http::removeFDFromSet(clientSock, &Http::write_set);
+}
+
+void					Response::work_with_directory(__unused SOCKET clientSock)
+{
+	// performs a 301 redirect if a client requests a directory without a trailing slash, adding the slash to the request URI.
+	if (_request.uri[_request.uri.length() - 1] != '/')
+	{
+		Redirection redirection(301, _request.uri + "/");
+		handleRedircetiveLocation(clientSock, redirection);
+		return ;
+	}
+
+	// if the location is autoindex then we will open the directory and read it's content and send it to the client
+	DIR *dir;
+	struct dirent *ent;
+	std::string path = _location->getRootDirectory() + _request.uri;
+	if ((dir = opendir(path.c_str())) != NULL)
+	{
+		_page << "<html><head><title>Index of " << _request.uri << "</title></head><body><h1>Index of " << _request.uri << "</h1><hr><pre>";
+		while ((ent = readdir(dir)) != NULL)
+		{
+			_page << "<a href=\"" << _request.uri << ent->d_name << "\">" << ent->d_name << "</a><br>";
+		}
+		_page << "</pre><hr></body></html>";
+		closedir(dir);
+		setStatusCode(200);
+		setStatusMessage(status_code(200));
+		setKeepAlive(false);
+		setVersion(1, 1);
+		init_headers();
+		setHeader("Content-Type", _server.getMimeType("html"));
+		setHeader("Content-Length", std::to_string(_page.str().length()));
+		setContent(std::vector<char>(_page.str().begin(), _page.str().end()));
+		setBody();
+		setResponseString();
+		send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+		Http::closeConnection(clientSock);
+		Http::removeFDFromSet(clientSock, &Http::write_set);
+	}
+	else
+	{
+		sendNotFound(clientSock, 404);
+		return ;
+	}
 }
 
 // Example for an HTTP GET request:
