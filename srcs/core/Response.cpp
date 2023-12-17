@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/17 17:26:53 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/17 19:24:01 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -421,8 +421,8 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 		init_headers();
 		setHeader("Content-Type", _server.getMimeType("html"));
 		setHeader("Content-Length", std::to_string(_page.str().length()));
-		setContent(std::vector<char>(_page.str().begin(), _page.str().end()));
-		setBody();
+		_body = _page.str();
+		_content = std::vector<char>(_body.begin(), _body.end());
 		setResponseString();
 		send(clientSock, _response_string.c_str(), _response_string.length(), 0);
 		Http::closeConnection(clientSock);
