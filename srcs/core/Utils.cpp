@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/16 17:15:39 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/18 10:16:33 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,6 +211,8 @@ std::string normalizePath(std::string& path)
 	std::vector<std::string> tokens;
 	std::string token;
 
+	if (path.front() == '/')
+		path.erase(0, 1);
 	std::istringstream iss(path);
 	while (std::getline(iss, token, '/'))
 	{
@@ -224,7 +226,7 @@ std::string normalizePath(std::string& path)
 	}
 	for (size_t i = 0; i < tokens.size(); i++)
 	{
-		normalizedPath += tokens[i] + "/";
+		normalizedPath += "/" + tokens[i];
 	}
 	if (normalizedPath.empty()) // if the path is empty, example: /var/www/html/../../../
 		normalizedPath = "/";
