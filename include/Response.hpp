@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/17 12:05:54 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/18 17:30:17 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ class Response
 		std::string				getCurrentTime();
 		void 					init_headers( void );
 		void					searchForErrorPage( void );
-		reqStatus				analyzeRequest( void );
+		reqStatus				analyzeRequest( std::string &path );
 		void					create(  Client& client );
 		void					reset( void );
 
@@ -103,5 +103,6 @@ class Response
 	void sendRequestToLarge( SOCKET clientSock, u_short statusCode );
 
 	void work_with_directory( SOCKET clientSock );
+	void work_with_file( SOCKET clientSock, std::string path );
 	// void	handleGETrequest( SOCKET clientSock );
 };

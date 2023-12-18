@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/17 19:24:01 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/18 20:03:39 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -230,10 +230,10 @@ void 					Response::searchForErrorPage( void )
 	}
 }
 
-reqStatus				Response::analyzeRequest( void )
+reqStatus				Response::analyzeRequest( std::string &path )
 {
-	std::string path = _request.uri;
-	
+	path = _request.uri;
+
 	if (!_location)
 		return LOCATION_NOT_FOUND;
 	if (_location->isRederecting())
@@ -264,7 +264,8 @@ reqStatus				Response::analyzeRequest( void )
 
 void					Response::create( __unused Client& client )
 {
-	reqStatus requestStatus = analyzeRequest();
+	std::string path;
+	reqStatus requestStatus = analyzeRequest(path);
 	switch (requestStatus)
 	{
 		case LOCATION_NOT_FOUND:
@@ -285,8 +286,9 @@ void					Response::create( __unused Client& client )
 		case PATH_IS_DIRECTORY:
 			work_with_directory(client.getClientSock());
 			break;
-		case OK:
-			exit(1);
+		case PATH_IS_FILE:
+			work_with_file(client.getClientSock(), path);
+			break;
 		default:
 			break;
 	}
@@ -400,7 +402,10 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 		handleRedircetiveLocation(clientSock, redirection);
 		return ;
 	}
-
+	/*
+	TODO:
+		[] handle default file later
+	*/
 	// if the location is autoindex then we will open the directory and read it's content and send it to the client
 	DIR *dir;
 	struct dirent *ent;
@@ -432,6 +437,92 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	{
 		sendNotFound(clientSock, 404);
 		return ;
+	}
+}
+
+#include <stdio.h>
+void					Response::work_with_file(SOCKET clientSock, std::string path)
+{
+	Logger::getInstance().log(COLOR_CYAN, "Working with file...");
+	if (access(path.c_str(), R_OK) == -1)
+	{
+		sendNotFound(clientSock, 404);
+		exit(1) ;
+	}
+	else {
+		if (_request.method == "Delete")
+		{
+			if (remove(path.c_str()) != 0) // remove returns 0 on success and -1 on failure
+				sendNotFound(clientSock, 404);
+			else
+			{
+				setStatusCode(200);
+				setStatusMessage(status_code(200));
+				setKeepAlive(false);
+				setVersion(1, 1);
+				init_headers();
+				setHeader("Content-Type", _server.getMimeType("html"));
+				setHeader("Content-Length", std::to_string(_page.str().length()));
+				_body = _page.str();
+				_content = std::vector<char>(_body.begin(), _body.end());
+				setResponseString();
+				send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+				Http::closeConnection(clientSock);
+				Http::removeFDFromSet(clientSock, &Http::write_set);
+			}
+		}
+		else if (_request.method == "Post")
+		{
+			std::ofstream file(path);
+			if (file.is_open())
+			{
+				file << std::string(_request.content.begin(), _request.content.end());
+				file.close();
+				setStatusCode(200);
+				setStatusMessage(status_code(200));
+				setKeepAlive(false);
+				setVersion(1, 1);
+				init_headers();
+				setHeader("Content-Type", _server.getMimeType("html"));
+				setHeader("Content-Length", std::to_string(_page.str().length()));
+				_body = _page.str();
+				_content = std::vector<char>(_body.begin(), _body.end());
+				setResponseString();
+				send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+				Http::closeConnection(clientSock);
+				Http::removeFDFromSet(clientSock, &Http::write_set);
+			}
+			else
+				sendNotFound(clientSock, 404);
+		}
+		else
+		{
+			std::ifstream file(path, std::ios::binary);
+			if (file.is_open())
+			{
+				// std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()); explanation: https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
+				std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+				file.close();
+				std::string extension = path.substr(path.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character in the string example: if the string is "hello world" and we call find_last_of('l') it will return 9
+				std::string mime_type = _server.getMimeType(extension);
+				std::cout << "\t\tmime_type: " << mime_type << std::endl;
+				setStatusCode(200);
+				setStatusMessage(status_code(200));
+				setKeepAlive(false);
+				setVersion(1, 1);
+				init_headers();
+				setHeader("Content-Type", mime_type);
+				setHeader("Content-Length", std::to_string(content.length()));
+				_body = content;
+				_content = std::vector<char>(_body.begin(), _body.end());
+				setResponseString();
+				send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+				Http::closeConnection(clientSock);
+				Http::removeFDFromSet(clientSock, &Http::write_set);
+			}
+			else
+				sendNotFound(clientSock, 404);
+		}
 	}
 }
 
