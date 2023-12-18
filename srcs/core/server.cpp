@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 13:31:56 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/18 15:06:32 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,7 @@ std::string	Server::getMimeType( std::string extension ) {
 	mime_types["htm"] = "text/html";
 	mime_types["html"] = "text/html";
 	mime_types["ico"] = "image/x-icon";
+	mime_types["png"] = "image/png";
 	mime_types["jpeg"] = "image/jpeg";
 	mime_types["jpg"] = "image/jpeg";
 	mime_types["js"] = "application/javascript";
