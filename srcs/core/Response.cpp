@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/21 11:43:50 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/21 15:48:31 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@ Response::Response( void )
 	_statusCode = 200;
 	_status = "OK";
 	_content = std::vector<char>();
+	_keepAlive = false;
+	_version = "1/1";
+	_body = "";
+	_response_string = "";
+	_error = false;
 }
 
 Response::Response( Request &request, Server &server ) : 
@@ -32,6 +37,10 @@ _request(request)
 	_content = std::vector<char>();
 	_keepAlive = false;
 	_location = _server.getMatchingLocation(_request.uri);
+	_version = "1/1";
+	_body = "";
+	_response_string = "";
+	_error = false;
 }
 
 Response::~Response( void )
@@ -56,6 +65,8 @@ Response &Response::operator=( Response const &rhs )
 		this->_version = rhs._version;
 		this->_body = rhs._body;
 		this->_response_string = rhs._response_string;
+		this->_location = rhs._location;
+		this->_error = rhs._error;
 	}
 	return *this;
 }
@@ -233,7 +244,9 @@ void 					Response::searchForErrorPage( void )
 reqStatus				Response::analyzeRequest( std::string &path )
 {
 	path = _request.uri;
-
+	std::string method = _request.method;
+	if (method != "GET" && method != "POST" && method != "DELETE")
+		return METHOD_NOT_ALLOWED;
 	if (!_location)
 		return LOCATION_NOT_FOUND;
 	if (_location->isRederecting())
@@ -268,19 +281,19 @@ void					Response::create( __unused Client& client )
 	reqStatus requestStatus = analyzeRequest(path);
 	switch (requestStatus)
 	{
-		case LOCATION_NOT_FOUND:
+		case LOCATION_NOT_FOUND: _error = true;
 			sendResponse(client.getClientSock(), 404);
 			break;
 		case LOCATIONS_IS_REDIRECTING:
 			handleRedircetiveLocation(client.getClientSock(), _location->getRedirection());
 			break;
-		case METHOD_NOT_ALLOWED:
+		case METHOD_NOT_ALLOWED: _error = true;
 			sendResponse(client.getClientSock(), 405);
 			break;
-		case REQUEST_TO_LARGE:
+		case REQUEST_TO_LARGE: _error = true;
 			sendResponse(client.getClientSock(), 413);
 			break;
-		case PATH_NOT_EXISTING:
+		case PATH_NOT_EXISTING: _error = true;
 			sendResponse(client.getClientSock(), 404);
 			break;
 		case PATH_IS_DIRECTORY:
@@ -297,11 +310,6 @@ void					Response::create( __unused Client& client )
 void					Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused Redirection redirection )
 {
 	Logger::getInstance().log(COLOR_CYAN, "Handling Redircetive Location...");
-	setKeepAlive(false);
-	setStatusCode(redirection.statusCode);
-	setStatusMessage(status_code(redirection.statusCode));
-	setVersion(1, 1);
-	init_headers();
 	if (redirection.url.find("http://", 0) != std::string::npos
 		|| redirection.url.find("https://", 0) != std::string::npos)
 	{
@@ -323,12 +331,7 @@ void					Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unus
 		url += "/" + redirection.url;
 		this->setHeader("Location", url);
 	}
-	// the Location header field specifies the URL of the resource to which the client is redirected (Section 7.1.2) https://tools.ietf.org/html/rfc7231#section-7.1.2
-	this->setBody();
-	this->setResponseString();
-	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-	Http::closeConnection(clientSock);
-	Http::removeFDFromSet(clientSock, &Http::write_set);
+	sendResponse(clientSock, redirection.statusCode);
 }
 
 void					Response::reset( void )
@@ -342,27 +345,9 @@ void					Response::reset( void )
 	_version = "";
 	_body = "";
 	_response_string = "";
+	_location = nullptr;
+	_error = false;
 }
-
-// ->->->->->->->->->->->->->->->->->->->->->-> [START EDIT] <-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-
-
-void	Response::sendResponse( SOCKET clientSock, u_short sCode )
-{
-	setVersion(1, 1);
-	setStatusCode(sCode);
-	setStatusMessage(status_code(sCode));
-	setKeepAlive(false);
-	init_headers();	
-	searchForErrorPage();
-	setBody();
-	setResponseString();
-	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-	Http::closeConnection(clientSock);
-	Http::removeFDFromSet(clientSock, &Http::write_set);
-	reset();
-}
-
-// ->->->->->->->->->->->->->->->->->->->->->-> [END EDIT] <-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-
 
 void					Response::work_with_directory(__unused SOCKET clientSock)
 {
@@ -373,39 +358,50 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 		handleRedircetiveLocation(clientSock, redirection);
 		return ;
 	}
-	/*
-	TODO:
-		[] handle default file later
-	*/
-	// if the location is autoindex then we will open the directory and read it's content and send it to the client
-	DIR *dir;
-	struct dirent *ent;
-	std::string path = _location->getRootDirectory() + _request.uri;
-	if ((dir = opendir(path.c_str())) != NULL)
+	if (_location->getDefaultFile() != "")
 	{
-		_page << "<html><head><title>Index of " << _request.uri << "</title></head><body><h1>Index of " << _request.uri << "</h1><hr><pre>";
-		while ((ent = readdir(dir)) != NULL)
+		std::string path = _location->getRootDirectory() + _request.uri + _location->getDefaultFile();
+		if (access(path.c_str(), F_OK) == -1)
 		{
-			_page << "<a href=\"" << _request.uri << ent->d_name << "\">" << ent->d_name << "</a><br>";
+			_error = true;
+			sendResponse(clientSock, 404);
+			return ;
 		}
-		_page << "</pre><hr></body></html>";
-		closedir(dir);
-		setStatusCode(200);
-		setStatusMessage(status_code(200));
-		setKeepAlive(false);
-		setVersion(1, 1);
-		init_headers();
-		setHeader("Content-Type", _server.getMimeType("html"));
-		setHeader("Content-Length", std::to_string(_page.str().length()));
-		_body = _page.str();
-		_content = std::vector<char>(_body.begin(), _body.end());
-		setResponseString();
-		send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-		Http::closeConnection(clientSock);
-		Http::removeFDFromSet(clientSock, &Http::write_set);
+		else
+		{
+			work_with_file(clientSock, path);
+			return ;
+		}
+	}
+	else if (_location->getAutoindex() && _request.method == "GET")
+	{
+		// if the location is autoindex then we will open the directory and read it's content and send it to the client
+		DIR *dir; // pointer to a directory stream (DIR is a type representing a directory stream), it is an opaque data type representing a directory stream, it works by opening a directory stream corresponding to the directory name, and returns a pointer to the directory stream. The stream is positioned at the first entry in the directory.
+		struct dirent *ent;
+		std::string content, path = _location->getRootDirectory() + _request.uri;
+		if ((dir = opendir(path.c_str())) != NULL)
+		{
+			_page << "<html><head><title>Index of " << _request.uri << "</title></head><body><h1>Index of " << _request.uri << "</h1><hr><pre>";
+			while ((ent = readdir(dir)) != NULL)
+				_page << "<a href=\"" << _request.uri << ent->d_name << "\">" << ent->d_name << "</a><br>";
+			_page << "</pre><hr></body></html>";
+			closedir(dir);
+			setHeader("Content-Type", _server.getMimeType("html"));
+			setHeader("Content-Length", std::to_string(_page.str().length()));
+			content = _page.str();
+			_content = std::vector<char>(content.begin(), content.end());
+			sendResponse(clientSock, 200);
+		}
+		else
+		{
+			_error = true;
+			sendResponse(clientSock, 404);
+			return ;
+		}
 	}
 	else
 	{
+		_error = true;
 		sendResponse(clientSock, 404);
 		return ;
 	}
@@ -413,89 +409,81 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 
 void					Response::work_with_file(SOCKET clientSock, std::string path)
 {
+	std::string	content;
 	Logger::getInstance().log(COLOR_CYAN, "Working with file...");
 	if (access(path.c_str(), R_OK) == -1)
 	{
+		_error = true;
 		sendResponse(clientSock, 404);
-		exit(1) ;
 	}
 	else {
-		if (_request.method == "DELETE") //!DELETE
-		{
+		if (_request.method == "DELETE")
+		{//!DELETE
 			std::cout << "Path: " << path << std::endl;
 			if (remove(path.c_str()) != 0) // remove returns 0 on success and -1 on failure
-				sendResponse(clientSock, 404);
+				_error = true, sendResponse(clientSock, 404);
 			else
 			{
-				setStatusCode(200);
-				setStatusMessage(status_code(200));
-				setKeepAlive(false);
-				setVersion(1, 1);
-				init_headers();
 				setHeader("Content-Type", _server.getMimeType("html"));
 				setHeader("Content-Length", std::to_string(_page.str().length()));
-				_body = _page.str();
-				_content = std::vector<char>(_body.begin(), _body.end());
-				setResponseString();
-				send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-				Http::closeConnection(clientSock);
-				Http::removeFDFromSet(clientSock, &Http::write_set);
+				content = _page.str();
+				_content = std::vector<char>(content.begin(), content.end());
+				sendResponse(clientSock, 200);
 			}
 		}
-		else if (_request.method == "POST") //!POST
-		{
+		else if (_request.method == "POST")
+		{//!POST
 			std::ofstream file(path);
 			if (file.is_open())
 			{
 				file << std::string(_request.content.begin(), _request.content.end());
 				file.close();
-				setStatusCode(200);
-				setStatusMessage(status_code(200));
-				setKeepAlive(false);
-				setVersion(1, 1);
-				init_headers();
 				setHeader("Content-Type", _server.getMimeType("html"));
 				setHeader("Content-Length", std::to_string(_page.str().length()));
-				_body = _page.str();
-				_content = std::vector<char>(_body.begin(), _body.end());
-				setResponseString();
-				send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-				Http::closeConnection(clientSock);
-				Http::removeFDFromSet(clientSock, &Http::write_set);
+				content = _page.str();
+				_content = std::vector<char>(content.begin(), content.end());
+				sendResponse(clientSock, 200);
 			}
 			else
-				sendResponse(clientSock, 404);
+				_error = true, sendResponse(clientSock, 404);
 		}
 		else
-		{ //GET
+		{//! GET
 			std::ifstream file(path, std::ios::binary);
 			if (file.is_open())
 			{
-				std::string content;
 				std::stringstream buffer;
 				buffer << file.rdbuf();
 				content = buffer.str();
 				file.close();
 				std::string extension = path.substr(path.find_last_of(".") + 1);
 				std::string mime_type = _server.getMimeType(extension);
-				setStatusCode(200);
-				setStatusMessage(status_code(200));
-				setKeepAlive(false);
-				setVersion(1, 1);
-				init_headers();
 				setHeader("Content-Type", mime_type);
 				setHeader("Content-Length", std::to_string(content.length()));
-				_body = content;
-				_content = std::vector<char>(_body.begin(), _body.end());
-				setResponseString();
-				send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-				Http::closeConnection(clientSock);
-				Http::removeFDFromSet(clientSock, &Http::write_set);
+				_content = std::vector<char>(content.begin(), content.end());
+				sendResponse(clientSock, 200);
 			}
 			else
-				sendResponse(clientSock, 404);
+				_error = true, sendResponse(clientSock, 404);
 		}
 	}
+}
+
+void	Response::sendResponse( SOCKET clientSock, u_short sCode )
+{
+	setVersion(1, 1);
+	setStatusCode(sCode);
+	setStatusMessage(status_code(sCode));
+	setKeepAlive(false);
+	init_headers();
+	if (_error)
+		searchForErrorPage();
+	setBody();
+	setResponseString();
+	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
+	Http::closeConnection(clientSock);
+	Http::removeFDFromSet(clientSock, &Http::write_set);
+	reset();
 }
 
 // Example for an HTTP GET request:
