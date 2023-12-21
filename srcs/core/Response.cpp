@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/18 20:03:39 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:43:50 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,37 +196,37 @@ void					Response::init_headers( void )
 void 					Response::searchForErrorPage( void )
 {
 	std::string error_page = _server.getErrorPage(_statusCode);
+	std::string content;
 	if ( error_page != "" )
 	{
 		std::ifstream file(error_page);
 		if ( file.is_open() )
 		{
-			std::string line;
-			while ( getline(file, line) )
-				_page << line;
+			while ( getline(file, content) )
+				_page << content;
 			file.close();
-			std::string extension = error_page.substr(error_page.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character in the string example: if the string is "hello world" and we call find_last_of('l') it will return 9
+			std::string extension = error_page.substr(error_page.find_last_of(".") + 1);
 			std::string mime_type = _server.getMimeType(extension);
 			setHeader("Content-Type", mime_type);
 			setHeader("Content-Length", std::to_string(_page.str().length()));
-			_body = _page.str();
-			_content = std::vector<char>(_body.begin(), _body.end());
+			content = _page.str();
+			_content = std::vector<char>(content.begin(), content.end());
 		}
 		else
 		{
 			_statusCode = 500;
 			_status = "Internal Server Error";
-			_body = "<html><body><h1>500 Internal Server Error</h1></body></html>";
+			content = "<html><body><h1>500 Internal Server Error</h1></body></html>";
 			setHeader("Content-Type", _server.getMimeType("html"));
-			setHeader("Content-Length", std::to_string(_body.length()));
-			_content = std::vector<char>(_body.begin(), _body.end());
+			setHeader("Content-Length", std::to_string(content.length()));
+			_content = std::vector<char>(content.begin(), content.end());
 		}
 	}
 	else // if the error page is not found
 	{
-		_body = "<html><body><h1>EMMMMMMMMMMMMM!</h1></body></html>";
+		content = "<html><body><h1>EMMMMMMMMMMMMM!</h1></body></html>";
 		setHeader("Content-Type", _server.getMimeType("html"));
-		_content = std::vector<char>(_body.begin(), _body.end());
+		_content = std::vector<char>(content.begin(), content.end());
 	}
 }
 
@@ -269,19 +269,19 @@ void					Response::create( __unused Client& client )
 	switch (requestStatus)
 	{
 		case LOCATION_NOT_FOUND:
-			sendNotFound(client.getClientSock(), 404);
+			sendResponse(client.getClientSock(), 404);
 			break;
 		case LOCATIONS_IS_REDIRECTING:
 			handleRedircetiveLocation(client.getClientSock(), _location->getRedirection());
 			break;
 		case METHOD_NOT_ALLOWED:
-			sendMethodNotAllowed(client.getClientSock(), 405);
+			sendResponse(client.getClientSock(), 405);
 			break;
 		case REQUEST_TO_LARGE:
-			sendRequestToLarge(client.getClientSock(), 413);
+			sendResponse(client.getClientSock(), 413);
 			break;
 		case PATH_NOT_EXISTING:
-			sendNotFound(client.getClientSock(), 404);
+			sendResponse(client.getClientSock(), 404);
 			break;
 		case PATH_IS_DIRECTORY:
 			work_with_directory(client.getClientSock());
@@ -344,13 +344,13 @@ void					Response::reset( void )
 	_response_string = "";
 }
 
-// response
-void					Response::sendNotFound( SOCKET clientSock, u_short statusCode )
+// ->->->->->->->->->->->->->->->->->->->->->-> [START EDIT] <-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-
+
+void	Response::sendResponse( SOCKET clientSock, u_short sCode )
 {
-	Logger::getInstance().log(COLOR_CYAN, "Sending Not Found Response");
 	setVersion(1, 1);
-	setStatusCode(statusCode);
-	setStatusMessage(status_code(statusCode));
+	setStatusCode(sCode);
+	setStatusMessage(status_code(sCode));
 	setKeepAlive(false);
 	init_headers();	
 	searchForErrorPage();
@@ -359,39 +359,10 @@ void					Response::sendNotFound( SOCKET clientSock, u_short statusCode )
 	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
 	Http::closeConnection(clientSock);
 	Http::removeFDFromSet(clientSock, &Http::write_set);
+	reset();
 }
 
-void					Response::sendMethodNotAllowed( SOCKET clientSock, u_short statusCode )
-{
-	Logger::getInstance().log(COLOR_CYAN, "Sending Method Not Allowed Response");
-	setVersion(1, 1);
-	setStatusCode(statusCode);
-	setStatusMessage(status_code(statusCode));
-	setKeepAlive(false);
-	init_headers();	
-	searchForErrorPage();
-	setBody();
-	setResponseString();
-	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-	Http::closeConnection(clientSock);
-	Http::removeFDFromSet(clientSock, &Http::write_set);
-}
-
-void					Response::sendRequestToLarge( SOCKET clientSock, u_short statusCode )
-{
-	Logger::getInstance().log(COLOR_CYAN, "Sending Request To Large Response");
-	setVersion(1, 1);
-	setStatusCode(statusCode);
-	setStatusMessage(status_code(statusCode));
-	setKeepAlive(false);
-	init_headers();	
-	searchForErrorPage();
-	setBody();
-	setResponseString();
-	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-	Http::closeConnection(clientSock);
-	Http::removeFDFromSet(clientSock, &Http::write_set);
-}
+// ->->->->->->->->->->->->->->->->->->->->->-> [END EDIT] <-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-<-
 
 void					Response::work_with_directory(__unused SOCKET clientSock)
 {
@@ -435,25 +406,25 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	}
 	else
 	{
-		sendNotFound(clientSock, 404);
+		sendResponse(clientSock, 404);
 		return ;
 	}
 }
 
-#include <stdio.h>
 void					Response::work_with_file(SOCKET clientSock, std::string path)
 {
 	Logger::getInstance().log(COLOR_CYAN, "Working with file...");
 	if (access(path.c_str(), R_OK) == -1)
 	{
-		sendNotFound(clientSock, 404);
+		sendResponse(clientSock, 404);
 		exit(1) ;
 	}
 	else {
-		if (_request.method == "Delete")
+		if (_request.method == "DELETE") //!DELETE
 		{
+			std::cout << "Path: " << path << std::endl;
 			if (remove(path.c_str()) != 0) // remove returns 0 on success and -1 on failure
-				sendNotFound(clientSock, 404);
+				sendResponse(clientSock, 404);
 			else
 			{
 				setStatusCode(200);
@@ -471,7 +442,7 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 				Http::removeFDFromSet(clientSock, &Http::write_set);
 			}
 		}
-		else if (_request.method == "Post")
+		else if (_request.method == "POST") //!POST
 		{
 			std::ofstream file(path);
 			if (file.is_open())
@@ -493,19 +464,20 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 				Http::removeFDFromSet(clientSock, &Http::write_set);
 			}
 			else
-				sendNotFound(clientSock, 404);
+				sendResponse(clientSock, 404);
 		}
 		else
-		{
+		{ //GET
 			std::ifstream file(path, std::ios::binary);
 			if (file.is_open())
 			{
-				// std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()); explanation: https://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
-				std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+				std::string content;
+				std::stringstream buffer;
+				buffer << file.rdbuf();
+				content = buffer.str();
 				file.close();
-				std::string extension = path.substr(path.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character in the string example: if the string is "hello world" and we call find_last_of('l') it will return 9
+				std::string extension = path.substr(path.find_last_of(".") + 1);
 				std::string mime_type = _server.getMimeType(extension);
-				std::cout << "\t\tmime_type: " << mime_type << std::endl;
 				setStatusCode(200);
 				setStatusMessage(status_code(200));
 				setKeepAlive(false);
@@ -521,7 +493,7 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 				Http::removeFDFromSet(clientSock, &Http::write_set);
 			}
 			else
-				sendNotFound(clientSock, 404);
+				sendResponse(clientSock, 404);
 		}
 	}
 }
@@ -544,3 +516,5 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 // Content-Length: 13
 
 // name=abdelouah&age=23
+
+// e

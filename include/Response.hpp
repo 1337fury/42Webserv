@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/18 17:30:17 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:30:38 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,12 +97,9 @@ class Response
 		void					reset( void );
 
 	// Response
-	void sendNotFound( SOCKET clientSock, u_short statusCode );
 	void handleRedircetiveLocation( SOCKET clientSock, Redirection red );
-	void sendMethodNotAllowed( SOCKET clientSock, u_short statusCode );
-	void sendRequestToLarge( SOCKET clientSock, u_short statusCode );
 
 	void work_with_directory( SOCKET clientSock );
 	void work_with_file( SOCKET clientSock, std::string path );
-	// void	handleGETrequest( SOCKET clientSock );
+	void sendResponse( SOCKET clientSock, u_short sCode );
 };
