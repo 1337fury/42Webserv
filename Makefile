@@ -41,17 +41,17 @@ $(NAME): $(O_DIR) $(OBJ)
 	@echo "$(RESET)$(NAME): $(GREEN)$(NAME) was created"
 
 $(O_DIR):
-	mkdir -p $(O_DIR)
+	@mkdir -p $(O_DIR)
 
 $(O_DIR)%.o : srcs/home/%.cpp
-	@tput cuu1
+	@echo "$(GREEN)Compiling $@"
 	@$(CC) $(FLAGS) $(INC) -c $< -o $@
-	@echo "Compiling $(GREEN)$@"
+	@sleep .1
 
 $(O_DIR)%.o : srcs/core/%.cpp
-	@tput cuu1
-	@$(CC) $(FLAGS) $(INC) -c $< -o $@
 	@echo "Compiling $(GREEN)$@"
+	@$(CC) $(FLAGS) $(INC) -c $< -o $@
+	@sleep .1
 
 clean:
 	@rm -rf $(O_DIR)
