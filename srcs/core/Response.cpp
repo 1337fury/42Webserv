@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/21 15:48:31 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/27 19:18:24 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,7 +235,7 @@ void 					Response::searchForErrorPage( void )
 	}
 	else // if the error page is not found
 	{
-		content = "<html><body><h1>EMMMMMMMMMMMMM!</h1></body></html>";
+		content = "<html><body><h1><center>Free Palestine!</center></h1><hr></hr><center>nginy/1.0</center></body></html>";
 		setHeader("Content-Type", _server.getMimeType("html"));
 		_content = std::vector<char>(content.begin(), content.end());
 	}
@@ -251,21 +251,17 @@ reqStatus				Response::analyzeRequest( std::string &path )
 		return LOCATION_NOT_FOUND;
 	if (_location->isRederecting())
 		return LOCATIONS_IS_REDIRECTING;
-	if (_location->getAcceptedMethods().size() > 0)
-	{
-		std::vector<std::string> acceptedMethods = _location->getAcceptedMethods();
-		if (std::find(acceptedMethods.begin(), acceptedMethods.end(), _request.method) == acceptedMethods.end())
-			return METHOD_NOT_ALLOWED;
-	}
+	std::vector<std::string> acceptedMethods = _location->getAcceptedMethods();
+	if (std::find(acceptedMethods.begin(), acceptedMethods.end(), _request.method) == acceptedMethods.end())
+		return METHOD_NOT_ALLOWED;
 	// check if request content is too large 413
 	if (_request.content.size() > _server.getClientBodySizeLimit())
 		return REQUEST_TO_LARGE;
 	path = _location->getRootDirectory() + path;
 	// normalize the path
 	path = normalizePath(path);
-	/*[debug]*/std::cout << "path: " << path << std::endl;
-	// check if the path is existing
-	if (access(path.c_str(), F_OK) == -1) // Explanation: the access() function checks whether the calling process can access the file pathname. If pathname is a symbolic link, it is dereferenced. it works by checking the file's inode permission bits, not the file's mode bits. This allows the check to be made without actually attempting to open the file.
+	// Explanation: the access() function checks whether the calling process can access the file pathname. If pathname is a symbolic link, it is dereferenced. it works by checking the file's inode permission bits, not the file's mode bits. This allows the check to be made without actually attempting to open the file.
+	if (access(path.c_str(), F_OK) == -1) 
 		return PATH_NOT_EXISTING;
 	// check if the path is directory
 	if (checks_type(path) == DIRECTORY)
@@ -285,6 +281,7 @@ void					Response::create( __unused Client& client )
 			sendResponse(client.getClientSock(), 404);
 			break;
 		case LOCATIONS_IS_REDIRECTING:
+			Logger::getInstance().log(COLOR_GRAY, "Location is redirecting...");
 			handleRedircetiveLocation(client.getClientSock(), _location->getRedirection());
 			break;
 		case METHOD_NOT_ALLOWED: _error = true;
@@ -309,7 +306,6 @@ void					Response::create( __unused Client& client )
 //  handle the setup and sending of an HTTP redirect response to the client. It performs a series of steps to set up the necessary HTTP headers, check for successful redirection, build appropriate content for the redirect page, and manage the status of the response object itself.
 void					Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused Redirection redirection )
 {
-	Logger::getInstance().log(COLOR_CYAN, "Handling Redircetive Location...");
 	if (redirection.url.find("http://", 0) != std::string::npos
 		|| redirection.url.find("https://", 0) != std::string::npos)
 	{
@@ -354,6 +350,7 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	// performs a 301 redirect if a client requests a directory without a trailing slash, adding the slash to the request URI.
 	if (_request.uri[_request.uri.length() - 1] != '/')
 	{
+		Logger::getInstance().log(COLOR_GRAY, "Performs a 301 redirect...");
 		Redirection redirection(301, _request.uri + "/");
 		handleRedircetiveLocation(clientSock, redirection);
 		return ;
@@ -361,8 +358,10 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	if (_location->getDefaultFile() != "")
 	{
 		std::string path = _location->getRootDirectory() + _request.uri + _location->getDefaultFile();
+		Logger::getInstance().log(COLOR_GRAY, "Path requested: %s" ,path.c_str());
 		if (access(path.c_str(), F_OK) == -1)
 		{
+			Logger::getInstance().log(COLOR_GRAY, "File not found...");
 			_error = true;
 			sendResponse(clientSock, 404);
 			return ;
@@ -394,6 +393,7 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 		}
 		else
 		{
+			Logger::getInstance().log(COLOR_GRAY, "File not found...");
 			_error = true;
 			sendResponse(clientSock, 404);
 			return ;
@@ -402,7 +402,7 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	else
 	{
 		_error = true;
-		sendResponse(clientSock, 404);
+		sendResponse(clientSock, 403);
 		return ;
 	}
 }
@@ -410,16 +410,22 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 void					Response::work_with_file(SOCKET clientSock, std::string path)
 {
 	std::string	content;
-	Logger::getInstance().log(COLOR_CYAN, "Working with file...");
-	if (access(path.c_str(), R_OK) == -1)
+	if (access(path.c_str(), F_OK) == -1)
 	{
+		Logger::getInstance().log(COLOR_GRAY, "File not found...");
 		_error = true;
 		sendResponse(clientSock, 404);
 	}
-	else {
-		if (_request.method == "DELETE")
+	// check if location is cgi and if the file extension is supported
+	// else if (_location->isCgi() && supported_extension(path))
+	// {
+		
+	// }
+	// else
+	// 	exit(0);
+	/******************************************/
+	else if (_request.method == "DELETE")
 		{//!DELETE
-			std::cout << "Path: " << path << std::endl;
 			if (remove(path.c_str()) != 0) // remove returns 0 on success and -1 on failure
 				_error = true, sendResponse(clientSock, 404);
 			else
@@ -428,24 +434,25 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 				setHeader("Content-Length", std::to_string(_page.str().length()));
 				content = _page.str();
 				_content = std::vector<char>(content.begin(), content.end());
-				sendResponse(clientSock, 200);
+				sendResponse(clientSock, 204);
 			}
 		}
 		else if (_request.method == "POST")
 		{//!POST
-			std::ofstream file(path);
-			if (file.is_open())
-			{
-				file << std::string(_request.content.begin(), _request.content.end());
-				file.close();
-				setHeader("Content-Type", _server.getMimeType("html"));
-				setHeader("Content-Length", std::to_string(_page.str().length()));
-				content = _page.str();
-				_content = std::vector<char>(content.begin(), content.end());
-				sendResponse(clientSock, 200);
-			}
-			else
+			if (access(path.c_str(), F_OK) == -1)
 				_error = true, sendResponse(clientSock, 404);
+			else
+			{
+				std::ofstream file(path);
+				if (file.is_open())
+				{
+					file << std::string(_request.content.begin(), _request.content.end());
+					file.close();
+					sendResponse(clientSock, 204);
+				}
+				else
+					_error = true, sendResponse(clientSock, 500);
+			}
 		}
 		else
 		{//! GET
@@ -466,7 +473,6 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 			else
 				_error = true, sendResponse(clientSock, 404);
 		}
-	}
 }
 
 void	Response::sendResponse( SOCKET clientSock, u_short sCode )

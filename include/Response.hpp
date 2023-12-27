@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/21 11:30:38 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/21 11:55:54 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ class Response
 		std::stringstream		_page; // the page that we will send to the client //? GETTER & SETTER
 		
 		Location				*_location; //! [during testing]
+		bool					_error;
 
 	public:
 		Response( void );
