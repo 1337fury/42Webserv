@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/14 13:31:54 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/27 19:04:50 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ class Server
 		std::map<short, std::string>	_error_pages;
         SOCKET     						_listen_socket;
 		std::vector<Location>			_locations;
+		std::vector<std::string>		_acceptedMethods; //! New
 		
 	public:
 	// Constructors
@@ -63,6 +64,7 @@ class Server
 	std::string 					getErrorPage( short number ) const;
 	std::string 					getHostString( void ) const;
 	std::string 					getPortString( void ) const;
+	std::vector<std::string>		getAcceptedMethods( void ) const; //! New
 	
 	// Setters
 	void	setHost( std::string );
@@ -76,6 +78,7 @@ class Server
 	void	setAutoindex( bool );
 	void	setErrorPage( std::vector<std::string> );
 	void	setListenFd( int );
+	void	setAcceptedMethods( std::vector<std::string> ); //! New
 	
 	Location	*getMatchingLocation( std::string uri );
 	

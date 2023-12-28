@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/18 15:06:32 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/27 19:12:25 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ Server::Server( void ) {
 	this->_locations = std::vector<Location>();
 	this->_host_string = "localhost";
 	this->_port_string = "";
+	this->_acceptedMethods = std::vector<std::string>(); //! New
 }
 
 Server::Server( Server const &rhs ) {
@@ -50,6 +51,7 @@ Server &Server::operator=( Server const &rhs ) {
 		this->_locations = rhs._locations;
 		this->_host_string = rhs._host_string;
 		this->_port_string = rhs._port_string;
+		this->_acceptedMethods = rhs._acceptedMethods; //! New
 	}
 	return *this;
 }
@@ -101,6 +103,9 @@ std::string	Server::getHostString( void ) const {
 }
 std::string	Server::getPortString( void ) const {
 	return this->_port_string;
+}
+std::vector<std::string>	Server::getAcceptedMethods( void ) const { //! New
+	return this->_acceptedMethods;
 }
 
 // Setters
@@ -160,6 +165,11 @@ void	Server::setErrorPage( std::vector<std::string> parameters ) {
 }
 void	Server::setListenFd( int listen_fd ) {
 	this->_listen_socket = listen_fd;
+}
+void	Server::setAcceptedMethods( std::vector<std::string> acceptedMethods ) { //! New
+	// check if methods are valid
+	check_methods(acceptedMethods);
+	this->_acceptedMethods = acceptedMethods;
 }
 
 std::string	Server::getMimeType( std::string extension ) {
@@ -311,7 +321,6 @@ void	Server::handleRequest( int fd, Client& client ) {
 	}
 	if (parseResult == PARSE_SUCCESS || parseResult == PARSE_ERROR)
 	{
-		Logger::getInstance().log(COLOR_GREEN, "Request parsed successfully");
 		if (parseResult == PARSE_ERROR)
 		{
 			Logger::getInstance().log(COLOR_RED, "Sending 400 Bad Request");
