@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/16 11:42:25 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/28 19:51:04 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,6 +264,14 @@ void Config::_parseServer( Block &block )
 				throw std::runtime_error("WebServ: invalid argument in `autoindex`");
 			indexDone = true;
 		}
+		else if (blockDirectives[i].name == "method")
+		{
+			if (blockDirectives[i].parameters.size() < 1)
+				throw std::runtime_error("WebServ: invalid number of arguments in `methods`");
+			if (server.getAcceptedMethods().size() != 0)
+				throw std::runtime_error("WebServ: methods directive is duplicate");
+			server.setAcceptedMethods(blockDirectives[i].parameters);
+		}
 		else if (blockDirectives[i].name == "location")
 		{
 			if (blockDirectives[i].parameters.size() != 1)
@@ -290,6 +298,8 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 	{
 		if (blockDirectives[i].name == "root")
 		{
+			if (location.isCgi())
+				throw std::runtime_error("WebServ: [location] root directive not allowed in cgi-bin");
 			if (location.getRootDirectory() != "")
 				throw std::runtime_error("WebServ: [location] root directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
@@ -306,7 +316,7 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 		}
 		else if (blockDirectives[i].name == "autoindex")
 		{
-			if (path == "/cgi-bin")
+			if (location.isCgi())
 				throw std::runtime_error("WebServ: [location] autoindex directive not allowed in cgi-bin");
 			if (blockDirectives[i].parameters.size() != 1)
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `autoindex`");
@@ -330,7 +340,7 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 		}
 		else if (blockDirectives[i].name == "return") //! Work with redirection 12/12/2023: 10:00	
 		{
-			if (path == "/cgi-bin") //! we can't redirect to a cgi-bin location because it's a script and not a file
+			if (location.isCgi()) //! we can't redirect to a cgi-bin location because it's a script and not a file
 				throw std::runtime_error("WebServ: [location] return directive not allowed in cgi-bin"); 
 			if (location.isRederecting())
 				throw std::runtime_error("WebServ: [location] return directive is duplicate");
@@ -340,7 +350,7 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 		}
 		else if (blockDirectives[i].name == "alias") //? the alias directive is used to replace the path of the request with the specified path example: /tours/1.html -> docs/fusion_web/1.html, when the request is /tours/1.html the server will return docs/fusion_web/1.html
 		{
-			if (path == "/cgi-bin")
+			if (location.isCgi())
 				throw std::runtime_error("WebServ: [location] alias directive not allowed in cgi-bin");
 			if (location.getAlias() != "")
 				throw std::runtime_error("WebServ: [location] alias directive is duplicate");
@@ -348,35 +358,27 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `alias`");
 			location.setAlias(blockDirectives[i].parameters[0]);
 		}
-		else if (blockDirectives[i].name == "cgi_ext")
-		{
-			if (location.getCgiExtension().size() != 0)
-				throw std::runtime_error("WebServ: [location] cgi_extension directive is duplicate");
-			if (blockDirectives[i].parameters.size() < 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `cgi_extension`");
-			location.setCgiExtension(blockDirectives[i].parameters);
-		}
 		else if (blockDirectives[i].name == "cgi_path")
 		{
+			if (!location.isCgi())
+				throw std::runtime_error("WebServ: [location] cgi_path directive not allowed in this location: " + path);
 			if (location.getCgiPath().size() != 0)
 				throw std::runtime_error("WebServ: [location] cgi_path directive is duplicate");
-			if (blockDirectives[i].parameters.size() < 1)
+			if (blockDirectives[i].parameters.size() != 1)
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `cgi_path`");
-			location.setCgiPath(blockDirectives[i].parameters);
+			location.setCgiPath(blockDirectives[i].parameters[0]);
 		}
 		else
 			throw std::runtime_error("WebServ: [location] unknown directive `" + blockDirectives[i].name + "`");
-		if (location.getPath() != "/cgi-bin" && location.getRootDirectory() == "")
-			location.setRootDirectory(server.getRoot());
-		if (location.getPath() != "/cgi-bin" && location.getDefaultFile() == "")
-			location.setDefaultFile(server.getIndex());
-		if (location.getPath() != "/cgi-bin" && !autoindexDone)
-			location.setAutoindex(server.getAutoindex());
-		/*
-			[] check if location is valid
-			[] check if location is unique
-		*/
 	}
+	if (!location.isCgi() && location.getRootDirectory() == "")
+		location.setRootDirectory(server.getRoot());
+	if (!location.isCgi() && location.getDefaultFile() == "")
+		location.setDefaultFile(server.getIndex());
+	if (!autoindexDone)
+		location.setAutoindex(server.getAutoindex());
+	if (location.getAcceptedMethods().size() == 0)
+		location.setAcceptedMethods(server.getAcceptedMethods());
 	
 	server.setLocation(location);
 }
