@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/16 10:50:33 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/28 19:21:14 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,14 @@ class Location
 		std::vector<std::string> 			_redirection; //! change type to std::vector<std::string>
 		std::string 						_rootDirectory;
 		std::string 						_defaultFile;
-		std::vector<std::string> 			_cgiExtension;
-		std::vector<std::string> 			_cgiPath;
+		std::string 						_cgiPath;
 		bool								_autoindex;
 		std::string 						_alias;
 		// bool 						_directoryListing;
 		// bool 						_acceptUploads;
 		// std::string 				_uploadDirectory;
 		bool								_isRederecting;
+		bool								_isCgi;
 
 
 	public:
@@ -55,12 +55,12 @@ class Location
 		std::string 				getDefaultFile( void ) const;
 		bool						getAutoindex( void ) const;
 		std::string 				getAlias( void ) const;
-		std::vector<std::string>	getCgiExtension( void ) const;
-		std::vector<std::string>	getCgiPath( void ) const;
+		std::string					getCgiPath( void ) const;
 		// bool 					getDirectoryListing( void ) const;
 		// bool 					getAcceptUploads( void ) const;
 		// std::string 				getUploadDirectory( void ) const;
 		bool						isRederecting( void ) const;
+		bool						isCgi( void ) const;
 	// Setters
 		void		setPath( std::string path );
 		void		setAcceptedMethods( std::vector<std::string> acceptedMethods );
@@ -69,9 +69,9 @@ class Location
 		void		setDefaultFile( std::string defaultFile );
 		void		setAutoindex( bool autoindex );
 		void		setAlias( std::string alias );
-		void		setCgiExtension( std::vector<std::string> cgiExtension );
-		void		setCgiPath( std::vector<std::string> cgiPath );
+		void		setCgiPath( std::string	 cgiPath );
 		// void		setDirectoryListing( bool directoryListing );
 		// void		setAcceptUploads( bool acceptUploads );
 		// void		setUploadDirectory( std::string uploadDirectory );
+		void		setCgi( bool isCgi );
 };

@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/16 10:52:28 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/29 11:31:22 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,9 +23,9 @@ Location::Location( void ) {
 	// this->_uploadDirectory = "";
 	this->_autoindex = false;
 	this->_alias = "";
-	this->_cgiExtension = std::vector<std::string>();
-	this->_cgiPath = std::vector<std::string>();
+	this->_cgiPath = "";
 	this->_isRederecting = false;
+	this->_isCgi = false;
 }
 
 Location::Location( Location const &rhs ) {
@@ -44,9 +44,9 @@ Location &Location::operator=( Location const &rhs ) {
 		// this->_uploadDirectory = rhs._uploadDirectory;
 		this->_autoindex = rhs._autoindex;
 		this->_alias = rhs._alias;
-		this->_cgiExtension = rhs._cgiExtension;
 		this->_cgiPath = rhs._cgiPath;
 		this->_isRederecting = rhs._isRederecting;
+		this->_isCgi = rhs._isCgi;
 	}
 	return *this;
 }
@@ -73,17 +73,17 @@ std::string 				Location::getRootDirectory( void ) {
 std::string 				Location::getDefaultFile( void ) const {
 	return this->_defaultFile; // default file is the file that we want to serve if the client requests a directory, example: index.html, the directive name is index
 }
-std::vector<std::string>	Location::getCgiExtension( void ) const {
-	return this->_cgiExtension;
-}
 bool						Location::getAutoindex( void ) const {
 	return this->_autoindex;
 }
 std::string 				Location::getAlias( void ) const {
 	return this->_alias;
 }
-std::vector<std::string>	Location::getCgiPath( void ) const {
+std::string					Location::getCgiPath( void ) const {
 	return this->_cgiPath;
+}
+bool						Location::isCgi( void ) const {
+	return this->_isCgi;
 }
 // bool 						Location::getDirectoryListing( void ) const {
 // 	return this->_directoryListing;
@@ -103,6 +103,11 @@ bool						Location::isRederecting( void ) const {
 void		Location::setPath( std::string path ) {
 	if (path[0] != '/')
 		path = "/" + path;
+	if (path == "/cgi-bin")
+	{
+		this->_isCgi = true;
+		this->_rootDirectory = "/Users/abdeel-o/Desktop/Webserv";
+	}
 	this->_path = path;
 }
 void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
@@ -134,11 +139,8 @@ void		Location::setAutoindex( bool autoindex ) {
 void		Location::setAlias( std::string alias ) {
 	this->_alias = alias;
 }
-void		Location::setCgiPath( std::vector<std::string> cgiPath ) {
+void		Location::setCgiPath( std::string cgiPath ) {
 	this->_cgiPath = cgiPath;
-}
-void		Location::setCgiExtension( std::vector<std::string> cgiExtension ) {
-	this->_cgiExtension = cgiExtension;
 }
 // void		Location::setDirectoryListing( bool directoryListing ) {
 // 	this->_directoryListing = directoryListing;
@@ -149,6 +151,9 @@ void		Location::setCgiExtension( std::vector<std::string> cgiExtension ) {
 // void		Location::setUploadDirectory( std::string uploadDirectory ) {
 // 	this->_uploadDirectory = uploadDirectory;
 // }
+void		Location::setCgi( bool isCgi ) {
+	this->_isCgi = isCgi;
+}
 // check if the location is has a root directory if else get the root directory from the server if else throw an exception
 // check if the location has a autoindex if else get the autoindex from the server if else throw an exception
 // check if the location has a index if else get the index from the server if else throw an exception
