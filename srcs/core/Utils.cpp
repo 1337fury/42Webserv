@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/18 10:16:33 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/27 14:07:38 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -231,4 +231,13 @@ std::string normalizePath(std::string& path)
 	if (normalizedPath.empty()) // if the path is empty, example: /var/www/html/../../../
 		normalizedPath = "/";
 	return normalizedPath;
+}
+
+// support just .py and .php extensions
+bool	supported_extension(std::string const& path)
+{
+	std::string extension = path.substr(path.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character '.' in the string, if doesn't find the character '.' it returns std::string::npos, substr returns a substring of the string, starting at the index specified in the first argument, and the length of the substring is specified in the second argument, if the second argument is not specified, the substring will start at the index specified in the first argument and will end at the end of the string.
+	if (extension == "py" || extension == "php")
+		return true;
+	return false;
 }
