@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/27 14:07:38 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/30 13:37:00 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -240,4 +240,11 @@ bool	supported_extension(std::string const& path)
 	if (extension == "py" || extension == "php")
 		return true;
 	return false;
+}
+
+std::string	ft_itos(size_t i)
+{
+	std::stringstream ss;
+	ss << i;
+	return (ss.str());
 }
