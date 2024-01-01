@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:28:11 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/05 12:05:58 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2023/12/30 13:29:54 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,13 @@ Request &Request::operator=( Request const &rhs ) {
 }
 
 Request::~Request( void ) {
+}
+
+std::string Request::getHeader( const std::string& key ) const {
+	for (size_t i = 0; i < this->headers.size(); i++)
+		if (this->headers[i].key == key)
+			return this->headers[i].value;
+	return "";
 }
 
 std::ostream &operator<<( std::ostream &o, Request const &i ) {
