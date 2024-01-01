@@ -54,3 +54,4 @@ bool		check_methods(std::vector<std::string>& methods);
 int			set_non_blocking(int fd);
 std::string normalizePath(std::string& path);
 bool		supported_extension(std::string const& path);
+std::string	ft_itos(size_t i);
