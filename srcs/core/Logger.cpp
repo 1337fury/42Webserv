@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 12:36:36 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/11/30 17:31:17 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/03 19:09:50 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,14 @@ Logger& Logger::getInstance() {
 }
 
 void Logger::log(int colorCode, const char *format, ...) {
-	char buffer[BUFFER_SIZE];
+	char buffer[BUFFER_SIZE] = {0};
 	va_list args;
 	va_start(args, format);
 	vsnprintf(buffer, BUFFER_SIZE, format, args);
+	va_end(args);
 	setColor(colorCode);
-	std::cout << getTimestamp() << " ";
-	std::cout << buffer << std::endl;
+	std::cout << std::flush;
+	std::cout << getTimestamp() << " " << buffer << std::endl;
 }
 
 std::string	Logger::getTimestamp( void )
