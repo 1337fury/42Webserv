@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/21 11:55:54 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/01 18:49:51 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "Server.hpp"
 #include "Request.hpp"
 #include "Location.hpp"
+#include "Cgi.hpp"
 #include <sstream>
 
 // Example for an http response:
@@ -58,6 +59,9 @@ class Response
 		
 		Location				*_location; //! [during testing]
 		bool					_error;
+		pid_t					_cgi_pid;
+		int						_cgi_stdout;
+		int						_cgi_stderr;
 
 	public:
 		Response( void );
@@ -103,4 +107,6 @@ class Response
 	void work_with_directory( SOCKET clientSock );
 	void work_with_file( SOCKET clientSock, std::string path );
 	void sendResponse( SOCKET clientSock, u_short sCode );
+	void initiate_cgi_response( SOCKET clientSock, CGI &cgi );
+	void cgiHandler( SOCKET clientSock );
 };
