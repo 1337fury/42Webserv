@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:54:37 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/01 13:11:45 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/04 13:04:40 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ class CGI
 		bool		validate( void );
 		bool		execute(Request &request);
 		bool		isExecuted() const;
+		int			wait( void );
 
 		std::string	getErrorMsg() const;
 		bool 		setCgiEnvs(Request &request);

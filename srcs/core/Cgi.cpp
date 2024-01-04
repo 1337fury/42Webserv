@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:56:25 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/01 19:45:50 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/04 13:40:07 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,8 +183,33 @@ bool	CGI::execute(__unused Request &request)
 		if (execve(_args[0], (char* const*)_args, _env) == -1)
 			_exit(EXIT_FAILURE);
 	}
-	wait(NULL);
 	return (true);
+}
+
+int	CGI::wait( void )
+{
+	int		status;
+	
+	if (waitpid(_cgi_prcs, &status, 0) == -1)
+	{
+		_error_msg = "failed to wait for the cgi script";
+		return (-1);
+	}
+	if (WIFEXITED(status))
+	{
+		if (WEXITSTATUS(status) == EXIT_SUCCESS)
+			return (0);
+		else
+		{
+			_error_msg = "the cgi script exited with an error";
+			return (-1);
+		}
+	}
+	else
+	{
+		_error_msg = "the cgi script exited with an error";
+		return (-1);
+	}
 }
 
 bool	CGI::isExecuted() const
