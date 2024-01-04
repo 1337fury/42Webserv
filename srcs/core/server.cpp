@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/27 19:12:25 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/04 13:36:30 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -258,11 +258,10 @@ void	Server::init( void ) {
 		Logger::getInstance().log(COLOR_RED, "WebServ: Socket listening failed");
 		exit(EXIT_FAILURE);
 	}
-	// if (set_non_blocking(this->_listen_socket) == -1) {
-	// 	Logger::getInstance().log(COLOR_RED, "WebServ: Socket non-blocking failed");
-	// 	exit(EXIT_FAILURE);
-	// } //? what Happens if we don't the server socket to non-blocking? : we will have to wait for the client to send data before we can send data to it, and we will have to wait for the client to send data before we can accept another client connection
-
+	if (set_non_blocking(this->_listen_socket) == -1) {
+		Logger::getInstance().log(COLOR_RED, "WebServ: Socket non-blocking failed");
+		exit(EXIT_FAILURE);
+	}
 }
 
 void   Server::acceptConnection( fd_set &read_set)
@@ -281,12 +280,11 @@ void   Server::acceptConnection( fd_set &read_set)
 
 	Http::addFDToSet(client_fd, &read_set); //? Can be better
 	
-	// if (set_non_blocking(client_fd) == -1)
-	// {
-	// 	Logger::getInstance().log(COLOR_RED, "WebServ: Socket non-blocking failed");
-	// 	exit(EXIT_FAILURE);
-	// } //? what Happens if we don't set the client socket to non-blocking? : we will have to wait for the client to send data before we can send data to it
-
+	if (set_non_blocking(client_fd) == -1)
+	{
+		Logger::getInstance().log(COLOR_RED, "WebServ: Socket non-blocking failed");
+		exit(EXIT_FAILURE);
+	}
 	Client client(client_fd, client_addr, *this);
 	client.setClientAddrLen(client_addr_len);
 
@@ -357,6 +355,9 @@ void	Server::handleResponse( __unused int fd, __unused Client& client )
 {
 	Request Req;
 	Req = client.getRequest(); //! Get the request object from the client object
+
+	// std::cout << Req << std::endl;
+
 	Response response(Req, *this); //! Create a response object
 	
 	response.create(client);
