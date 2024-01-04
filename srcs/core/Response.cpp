@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/02 12:16:30 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/04 13:12:28 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -431,10 +431,17 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 		sendResponse(clientSock, 404);
 	}
 	// check if location is cgi and if the file extension is supported
-	else if (_location->isCgi() && supported_extension(path))
+	else if (_location->isCgi())
 	{
 		Logger::getInstance().log(COLOR_GRAY, "CGI processing...");
-		if (access(path.c_str(), X_OK | R_OK) == -1) // check if the path is executable and readable
+		if (!supported_extension(path))
+		{
+			Logger::getInstance().log(COLOR_RED, "CGI File extension not supported...");
+			_error = true;
+			sendResponse(clientSock, 500);
+			return ;
+		}
+		if (access(path.c_str(), R_OK) == -1) // check if the path is executable and readable
 		{
 			Logger::getInstance().log(COLOR_GRAY, "CGI File error...");
 			_error = true;
@@ -443,6 +450,21 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 		}
 		CGI cgi(_server, *_location, path);
 		initiate_cgi_response(clientSock, cgi);
+		if (!cgi.execute(_request))
+		{
+			Logger::getInstance().log(COLOR_RED, "CGI Not executed: `%s`", cgi.getErrorMsg().c_str());
+			_error = true;
+			sendResponse(clientSock, 404);
+			return ;
+		}
+		if (cgi.wait() < 0)
+		{
+			Logger::getInstance().log(COLOR_RED, "CGI Process error: `%s`", cgi.getErrorMsg().c_str());
+			_error = true;
+			sendResponse(clientSock, 500);
+			return ;
+		}
+		Logger::getInstance().log(COLOR_GRAY, "CGI Is executed...");
 		_cgi_stdout = cgi.getStdout();
 		_cgi_stderr = cgi.getStderr();
 		_cgi_pid = cgi.getPid();
@@ -475,14 +497,33 @@ void					Response::initiate_cgi_response( SOCKET clientSock, CGI &cgi )
 		sendResponse(clientSock, 404);
 		return ;
 	}
-	if (!cgi.execute(_request))
+}
+
+//! [TESTING ...]
+void					Response::cgiHandler( SOCKET clientSock )
+{
+	std::stringstream buffer;
+	lseek(_cgi_stdout, 0, SEEK_SET);
+	while (true)
 	{
-		Logger::getInstance().log(COLOR_RED, "CGI Not executed: `%s`", cgi.getErrorMsg().c_str());
-		_error = true;
-		sendResponse(clientSock, 404);
-		return ;
+		char c;
+		int ret = read(_cgi_stdout, &c, 1);
+		if (ret == -1)
+		{
+			Logger::getInstance().log(COLOR_RED, "Error reading from CGI stdout");
+			sendResponse(clientSock, 500);
+			return ;
+		}
+		else if (ret == 0)
+			break ;
+		buffer << c;
 	}
-	Logger::getInstance().log(COLOR_GRAY, "CGI Is executed...");
+	std::string content = buffer.str();
+	setHeader("Content-length", std::to_string(content.length()));
+	_content = std::vector<char>(content.begin(), content.end());
+	sendResponse(clientSock, 200);
+	close(_cgi_stdout);
+	close(_cgi_stderr);
 }
 
 void					Response::sendResponse( SOCKET clientSock, u_short sCode )
@@ -500,33 +541,6 @@ void					Response::sendResponse( SOCKET clientSock, u_short sCode )
 	Http::closeConnection(clientSock);
 	Http::removeFDFromSet(clientSock, &Http::write_set);
 	reset();
-}
-
-//! [TESTING ...]
-void					Response::cgiHandler( SOCKET clientSock )
-{
-	std::stringstream buffer;
-	lseek(_cgi_stdout, 0, SEEK_SET);
-	while (true)
-	{
-		char c;
-		int ret = read(_cgi_stdout, &c, 1);
-		if (ret == -1)
-		{
-			Logger::getInstance().log(COLOR_RED, "Error reading from CGI stdout: `%s`", strerror(errno));
-			sendResponse(clientSock, 500);
-			return ;
-		}
-		else if (ret == 0)
-			break ;
-		buffer << c;
-	}
-	std::string content = buffer.str();
-	setHeader("Content-length", std::to_string(content.length()));
-	_content = std::vector<char>(content.begin(), content.end());
-	sendResponse(clientSock, 200);
-	close(_cgi_stdout);
-	close(_cgi_stderr);
 }
 
 // Example for an HTTP GET request:
