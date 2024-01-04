@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/29 11:31:22 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/04 13:38:58 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,8 @@ void		Location::setAlias( std::string alias ) {
 	this->_alias = alias;
 }
 void		Location::setCgiPath( std::string cgiPath ) {
+	if ( checks_type(cgiPath) != REG_FILE)
+		throw std::invalid_argument("WebServ: cgi path is not valid");
 	this->_cgiPath = cgiPath;
 }
 // void		Location::setDirectoryListing( bool directoryListing ) {
