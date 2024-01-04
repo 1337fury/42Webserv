@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/28 19:51:04 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/04 13:28:27 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -316,8 +316,6 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 		}
 		else if (blockDirectives[i].name == "autoindex")
 		{
-			if (location.isCgi())
-				throw std::runtime_error("WebServ: [location] autoindex directive not allowed in cgi-bin");
 			if (blockDirectives[i].parameters.size() != 1)
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `autoindex`");
 			if (autoindexDone)
