@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/04 13:12:28 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/06 10:42:13 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -357,6 +357,9 @@ void					Response::reset( void )
 	_response_string = "";
 	_location = nullptr;
 	_error = false;
+	_cgi_pid = -1;
+	_cgi_stdout = -1;
+	_cgi_stderr = -1;
 }
 
 void					Response::work_with_directory(__unused SOCKET clientSock)
@@ -441,7 +444,7 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 			sendResponse(clientSock, 500);
 			return ;
 		}
-		if (access(path.c_str(), R_OK) == -1) // check if the path is executable and readable
+		if (access(path.c_str(), R_OK) == -1) // check if the path is readable
 		{
 			Logger::getInstance().log(COLOR_GRAY, "CGI File error...");
 			_error = true;
