@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:46:52 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/30 13:29:46 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/07 11:04:15 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,9 @@ class Request
 		~Request( void );
 
 	// Properties
+		//![NEW]
+		std::string				query_string;
+		std::string				fragment;
 		std::string				method;
 		std::string				uri;
 		int 					versionMajor;
