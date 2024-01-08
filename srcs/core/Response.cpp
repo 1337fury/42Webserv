@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/06 10:42:13 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/08 14:47:14 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ Response::Response( void )
 	_headers = std::vector<Header>();
 	_cgi_stdout = -1;
 	_cgi_stderr = -1;
+	_cgi = false;
 }
 
 Response::Response( Request &request, Server &server ) : 
@@ -50,6 +51,7 @@ _request(request)
 	_headers = std::vector<Header>();
 	_cgi_stdout = -1;
 	_cgi_stderr = -1;
+	_cgi = false;
 }
 
 Response::~Response( void )
@@ -80,6 +82,7 @@ Response &Response::operator=( Response const &rhs )
 		this->_server = rhs._server;
 		this->_cgi_stdout = rhs._cgi_stdout;
 		this->_cgi_stderr = rhs._cgi_stderr;
+		this->_cgi = rhs._cgi;
 	}
 	return *this;
 }
@@ -194,7 +197,8 @@ void					Response::setResponseString( void )
 	_response_string = _version + " " + std::to_string(_statusCode) + " " + _status + "\r\n";
 	for ( std::vector<Header>::iterator it = _headers.begin(); it != _headers.end(); it++ )
 		_response_string += it->key + ": " + it->value + "\r\n";
-	_response_string += "\r\n";
+	if (!_cgi || _error)
+		_response_string += "\r\n";
 	_response_string += _body;
 }
 
@@ -248,7 +252,7 @@ void 					Response::searchForErrorPage( void )
 	}
 	else // if the error page is not found
 	{
-		content = "<html><body><h1><center>Free Palestine!</center></h1><hr></hr><center>nginy/1.0</center></body></html>";
+		content = "<html><body><h1><center>OOPS!</center></h1><hr></hr><center>nginy/1.0</center></body></html>";
 		setHeader("Content-Type", _server.getMimeType("html"));
 		_content = std::vector<char>(content.begin(), content.end());
 	}
@@ -305,12 +309,15 @@ void					Response::create( __unused Client& client )
 			sendResponse(client.getClientSock(), 413);
 			break;
 		case PATH_NOT_EXISTING: _error = true;
+			Logger::getInstance().log(COLOR_YELLOW, "[Dir] => Requested Path is %s", path.c_str());
 			sendResponse(client.getClientSock(), 404);
 			break;
 		case PATH_IS_DIRECTORY:
+			Logger::getInstance().log(COLOR_YELLOW, "[Dir] => Requested Path is %s", path.c_str());
 			work_with_directory(client.getClientSock());
 			break;
 		case PATH_IS_FILE:
+			Logger::getInstance().log(COLOR_YELLOW, "[File] => Requested Path is %s", path.c_str());
 			work_with_file(client.getClientSock(), path);
 			break;
 		default:
@@ -360,6 +367,7 @@ void					Response::reset( void )
 	_cgi_pid = -1;
 	_cgi_stdout = -1;
 	_cgi_stderr = -1;
+	_cgi = false;
 }
 
 void					Response::work_with_directory(__unused SOCKET clientSock)
@@ -426,7 +434,6 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 
 void					Response::work_with_file(SOCKET clientSock, std::string path)
 {
-	std::string	content;
 	if (access(path.c_str(), F_OK) == -1)
 	{
 		Logger::getInstance().log(COLOR_GRAY, "File not found...");
@@ -436,6 +443,7 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 	// check if location is cgi and if the file extension is supported
 	else if (_location->isCgi())
 	{
+		_cgi = true;
 		Logger::getInstance().log(COLOR_GRAY, "CGI processing...");
 		if (!supported_extension(path))
 		{
@@ -474,7 +482,7 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 		cgiHandler(clientSock);
 	}
 	else
-		exit(1);
+		handleFileRequest(clientSock, path);
 }
 
 void					Response::initiate_cgi_response( SOCKET clientSock, CGI &cgi )
@@ -502,6 +510,61 @@ void					Response::initiate_cgi_response( SOCKET clientSock, CGI &cgi )
 	}
 }
 
+
+void					Response::handleFileRequest( SOCKET clientSock, std::string path )
+{
+	std::string	content;
+	if (_request.method == "DELETE")
+	{//!DELETE
+		if (remove(path.c_str()) != 0) // remove returns 0 on success and -1 on failure
+			_error = true, sendResponse(clientSock, 404);
+		else
+		{
+			setHeader("Content-Type", _server.getMimeType("html"));
+			setHeader("Content-Length", std::to_string(_page.str().length()));
+			content = _page.str();
+			_content = std::vector<char>(content.begin(), content.end());
+			sendResponse(clientSock, 204);
+		}
+	}
+	else if (_request.method == "POST")
+	{//!POST
+		if (access(path.c_str(), F_OK) == -1)
+			_error = true, sendResponse(clientSock, 404);
+		else
+		{
+			std::ofstream file(path);
+			if (file.is_open())
+			{
+				file << std::string(_request.content.begin(), _request.content.end());
+				file.close();
+				sendResponse(clientSock, 204);
+			}
+			else
+				_error = true, sendResponse(clientSock, 500);
+		}
+	}
+	else
+	{//! GET
+		std::ifstream file(path, std::ios::binary);
+		if (file.is_open())
+		{
+			std::stringstream buffer;
+			buffer << file.rdbuf();
+			content = buffer.str();
+			file.close();
+			std::string extension = path.substr(path.find_last_of(".") + 1);
+			std::string mime_type = _server.getMimeType(extension);
+			setHeader("Content-Type", mime_type);
+			setHeader("Content-Length", std::to_string(content.length()));
+			_content = std::vector<char>(content.begin(), content.end());
+			sendResponse(clientSock, 200);
+		}
+		else
+			_error = true, sendResponse(clientSock, 404);
+	}
+}
+
 //! [TESTING ...]
 void					Response::cgiHandler( SOCKET clientSock )
 {
@@ -514,6 +577,8 @@ void					Response::cgiHandler( SOCKET clientSock )
 		if (ret == -1)
 		{
 			Logger::getInstance().log(COLOR_RED, "Error reading from CGI stdout");
+			close(_cgi_stdout);
+			close(_cgi_stderr);
 			sendResponse(clientSock, 500);
 			return ;
 		}
@@ -522,7 +587,6 @@ void					Response::cgiHandler( SOCKET clientSock )
 		buffer << c;
 	}
 	std::string content = buffer.str();
-	setHeader("Content-length", std::to_string(content.length()));
 	_content = std::vector<char>(content.begin(), content.end());
 	sendResponse(clientSock, 200);
 	close(_cgi_stdout);
@@ -564,6 +628,4 @@ void					Response::sendResponse( SOCKET clientSock, u_short sCode )
 // Content-Length: 13
 
 // name=abdelouah&age=23
-
-// e
 
