@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/01 18:49:51 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/07 15:45:52 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,7 @@ class Response
 		pid_t					_cgi_pid;
 		int						_cgi_stdout;
 		int						_cgi_stderr;
+		bool					_cgi;
 
 	public:
 		Response( void );
@@ -109,4 +110,5 @@ class Response
 	void sendResponse( SOCKET clientSock, u_short sCode );
 	void initiate_cgi_response( SOCKET clientSock, CGI &cgi );
 	void cgiHandler( SOCKET clientSock );
+	void handleFileRequest( SOCKET clientSock, std::string path );
 };
