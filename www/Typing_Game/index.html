@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <title>Typing Game</title>
+</head>
+<body>
+  <div class="option">
+    <select name="level" id="levels">
+      <option value="Easy">Easy</option>
+      <option value="Normal">Normal</option>
+      <option value="Hard">Hard</option>
+    </select>
+  </div>
+    <div class="game">
+        <div class="name">Typing Speed Test Game</div>
+        <div class="container">
+          <div class="message">
+            You Are Playing On
+            <span class="lvl"></span> Level
+            & You Have <span class="seconds"></span> Seconds To Type The Word
+          </div>
+          <div class="start">Start Playing</div>
+          <div class="the-word"></div>
+          <input type="text" class="input" />
+          <div class="upcoming-words">Words Will Show Here</div>
+          <div class="control">
+            <div class="time">Time Left: <span></span> Seconds</div>
+            <div class="score">
+              Score: <span class="got">0</span> From <span class="total"></span>
+            </div>
+          </div>
+          <div class="finish"></div>
+        </div>
+      </div>
+      <script src="js/script.js"></script>
+</body>
+</html>

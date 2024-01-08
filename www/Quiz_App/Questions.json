@@ -1,0 +1,79 @@
+[
+    {
+        "title" : "Inside which HTML element do we put the JavaScript ?",
+        "answer_1" : "&ltlink&gt",
+        "answer_2" : "&ltmeta&gt",
+        "answer_3" : "&ltscript&gt",
+        "answer_4" : "&ltbody&gt",
+        "correct_answer" : "&ltscript&gt"
+    },
+    {
+        "title" : "Where is the correct place to insert a JavaScript ?",
+        "answer_1" : "The &ltbody&gt section",
+        "answer_2" : "Both the &lthead&gt section and the &ltbody&gt section are correct",
+        "answer_3" : "The &lthead&gt section",
+        "answer_4" : "The js file",
+        "correct_answer" : "Both the &lthead&gt section and the &ltbody&gt section are correct"
+    },
+    {
+        "title" : "The externel JavaScript file must ontain the &ltscript&gt tag ?",
+        "answer_1" : "False",
+        "answer_2" : "True",
+        "correct_answer" : "False"
+    },
+     {
+        "title" : "How do you write 'Hello world' in an alert box ?",
+        "answer_1" : "msg('hello world')",
+        "answer_2" : "msgBox('hello world')",
+        "answer_3" : "alertBox('hello world')",
+        "answer_4" : "alert('hello world')",
+        "correct_answer" : "alert('hello world')"
+    },
+    {
+        "title" : "How do you create a function in javaScript ?",
+        "answer_1" : "function:myFunction()",
+        "answer_2" : "function myFunction()",
+        "answer_3" : "function =myFunction()",
+        "answer_4" : "myFunction()",
+        "correct_answer" : "function myFunction()"
+    },
+     {
+        "title" : "How do you call a function named 'myFunction' ?",
+        "answer_1" : "myFunction()",
+        "answer_2" : "call function myFunction()",
+        "answer_3" : "call myFunction()",
+        "correct_answer" : "myFunction()"
+    },
+     {
+        "title" : "How to write an IF statement in JavaScript ?",
+        "answer_1" : "if i = 5",
+        "answer_2" : "if(i===5)",
+        "answer_3" : "if i = 5 then",
+        "answer_4" : "if i === 5 then",
+        "correct_answer" : "if(i===5)"
+    },
+     {
+        "title" : "How do you add a comment in a JavaScript ?",
+        "answer_1" : "//This is a comment",
+        "answer_2" : "'This is a comment",
+        "answer_3" : "&lt!--This is a comment--&gt",
+        "answer_4" : "#This is a comment",
+        "correct_answer" : "//This is a comment"
+    },
+     {
+        "title" : "How do you round the number 7.25, to the nearest integer ?",
+        "answer_1" : "round(7.25)",
+        "answer_2" : "rnd(7.25)",
+        "answer_3" : "Math.rnd(7.25)",
+        "answer_4" : "Math.round(7.25)",
+        "correct_answer" : "Math.round(7.25)"
+    },
+     {
+        "title" : "How do you find the number with the highest value of x and y ?",
+        "answer_1" : "Match.max(x,y)",
+        "answer_2" : "ceil(c,y)",
+        "answer_3" : "Math.ceil(x,y)",
+        "answer_4" : "top(x,y)",
+        "correct_answer" : "Match.max(x,y)"
+    }
+]

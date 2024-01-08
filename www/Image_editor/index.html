@@ -1,0 +1,53 @@
+<!-- Created By FURY -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/style.css">
+        <script src="https://kit.fontawesome.com/25821fe11a.js" crossorigin="anonymous"></script>
+        <script src="js/script.js" defer></script>
+        <title>Image Editor | Fury</title>
+    </head>
+    <body>
+        <div class="container">
+            <h2>easy image editor</h2>
+            <div class="wrapper">
+                <div class="filter_options">
+                    <h3>filters</h3>
+                    <ul class="options first">
+                        <li><button class="brightness active" data-name = "brightness">brightness</button></li>
+                        <li><button class="saturation" data-name = "saturate">saturation</button></li>
+                        <li><button class="inversion" data-name = "invert">inversion</button></li>
+                        <li><button class="grayscale" data-name = "grayscale">grayscale</button></li>
+                    </ul>
+                    <div class="opt_value">
+                        <div class="head">
+                            <span class="name">brightness</span>
+                            <span class="value"></span>
+                        </div>
+                        <input type="range" name="range" id="range" min="" max="">
+                    </div>
+                    <div class="other_options">
+                        <h3>rotate & flip</h3>
+                        <ul class="options second">
+                            <li><button data-name="rotate"><i class="fa-solid fa-rotate-right"></i></button></li>
+                            <li><button data-name="rRotate"><i class="fa-solid fa-rotate-left"></i></button></li>
+                            <li><button data-name="hFlip"><i class="fa-solid fa-angle-left"></i></button></li>
+                            <li><button data-name="vFlip"><i class="fa-solid fa-angle-down"></i></button></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="image">
+                    <img src="https://dl.dropbox.com/s/b9qcduaoq38ly0u/FB_IMG_16219244672194786.jpg" alt="">
+                </div>
+            </div>
+            <div class="footer">
+                <div class="reset">
+                    <button id="reset">reset filters</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
