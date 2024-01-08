@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:28:11 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/30 13:29:54 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/07 11:19:39 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ Request::Request( void ) {
 	this->headers = std::vector<Header>();
 	this->content = std::vector<char>();
 	this->keepAlive = false;
+	this->query_string = "";
+	this->fragment = "";
 }
 
 Request::Request( Request const &rhs ) {
@@ -35,6 +37,8 @@ Request &Request::operator=( Request const &rhs ) {
 		this->headers = rhs.headers;
 		this->content = rhs.content;
 		this->keepAlive = rhs.keepAlive;
+		this->query_string = rhs.query_string;
+		this->fragment = rhs.fragment;
 	}
 	return *this;
 }

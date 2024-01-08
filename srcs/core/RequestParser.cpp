@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:51:44 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/17 12:55:46 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/07 11:07:28 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ bool	RequestParser::isTspecial( char c )
 			return false;
 	}
 }
-
+// to see an explanation of the parsing process by states, see https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5
 ParseResult	RequestParser::parse( Request &request, const char *begin, const char *end )
 {
 	const char *current = begin;
@@ -90,10 +90,52 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 			case URI:
 				if (*current == ' ')
 					_state = HTTP_VERSION_H;
+				else if (*current == '?')
+					_state = QUERY_STRING_START;
+				else if (*current == '#')
+					_state = FRAGMENT_START;
 				else if (isCtl(*current))
 					return PARSE_ERROR;
 				else
 					request.uri.push_back(*current);
+				break;
+			case QUERY_STRING_START:
+				if (isCtl(*current))
+					return PARSE_ERROR;
+				else if (*current == '#')
+					_state = FRAGMENT_START;
+				else
+				{
+					_state = QUERY_STRING;
+					request.query_string.push_back(*current);
+				}
+				break;
+			case QUERY_STRING:
+				if (*current == ' ')
+					_state = HTTP_VERSION_H;
+				else if (*current == '#')
+					_state = FRAGMENT_START;
+				else if (isCtl(*current))
+					return PARSE_ERROR;
+				else
+					request.query_string.push_back(*current);
+				break;
+			case FRAGMENT_START:
+				if (isCtl(*current))
+					return PARSE_ERROR;
+				else
+				{
+					_state = FRAGMENT;
+					request.fragment.push_back(*current);
+				}
+				break;
+			case FRAGMENT:
+				if (*current == ' ')
+					_state = HTTP_VERSION_H;
+				else if (isCtl(*current))
+					return PARSE_ERROR;
+				else
+					request.fragment.push_back(*current);
 				break;
 			case HTTP_VERSION_H:
 				if (*current == 'H')
@@ -325,3 +367,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
                         "Host: 127.0.0.1\r\n"
                         "\r\n";
 */
+
+// example for a complex query string: POST /inception/?user=fury#art HTTP/1.0\r\nHost: example.com\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\nContent-Length: 0\r\n\r\n4\r\nWiki\r\n5\r\npedia\r\n2\r\nin\r\n7\r\nchunks.\r\n0\r\n\r\n
+
+// # means fragment identifier it means that the browser will scroll to the element with the id "art" in the page, there is also a query string in the url: ?user=fury, we stop read query string when we encounter # or 
