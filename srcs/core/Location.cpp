@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/04 13:38:58 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/08 14:53:41 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,10 +104,7 @@ void		Location::setPath( std::string path ) {
 	if (path[0] != '/')
 		path = "/" + path;
 	if (path == "/cgi-bin")
-	{
 		this->_isCgi = true;
-		this->_rootDirectory = "/Users/abdeel-o/Desktop/Webserv";
-	}
 	this->_path = path;
 }
 void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
