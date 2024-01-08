@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:52:17 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/07 17:01:52 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/07 11:03:38 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,10 @@ enum RequestState
 	REQUEST_METHOD,
 	URI_START, // 2
 	URI,
+	QUERY_STRING_START,
+	QUERY_STRING,
+	FRAGMENT_START,
+	FRAGMENT,
 	HTTP_VERSION_H,
 	HTTP_VERSION_HT,
 	HTTP_VERSION_HTT,
