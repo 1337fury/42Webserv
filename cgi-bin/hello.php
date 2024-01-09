@@ -1,3 +1,7 @@
+<?php
+	echo "Content-Type: text/html\n\n";		
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -16,22 +20,9 @@
 				echo "<h1>Hello, $name!</h1>";
 			} else {
 				// If the 'name' key doesn't exist, handle it as you prefer
-				echo "<h1>Name parameter is missing.</h1>";
+				echo "<h1 style='color: red'>No Name No Hello!</h1>";
 			}
 		}
 	?>
-
-	<?php
-		// Check if there are arguments passed to the script
-		if ($argc > 1) {
-			// Loop through each element in the $argv array and print it
-			foreach ($argv as $key => $value) {
-				echo "Argument $key: $value\n";
-			}
-		} else {
-			echo "No arguments provided.\n";
-		}
-	?>
-
 </body>
 </html>
