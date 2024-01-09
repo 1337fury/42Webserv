@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:56:25 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/09 10:28:04 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/09 16:08:10 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,22 +169,6 @@ bool	CGI::execute(__unused Request &request)
 	}
 	if (_cgi_prcs == 0)
 	{
-		// for POST requests we need to send the body to the cgi script, so we need to redirect the stdin to the body file, we send the body to the cgi script because the cgi script will read the body from the stdin to get the form data and process it for example:
-		// 	POST /cgi-bin/env.py?name=fury&garde=one&key HTTP/1.0\r\nHost: example.com\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\nContent-Length: 0\r\n\r\n4\r\nWiki\r\n5\r\npedia\r\n2\r\nin\r\n7\r\nchunks.\r\n0\r\n\r\n
-		// 	so the cgi script will read the body from the stdin and process it, process it means that the cgi script will get the form data and do something with it, for example: print the form data to the stdout, for example:
-		// 	Content-Type: text/plain\r\n\r\n
-		// 	Hello, World!\r\n
-		// 	so the cgi script will print the form data to the stdout, and the stdout will be redirected to the temporary file that we created earlier, so we can send the output to the client later...
-		// if you need to try it with python, you can use this script:
-		// 	#!/usr/bin/env python3
-		// 	import sys
-		// 	print("Content-Type: text/plain\r\n\r\n")
-		// 	for line in sys.stdin:
-		// 		print(line)
-		// 	sys.stdout.flush()
-		// 	sys.stderr.flush()
-		// 	sys.exit(0)
-		Logger::getInstance().log(COLOR_GRAY, "CGI: Request method: %s", request.method.c_str());
 		if (request.method == "POST")
 		{
 			rewind(_body_file);
