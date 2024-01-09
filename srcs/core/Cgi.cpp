@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:56:25 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/08 12:18:34 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/09 10:28:04 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ bool	CGI::setCgiEnvs(Request &request)
 	_cgi_envs["HTTP_COOKIE"] = request.getHeader("Cookie");
 	_cgi_envs["HTTP_ACCEPT"] = request.getHeader("Accept");
 	_cgi_envs["HTTP_VERSION"] = "HTTP/1.1";
+	_cgi_envs["HTTP_COOKIE"] = request.getHeader("Cookie");
 	// init _cgi_envs_str
 	for (map_str_str::iterator it = _cgi_envs.begin(); it != _cgi_envs.end(); it++)
 	{
