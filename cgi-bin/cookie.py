@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-
 import cgi
 import os
+
 
 # Function to get cookie value
 def get_cookie_value(cookie_name):
@@ -9,9 +9,11 @@ def get_cookie_value(cookie_name):
         cookies = os.environ["HTTP_COOKIE"]
         cookie_list = cookies.split("; ")
         for cookie in cookie_list:
-            name, value = cookie.split("=")
-            if name == cookie_name:
-                return value
+            cookie_parts = cookie.split("=")
+            if len(cookie_parts) == 2:
+                name, value = cookie_parts
+                if name == cookie_name:
+                    return value
     return None
 
 # Get name and session from query parameters or cookies
