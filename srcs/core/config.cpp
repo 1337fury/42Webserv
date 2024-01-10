@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/04 13:28:27 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/10 09:43:50 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -298,8 +298,8 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 	{
 		if (blockDirectives[i].name == "root")
 		{
-			if (location.isCgi())
-				throw std::runtime_error("WebServ: [location] root directive not allowed in cgi-bin");
+			// if (location.isCgi()) //! ????????????????????????????
+			// 	throw std::runtime_error("WebServ: [location] root directive not allowed in cgi-bin");
 			if (location.getRootDirectory() != "")
 				throw std::runtime_error("WebServ: [location] root directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
@@ -366,10 +366,21 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `cgi_path`");
 			location.setCgiPath(blockDirectives[i].parameters[0]);
 		}
+		else if (blockDirectives[i].name == "upload_path")
+		{
+			if (location.isCgi())
+				throw std::runtime_error("WebServ: [location] upload_path directive not allowed in this location: " + path);
+			if (location.getUploadDirectory().size() != 0)
+				throw std::runtime_error("WebServ: [location] upload_path directive is duplicate");
+			if (blockDirectives[i].parameters.size() != 1)
+				throw std::runtime_error("WebServ: [location] invalid number of arguments in `upload_path`");
+			location.setAcceptUploads(true);
+			location.setUploadDirectory(blockDirectives[i].parameters[0]);
+		}
 		else
 			throw std::runtime_error("WebServ: [location] unknown directive `" + blockDirectives[i].name + "`");
 	}
-	if (!location.isCgi() && location.getRootDirectory() == "")
+	if (location.getRootDirectory() == "")
 		location.setRootDirectory(server.getRoot());
 	if (!location.isCgi() && location.getDefaultFile() == "")
 		location.setDefaultFile(server.getIndex());
