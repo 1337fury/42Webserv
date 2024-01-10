@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Cookie Form</title>
+</head>
+<body>
+    <h2>Set Cookie Form</h2>
+    <form action="/cgi-bin/cookie_script.py" method="post">
+        <label for="cookie_name">Cookie Name:</label>
+        <input type="text" id="cookie_name" name="cookie_name" required><br>
+
+        <label for="cookie_value">Cookie Value:</label>
+        <input type="text" id="cookie_value" name="cookie_value" required><br>
+
+        <input type="submit" value="Set Cookie">
+    </form>
+</body>
+</html>
