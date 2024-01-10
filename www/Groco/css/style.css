@@ -275,6 +275,7 @@ form.search-form input::placeholder {
     padding: 1.2rem .8rem;
     border-radius: .5rem;
     text-transform: lowercase;
+	width: 100%;
 }
 .login_form span {
     color: var(--light-color);

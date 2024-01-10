@@ -73,14 +73,44 @@
             <a href="#">checkout</a>
         </div>
 
-        <form action="" class="login_form">
+        <!-- <form action="/cgi-bin/groco_login.py" class="login_form">
             <h1>login now</h1>
             <input type="email" name="email" id="user_mail" placeholder="your email" />
             <input type="password" name="pass" id="user_pass" placeholder="your password" />
             <span>forget password <a href="#">click here</a></span>
-            <span>don't have an account <a href="#">create now</a></span>
             <a href="#" class="btn">login now</a>
-        </form>
+			<input type="submit" class="btn" value="login now">
+			<input type="submit" class="btn" value="login now">
+        </form> -->
+		<form action="/cgi-bin/groco_login.py" class="login_form" method="post">
+			<h1 id="form_title">login now</h1>
+			<input type="email" name="email" id="user_mail" placeholder="your email" required />
+			<input type="password" name="pass" id="user_pass" placeholder="your password" required />
+			<!-- For registration -->
+			<div id="register_form" style="display: none;">
+				<input type="password" name="confirm_pass" id="confirm_pass" placeholder="confirm password"/>
+				<input type="hidden" name="action" value="register">
+			</div>
+			<span>forget password <a href="#">click here</a></span>
+			<span>don't have an account <a href="#" id="register_link">create now</a></span>
+			<input type="hidden" name="action" id="action" value="login">
+		
+		
+			<!-- <a href="#" class="btn">login now</a> -->
+			<input id="sbBtn" type="submit" name="login" class="btn" value="login now">
+		</form>
+		
+		<script>
+			document.getElementById('register_link').addEventListener('click', function() {
+				// Switch to registration form
+				document.getElementById("form_title").innerHTML = "register now";
+				document.getElementById('confirm_pass').setAttribute('required', 'required');
+				document.getElementById('action').value = 'register';
+				document.getElementById('register_form').style.display = 'block';
+				document.getElementById("sbBtn").value = "register now";
+				document.getElementById("sbBtn").name = "register";
+			});
+		</script>
             
     </div>
     <!-- END HEADER SECTION  -->
@@ -469,7 +499,7 @@
         </div>
     </div>
     <div class="copy">
-        Created By <span>Mr. Free Coder</span> | All Rights Reserved
+        Created By <span>Fury</span> | All Rights Reserved
     </div>
     <!-- END FOOTER SECTION  -->
     
