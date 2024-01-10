@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/08 14:53:41 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/09 16:26:10 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,9 @@ Location::Location( void ) {
 	this->_acceptedMethods = std::vector<std::string>();
 	this->_redirection = std::vector<std::string>();
 	this->_rootDirectory = "";
-	// this->_directoryListing = false;
 	this->_defaultFile = "";
-	// this->_acceptUploads = false;
-	// this->_uploadDirectory = "";
+	this->_acceptUploads = false; //! New for upload
+	this->_uploadDirectory = ""; //! New for upload
 	this->_autoindex = false;
 	this->_alias = "";
 	this->_cgiPath = "";
@@ -38,10 +37,9 @@ Location &Location::operator=( Location const &rhs ) {
 		this->_acceptedMethods = rhs._acceptedMethods;
 		this->_redirection = rhs._redirection;
 		this->_rootDirectory = rhs._rootDirectory;
-		// this->_directoryListing = rhs._directoryListing;
 		this->_defaultFile = rhs._defaultFile;
-		// this->_acceptUploads = rhs._acceptUploads;
-		// this->_uploadDirectory = rhs._uploadDirectory;
+		this->_acceptUploads = rhs._acceptUploads; //! New for upload
+		this->_uploadDirectory = rhs._uploadDirectory; //! New for upload
 		this->_autoindex = rhs._autoindex;
 		this->_alias = rhs._alias;
 		this->_cgiPath = rhs._cgiPath;
@@ -85,15 +83,12 @@ std::string					Location::getCgiPath( void ) const {
 bool						Location::isCgi( void ) const {
 	return this->_isCgi;
 }
-// bool 						Location::getDirectoryListing( void ) const {
-// 	return this->_directoryListing;
-// }
-// bool 						Location::getAcceptUploads( void ) const {
-// 	return this->_acceptUploads;
-// }
-// std::string 				Location::getUploadDirectory( void ) const {
-// 	return this->_uploadDirectory;
-// }
+bool 						Location::getAcceptUploads( void ) const {
+	return this->_acceptUploads;
+}
+std::string 				Location::getUploadDirectory( void ) const {
+	return this->_uploadDirectory;
+}
 bool						Location::isRederecting( void ) const {
 	return this->_isRederecting;
 }
@@ -141,15 +136,14 @@ void		Location::setCgiPath( std::string cgiPath ) {
 		throw std::invalid_argument("WebServ: cgi path is not valid");
 	this->_cgiPath = cgiPath;
 }
-// void		Location::setDirectoryListing( bool directoryListing ) {
-// 	this->_directoryListing = directoryListing;
-// }
-// void		Location::setAcceptUploads( bool acceptUploads ) {
-// 	this->_acceptUploads = acceptUploads;
-// }
-// void		Location::setUploadDirectory( std::string uploadDirectory ) {
-// 	this->_uploadDirectory = uploadDirectory;
-// }
+void		Location::setAcceptUploads( bool acceptUploads ) {
+	this->_acceptUploads = acceptUploads;
+}
+void		Location::setUploadDirectory( std::string uploadDirectory ) {
+	if ( checks_type(uploadDirectory) != DIRECTORY)
+		throw std::invalid_argument("WebServ: upload directory is not valid");
+	this->_uploadDirectory = uploadDirectory;
+}
 void		Location::setCgi( bool isCgi ) {
 	this->_isCgi = isCgi;
 }

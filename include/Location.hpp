@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/28 19:21:14 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/09 17:37:46 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,8 @@ class Location
 		std::string 						_cgiPath;
 		bool								_autoindex;
 		std::string 						_alias;
-		// bool 						_directoryListing;
-		// bool 						_acceptUploads;
-		// std::string 				_uploadDirectory;
+		bool 								_acceptUploads; //! New for upload
+		std::string 						_uploadDirectory; //! New for upload
 		bool								_isRederecting;
 		bool								_isCgi;
 
@@ -56,9 +55,8 @@ class Location
 		bool						getAutoindex( void ) const;
 		std::string 				getAlias( void ) const;
 		std::string					getCgiPath( void ) const;
-		// bool 					getDirectoryListing( void ) const;
-		// bool 					getAcceptUploads( void ) const;
-		// std::string 				getUploadDirectory( void ) const;
+		bool 						getAcceptUploads( void ) const;
+		std::string 				getUploadDirectory( void ) const;
 		bool						isRederecting( void ) const;
 		bool						isCgi( void ) const;
 	// Setters
@@ -70,8 +68,7 @@ class Location
 		void		setAutoindex( bool autoindex );
 		void		setAlias( std::string alias );
 		void		setCgiPath( std::string	 cgiPath );
-		// void		setDirectoryListing( bool directoryListing );
-		// void		setAcceptUploads( bool acceptUploads );
-		// void		setUploadDirectory( std::string uploadDirectory );
+		void		setAcceptUploads( bool acceptUploads );
+		void		setUploadDirectory( std::string uploadDirectory );
 		void		setCgi( bool isCgi );
 };
