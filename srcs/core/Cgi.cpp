@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:56:25 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/09 16:08:10 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/10 13:11:53 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,7 +107,7 @@ bool	CGI::setCgiEnvs(Request &request)
 	{
 		_cgi_args.push_back(it->first + "=" + it->second);
 	}
-	_env = new char*[_cgi_args.size()];
+	_env = new char*[_cgi_args.size() + 1];
 	if (_env == NULL)
 	{
 		_error_msg = "failed to allocate memory for the cgi envirenement variables";
@@ -191,7 +191,7 @@ bool	CGI::execute(__unused Request &request)
 int	CGI::wait( void )
 {
 	int		status;
-	
+
 	if (waitpid(_cgi_prcs, &status, 0) == -1)
 	{
 		_error_msg = "failed to wait for the cgi script";
