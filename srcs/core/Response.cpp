@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/08 14:47:14 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 19:10:09 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 #include "Http.hpp"
 #include "Logger.hpp"
 
-// Constructors & Destructors
 Response::Response( void )
 {
 	_statusCode = 200;
@@ -161,7 +160,7 @@ void					Response::setHeaders( std::vector<Header> headers )
 
 void					Response::setHeader( std::string key, std::string value  )
 {
-	Header header("", ""); //! switch to Header header(key, value); later ...
+	Header header("", "");
 	header.key = key;
 	header.value = value;
 	_headers.push_back(header);
@@ -189,7 +188,7 @@ void					Response::setVersion( int major, int minor )
 
 void					Response::setBody( void )
 {
-	_body = std::string(_content.begin(), _content.end()); // convert vector<char> to string
+	_body = std::string(_content.begin(), _content.end());
 }
 
 void					Response::setResponseString( void )
@@ -217,7 +216,7 @@ void					Response::init_headers( void )
 	_headers.push_back(Header("Last-Modified", getCurrentTime()));
 	_headers.push_back(Header("Connection", _keepAlive ? "keep-alive" : "close"));
 	if ( _keepAlive )
-		_headers.push_back(Header("Keep-Alive", "timeout=5, max=1000")); // max=1000 means that the client can send 1000 requests before the connection is closed
+		_headers.push_back(Header("Keep-Alive", "timeout=5, max=1000"));
 }
 
 // Methods
@@ -250,8 +249,9 @@ void 					Response::searchForErrorPage( void )
 			_content = std::vector<char>(content.begin(), content.end());
 		}
 	}
-	else // if the error page is not found
+	else
 	{
+		Logger::getInstance().log(COLOR_RED, "Error page not found for status code: %d", _statusCode);
 		content = "<html><body><h1><center>OOPS!</center></h1><hr></hr><center>nginy/1.0</center></body></html>";
 		setHeader("Content-Type", _server.getMimeType("html"));
 		_content = std::vector<char>(content.begin(), content.end());
@@ -262,7 +262,6 @@ reqStatus				Response::analyzeRequest( std::string &path )
 {
 	path = _request.uri;
 	std::string method = _request.method;
-	Logger::getInstance().log(COLOR_GRAY, "Method: %s", method.c_str());
 	if (method != "GET" && method != "POST" && method != "DELETE")
 		return METHOD_NOT_ALLOWED;
 	if (!_location)
@@ -272,16 +271,15 @@ reqStatus				Response::analyzeRequest( std::string &path )
 	std::vector<std::string> acceptedMethods = _location->getAcceptedMethods();
 	if (std::find(acceptedMethods.begin(), acceptedMethods.end(), _request.method) == acceptedMethods.end())
 		return METHOD_NOT_ALLOWED;
-	// check if request content is too large 413
 	if (_request.content.size() > _server.getClientBodySizeLimit())
 		return REQUEST_TO_LARGE;
+	if (_location->getAcceptUploads() && _request.method == "POST")
+		return LOCATION_IS_UPLOADING;
 	path = _location->getRootDirectory() + path;
 	// normalize the path
 	path = normalizePath(path);
-	// Explanation: the access() function checks whether the calling process can access the file pathname. If pathname is a symbolic link, it is dereferenced. it works by checking the file's inode permission bits, not the file's mode bits. This allows the check to be made without actually attempting to open the file.
 	if (access(path.c_str(), F_OK) == -1) 
 		return PATH_NOT_EXISTING;
-	// check if the path is directory
 	if (checks_type(path) == DIRECTORY)
 		return PATH_IS_DIRECTORY;
 	if (checks_type(path) == REG_FILE)
@@ -302,29 +300,29 @@ void					Response::create( __unused Client& client )
 			Logger::getInstance().log(COLOR_GRAY, "Location is redirecting...");
 			handleRedircetiveLocation(client.getClientSock(), _location->getRedirection());
 			break;
-		case METHOD_NOT_ALLOWED: _error = true;
+		case LOCATION_IS_UPLOADING:
+			handle_upload(client.getClientSock());
+			break;
+		case METHOD_NOT_ALLOWED:
 			sendResponse(client.getClientSock(), 405);
 			break;
 		case REQUEST_TO_LARGE: _error = true;
 			sendResponse(client.getClientSock(), 413);
 			break;
 		case PATH_NOT_EXISTING: _error = true;
-			Logger::getInstance().log(COLOR_YELLOW, "[Dir] => Requested Path is %s", path.c_str());
 			sendResponse(client.getClientSock(), 404);
 			break;
 		case PATH_IS_DIRECTORY:
-			Logger::getInstance().log(COLOR_YELLOW, "[Dir] => Requested Path is %s", path.c_str());
 			work_with_directory(client.getClientSock());
 			break;
 		case PATH_IS_FILE:
-			Logger::getInstance().log(COLOR_YELLOW, "[File] => Requested Path is %s", path.c_str());
 			work_with_file(client.getClientSock(), path);
 			break;
 		default:
 			break;
 	}
 }
-//  handle the setup and sending of an HTTP redirect response to the client. It performs a series of steps to set up the necessary HTTP headers, check for successful redirection, build appropriate content for the redirect page, and manage the status of the response object itself.
+
 void					Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unused Redirection redirection )
 {
 	if (redirection.url.find("http://", 0) != std::string::npos
@@ -368,11 +366,12 @@ void					Response::reset( void )
 	_cgi_stdout = -1;
 	_cgi_stderr = -1;
 	_cgi = false;
+	_page.str("");
+	_page.clear();
 }
 
 void					Response::work_with_directory(__unused SOCKET clientSock)
 {
-	// performs a 301 redirect if a client requests a directory without a trailing slash, adding the slash to the request URI.
 	if (_request.uri[_request.uri.length() - 1] != '/')
 	{
 		Logger::getInstance().log(COLOR_GRAY, "Performs a 301 redirect...");
@@ -399,8 +398,7 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	}
 	else if (_location->getAutoindex() && _request.method == "GET")
 	{
-		// if the location is autoindex then we will open the directory and read it's content and send it to the client
-		DIR *dir; // pointer to a directory stream (DIR is a type representing a directory stream), it is an opaque data type representing a directory stream, it works by opening a directory stream corresponding to the directory name, and returns a pointer to the directory stream. The stream is positioned at the first entry in the directory.
+		DIR *dir; 
 		struct dirent *ent;
 		std::string content, path = _location->getRootDirectory() + _request.uri;
 		if ((dir = opendir(path.c_str())) != NULL)
@@ -427,7 +425,7 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	else
 	{
 		_error = true;
-		sendResponse(clientSock, 403); // 403 Forbidden
+		sendResponse(clientSock, 403);
 		return ;
 	}
 }
@@ -440,7 +438,6 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 		_error = true;
 		sendResponse(clientSock, 404);
 	}
-	// check if location is cgi and if the file extension is supported
 	else if (_location->isCgi())
 	{
 		_cgi = true;
@@ -452,7 +449,7 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 			sendResponse(clientSock, 500);
 			return ;
 		}
-		if (access(path.c_str(), R_OK) == -1) // check if the path is readable
+		if (access(path.c_str(), R_OK) == -1)
 		{
 			Logger::getInstance().log(COLOR_GRAY, "CGI File error...");
 			_error = true;
@@ -515,8 +512,8 @@ void					Response::handleFileRequest( SOCKET clientSock, std::string path )
 {
 	std::string	content;
 	if (_request.method == "DELETE")
-	{//!DELETE
-		if (remove(path.c_str()) != 0) // remove returns 0 on success and -1 on failure
+	{
+		if (remove(path.c_str()) != 0)
 			_error = true, sendResponse(clientSock, 404);
 		else
 		{
@@ -528,7 +525,7 @@ void					Response::handleFileRequest( SOCKET clientSock, std::string path )
 		}
 	}
 	else if (_request.method == "POST")
-	{//!POST
+	{
 		if (access(path.c_str(), F_OK) == -1)
 			_error = true, sendResponse(clientSock, 404);
 		else
@@ -545,8 +542,8 @@ void					Response::handleFileRequest( SOCKET clientSock, std::string path )
 		}
 	}
 	else
-	{//! GET
-		std::ifstream file(path, std::ios::binary);
+	{
+		std::ifstream file(path, std::ios::in);
 		if (file.is_open())
 		{
 			std::stringstream buffer;
@@ -565,7 +562,6 @@ void					Response::handleFileRequest( SOCKET clientSock, std::string path )
 	}
 }
 
-//! [TESTING ...]
 void					Response::cgiHandler( SOCKET clientSock )
 {
 	std::stringstream buffer;
@@ -610,22 +606,101 @@ void					Response::sendResponse( SOCKET clientSock, u_short sCode )
 	reset();
 }
 
-// Example for an HTTP GET request:
-// GET /static HTTP/1.1
-// Host: www.example.com
-// Connection: keep-alive
-// Cache-Control: max-age=0
-// Upgrade-Insecure-Requests: 1
-// User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)
-// Chrome/87.0.4280.88 Safari/537.36
-// Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,
-// image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+void					Response::handle_upload( __unused SOCKET clientsock )
+{
+	Logger::getInstance().log(COLOR_YELLOW, "Handling upload...");
+	std::string boundary = _request.getHeader("Content-Type").substr(30);
+	std::pair<std::string, std::string> data = getData(_request.content, boundary);
+	std::string body = data.first;
+	std::string filename = data.second;
+	
+	std::ofstream file(filename);
+	if (file.is_open())
+	{
+		file << body;
+		file.close();
+	}
+	else
+	{
+		Logger::getInstance().log(COLOR_RED, "Error opening file...");
+		_error = true;
+		sendResponse(clientsock, 500);
+		return ;
+	}
+	std::string uploads_dir = _location->getUploadDirectory();
+	std::string path = uploads_dir + (uploads_dir[uploads_dir.length() - 1] == '/' ? "" : "/") + filename;
+	if (rename(filename.c_str(), path.c_str()) != 0)
+	{
+		Logger::getInstance().log(COLOR_RED, "Error moving file...");
+		_error = true;
+		sendResponse(clientsock, 500);
+		return ;
+	}
+	Logger::getInstance().log(COLOR_YELLOW, "Sending upload response...");
+	sendResponse(clientsock, 204);
+}
 
+std::pair<std::string, std::string>	Response::getData( __unused std::vector<char> content, __unused std::string boundary )
+{
+	std::string clean_body;
+	std::stringstream ssbody;
+	std::string body = std::string(content.begin(), content.end());
+	std::string line;
+	std::string filename;
+	ssbody << body;
 
-// Example for an HTTP POST request:
-// POST / HTTP/1.1
-// Host: localhost
-// Content-Length: 13
+	bool boundary_line = false;
+	bool content_line = false;
+	for (size_t i = 0; i < body.size(); i++)
+	{
+		line.clear();
+		std::getline(ssbody, line);
+		i += line.size();
+		if (!line.compare("--" + boundary + "--\r"))
+		{
+			content_line = true;
+			boundary_line = false;
+		}
+		if (!line.compare("--" + boundary + "\r"))
+		{
+			boundary_line = true;
+		}
+		if (boundary_line)
+		{
+			if (!line.compare(0, 31, "Content-Disposition: form-data;"))
+			{
+				size_t pos = line.find("filename=\"");
+				if (pos != std::string::npos)
+				{
+					filename = line.substr(pos + 10);
+					filename = filename.substr(0, filename.find("\""));
+					std::cout << "Filename: " << filename << std::endl;
+				}
+			}
+			else if (!line.compare(0, 1, "\r") && !filename.empty())
+			{
+				boundary_line = false;
+				content_line = true;
+			}
+		}
+		else if (content_line)
+		{
+			if (!line.compare(("--" + boundary + "\r")))
+			{
+				boundary_line = true;
+			}
+			else if (!line.compare(("--" + boundary + "--\r")))
+			{
+				clean_body.erase(clean_body.end() - 1);
+				break ;
+			}
+			else
+			{
+				clean_body += (line + "\n");
+			}
+		}
+	}
+	return std::pair<std::string, std::string>(clean_body, filename);
+}
 
-// name=abdelouah&age=23
-
+							 
