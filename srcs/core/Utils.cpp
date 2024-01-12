@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/30 13:37:00 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 19:02:21 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,22 +160,22 @@ int	checks_type(std::string const path)
 	struct stat		filestat;
 	int				ret;
 
-	ret = stat(path.c_str(), &filestat); // stat function used to get file status (type, size, permissions, etc.), returns -1 on error and 0 on success, and fills the struct stat pointed to by filestat with the file status information
+	ret = stat(path.c_str(), &filestat);
 	if (ret == -1)
 		return (ERROR);
 	if (S_ISDIR(filestat.st_mode))
-		return (DIRECTORY); // directory
+		return (DIRECTORY);
 	if (S_ISREG(filestat.st_mode))
-		return (REG_FILE); // regular file
+		return (REG_FILE);
 	return (OTHER);
 }
 
 bool	checks_permissions(std::string const path)
 {
 	if (access(path.c_str(), F_OK) == -1) 
-		return (false); // file does not exist
+		return (false);
 	if (access(path.c_str(), R_OK) == -1)
-		return (false); // file is not readable
+		return (false);
 	return (true);
 }
 
@@ -197,16 +197,14 @@ int set_non_blocking(int fd)
 {
 	int flags;
 
-	flags = fcntl(fd, F_GETFL, 0); // get current file status flags
+	flags = fcntl(fd, F_GETFL, 0);
 	if (flags == -1)
 		return -1;
-	return fcntl(fd, F_SETFL, flags | O_NONBLOCK); // set new file status flags
+	return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 }
 
-// this function is used to normalize the path, example: /var/www/html/../../ -> /var/www, /var/www/html/./ -> /var/www/html, /var/www/html/ -> /var/www/html, because we don't want to serve files outside the root directory, and we don't want to serve the same file twice, example: /var/www/html/index.html and /var/www/html/./index.html are the same file but with different paths so we need to normalize the path to avoid serving the same file twice and to avoid serving files outside the root directory.
 std::string normalizePath(std::string& path)
 {
-	// example: /var/www/html/../../
 	std::string normalizedPath;
 	std::vector<std::string> tokens;
 	std::string token;
@@ -228,16 +226,15 @@ std::string normalizePath(std::string& path)
 	{
 		normalizedPath += "/" + tokens[i];
 	}
-	if (normalizedPath.empty()) // if the path is empty, example: /var/www/html/../../../
+	if (normalizedPath.empty())
 		normalizedPath = "/";
 	return normalizedPath;
 }
 
-// support just .py and .php extensions
 bool	supported_extension(std::string const& path)
 {
-	std::string extension = path.substr(path.find_last_of(".") + 1); // find_last_of returns the index of the last occurrence of the character '.' in the string, if doesn't find the character '.' it returns std::string::npos, substr returns a substring of the string, starting at the index specified in the first argument, and the length of the substring is specified in the second argument, if the second argument is not specified, the substring will start at the index specified in the first argument and will end at the end of the string.
-	if (extension == "py" || extension == "php")
+	std::string extension = path.substr(path.find_last_of(".") + 1);
+	if (extension == "py" || extension == "js")
 		return true;
 	return false;
 }

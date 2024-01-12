@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:12 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/08 09:46:49 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:50:06 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,15 +67,15 @@ socklen_t		Client::getClientAddrLen( void ) const {
 
 Request&			Client::getRequest( void ) {
 	return this->request;
-} //! [NOT VERIFIED]
+}
 
 Server			Client::getServer( void ) const {
 	return this->_server;
-} //! [NOT VERIFIED]
+}
 
 Response		Client::getResponse( void ) const {
 	return this->_response;
-} //! [NOT VERIFIED]
+}
 
 // Setters
 void			Client::setClientSock( SOCKET clientSock ) {
@@ -92,8 +92,8 @@ void			Client::setClientAddrLen( socklen_t addrLen ) {
 
 void			Client::setServer( Server& server ) {
 	this->_server = server;
-} //! [NOT VERIFIED]
+}
 
 void			Client::setResponse( Response& response ) {
 	this->_response = response;
-} //! [NOT VERIFIED]
+}

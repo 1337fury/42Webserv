@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/10 09:43:50 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:52:13 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ std::vector<t_token> const& Config::getTockens() const {
 	return _tockens;
 }
 std::vector<Server> const& Config::getServers() const {
-	// check if server has the mandatory directives (listen, root)
+	
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
 		if (_servers[i].getPort() == 0)
@@ -57,7 +57,7 @@ std::vector<Server> const& Config::getServers() const {
 	return _servers;
 }
 
-// Exceptions
+
 const char* Config::FileNotFound::what() const throw() {
 	return "File not found or permission denied";
 }
@@ -65,7 +65,7 @@ const char* Config::FileNotFound::what() const throw() {
 Config::~Config() {}
 
 
-// Helper functions
+
 void	Config::printTokens( void )
 {
 	std::vector<t_token>::iterator it = _tockens.begin();
@@ -147,9 +147,9 @@ Block	Config::_parseBlock()
 			context.directives.push_back(statement);
 		}
 		if (_curTokenIs("EOF"))
-			throw std::runtime_error("WebServ: unexpected end of file, expecting `}`"); //handle error: missing block end }
+			throw std::runtime_error("WebServ: unexpected end of file, expecting `}`");
 		else if (_curTokenIs("BlockStart"))
-			throw std::runtime_error("WebServ: unexpected `{`"); //handle error: {{
+			throw std::runtime_error("WebServ: unexpected `{`");
 		
 		_nextToken();
 	}
@@ -183,7 +183,7 @@ void	Config::_syntaxCheck( Block &root )
 		if (root.directives[i].parameters.size() != 0)
 			throw std::runtime_error("WebServ: Server must not have parameters");
 	}
-	// to be continued ...
+	
 }
 
 void Config::_parseServer( Block &block )
@@ -281,9 +281,7 @@ void Config::_parseServer( Block &block )
 		else
 			throw std::runtime_error("WebServ: unknown directive `" + blockDirectives[i].name + "`");
 	}
-	// to be deleted
-	// server.printErrorPages();
-	// ...
+	
 	_servers.push_back(server);
 }
 
@@ -298,8 +296,7 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 	{
 		if (blockDirectives[i].name == "root")
 		{
-			// if (location.isCgi()) //! ????????????????????????????
-			// 	throw std::runtime_error("WebServ: [location] root directive not allowed in cgi-bin");
+			
 			if (location.getRootDirectory() != "")
 				throw std::runtime_error("WebServ: [location] root directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
@@ -336,13 +333,13 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `index`");
 			location.setDefaultFile(blockDirectives[i].parameters[0]);
 		}
-		else if (blockDirectives[i].name == "return") //! Work with redirection 12/12/2023: 10:00	
+		else if (blockDirectives[i].name == "return") 	
 		{
-			if (location.isCgi()) //! we can't redirect to a cgi-bin location because it's a script and not a file
+			if (location.isCgi()) 
 				throw std::runtime_error("WebServ: [location] return directive not allowed in cgi-bin"); 
 			if (location.isRederecting())
 				throw std::runtime_error("WebServ: [location] return directive is duplicate");
-			if (blockDirectives[i].parameters.size() != 2) //! change the number of arguments to 2
+			if (blockDirectives[i].parameters.size() != 2) 
 				throw std::runtime_error("WebServ: [location] invalid number of arguments in `return`");
 			location.setRedirection(blockDirectives[i].parameters);
 		}

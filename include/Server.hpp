@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/27 19:04:50 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:47:36 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ class Server
 		std::map<short, std::string>	_error_pages;
         SOCKET     						_listen_socket;
 		std::vector<Location>			_locations;
-		std::vector<std::string>		_acceptedMethods; //! New
+		std::vector<std::string>		_acceptedMethods;
 		
 	public:
 	// Constructors
@@ -64,7 +64,7 @@ class Server
 	std::string 					getErrorPage( short number ) const;
 	std::string 					getHostString( void ) const;
 	std::string 					getPortString( void ) const;
-	std::vector<std::string>		getAcceptedMethods( void ) const; //! New
+	std::vector<std::string>		getAcceptedMethods( void ) const;
 	
 	// Setters
 	void	setHost( std::string );
@@ -78,7 +78,7 @@ class Server
 	void	setAutoindex( bool );
 	void	setErrorPage( std::vector<std::string> );
 	void	setListenFd( int );
-	void	setAcceptedMethods( std::vector<std::string> ); //! New
+	void	setAcceptedMethods( std::vector<std::string> );
 	
 	Location	*getMatchingLocation( std::string uri );
 	
@@ -89,14 +89,10 @@ class Server
 	std::string getMimeType( std::string extension );
 	
 	// Methods
-	void init( void ); // init server
-	void acceptConnection( fd_set &set ); // accept connection
-	void handleRequest( int fd, Client& client ); // handle request
-	void handleResponse( int fd, Client& client ); // handle response
-
-	// Error Response
+	void init( void );
+	void acceptConnection( fd_set &set );
+	void handleRequest( int fd, Client& client );
+	void handleResponse( int fd, Client& client );
 	void send_400( int fd, Client& client );
-
-	// to be deleted
 	void printErrorPages() ;
 };

@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:52:17 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/07 11:03:38 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:46:15 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,3 @@ class RequestParser
 		bool	isDigit( char c );
 		ParseResult	parse( Request &request, const char *begin, const char *end );
 };
-
-/*
-	"GET /uri.cgi HTTP/1.1\r\n\r..."; //!ExpectingNewline_3
-	"GET /uri.cgi HTTP/1.1\r\nUser-Agent: Mozilla/5.0\r\nAccept: text/html\r\nHost: 127.0.0.1\r\n\r\n";
-*/

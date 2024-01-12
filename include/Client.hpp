@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:43:53 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/08 09:47:24 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:43:00 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,15 @@
 class Client
 {
 	public:
-		RequestParser	reqParser;//! [fixed]
-		Request			request; //! [NOT VERIFIED]
+		RequestParser	reqParser;
+		Request			request;
+		
 	private:
 		SOCKET			_clientSock;
 		sockaddr_in		_clientAddr;
 		socklen_t		_addrLen;
-		Server			_server; //! [NOT VERIFIED]
-		Response		_response; //! [NOT VERIFIED]
+		Server			_server;
+		Response		_response;
 	public:
 		Client( void );
 	// Constructors & Destructors
@@ -40,15 +41,15 @@ class Client
 		SOCKET			getClientSock( void ) const;
 		sockaddr_in		getClientAddr( void ) const;
 		socklen_t		getClientAddrLen( void ) const;
-		Request&		getRequest( void ); //! [NOT VERIFIED]
-		Server			getServer( void ) const; //! [NOT VERIFIED]
-		Response		getResponse( void ) const; //! [NOT VERIFIED]
-		RequestParser	getRequestParser( void ) const; //! [PROBLEM..........]
+		Request&		getRequest( void );
+		Server			getServer( void ) const;
+		Response		getResponse( void ) const;
+		RequestParser	getRequestParser( void ) const;
 	// Setters
 		void			setClientSock( SOCKET );
 		void			setClientAddr( sockaddr_in );
 		void			setClientAddrLen( socklen_t );
-		void			setRequest( Request& ); //! [NOT VERIFIED]
-		void			setServer( Server& ); //! [NOT VERIFIED]
-		void			setResponse( Response& ); //! [NOT VERIFIED]
+		void			setRequest( Request& );
+		void			setServer( Server& );
+		void			setResponse( Response& );
 };

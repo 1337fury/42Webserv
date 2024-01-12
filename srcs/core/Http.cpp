@@ -14,11 +14,10 @@
 #include "Logger.hpp"
 
 std::map<int, Client> Http::fd_client_map = std::map<int, Client>();
-fd_set Http::read_set = fd_set(); // creates an empty fd_set
-fd_set Http::write_set = fd_set(); // creates an empty fd_set
+fd_set Http::read_set = fd_set();
+fd_set Http::write_set = fd_set();
 int Http::max_fd = 0;
 
-// Constructors & Destructors
 Http::Http( void )
 {
 }
@@ -35,7 +34,7 @@ Http::Http( std::vector<Server> servers ) : _servers(servers)
 Http::~Http( void )
 {
 }
-// Methods
+
 void	Http::initServers( void )
 {
 	Logger::getInstance().log(COLOR_BLUE, "Initializing servers...");
@@ -47,15 +46,6 @@ void	Http::initServers( void )
 	}
 	Http::max_fd = _servers[_servers.size() - 1].getListenFd();
 }
-
-/*
-	TODO : 
-		[√] Handle client connection
-	TODO : 
-		[I] Handle client request
-	TODO : 
-		[X] Handle client response
-*/
 
 void	Http::run( void )
 {
@@ -76,9 +66,9 @@ void	Http::run( void )
 				if (_fd_server_map.count(i))
 					_fd_server_map[i].acceptConnection(read_set);
 				else
-					_fd_server_map[GET(i)].handleRequest(i, fd_client_map[i]); // [SIMPLE REQUEST[√] | //! CGI REQUEST[X]
+					_fd_server_map[GET(i)].handleRequest(i, fd_client_map[i]);
 			}
-			else if (FD_ISSET(i, &_write_set_copy)) //! In progress
+			else if (FD_ISSET(i, &_write_set_copy))
 			{
 				_fd_server_map[GET(i)].handleResponse(i, fd_client_map[i]);
 			}
@@ -86,7 +76,6 @@ void	Http::run( void )
 	}
 }
 
-// Static Methods
 void 	Http::addFDToSet( int fd, fd_set *set)
 {
 	if (fd > Http::max_fd)

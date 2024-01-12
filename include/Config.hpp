@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/12/08 09:52:53 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:44:54 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ struct Directive {
 struct Block {
 	std::string name;
 	std::vector<Directive> directives;
-	// std::vector<Block> block;
 };
 
 class Config
@@ -59,9 +58,6 @@ class Config
 	// Constructors
 		Config(std::string const &filename);
 		~Config();
-	// Copy constructor and assignation operator
-		// Config(const Config&);
-		// Config& operator=(const Config&);
 	
 	// Member functions
 		void		parseConfig( void );

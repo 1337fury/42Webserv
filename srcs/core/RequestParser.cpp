@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:51:44 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/07 11:07:28 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:56:28 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ bool	RequestParser::isTspecial( char c )
 			return false;
 	}
 }
-// to see an explanation of the parsing process by states, see https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html#sec5
+
 ParseResult	RequestParser::parse( Request &request, const char *begin, const char *end )
 {
 	const char *current = begin;
@@ -171,7 +171,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 				if (isDigit(*current))
 				{
 					_state = HTTP_VERSION_MAJOR;
-					request.versionMajor = *current - '0'; //! [NOTE] 
+					request.versionMajor = *current - '0';
 				}
 				else
 					return PARSE_ERROR;
@@ -180,14 +180,14 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 				if (*current == '.')
 					_state = HTTP_VERSION_MINOR_START;
 				else if (isDigit(*current))
-					request.versionMajor = request.versionMajor * 10 + (*current - '0'); //! [NOTE] 
+					request.versionMajor = request.versionMajor * 10 + (*current - '0');
 				else
 					return PARSE_ERROR;
 				break;
 			case HTTP_VERSION_MINOR_START:
 				if (isDigit(*current))
 				{
-					request.versionMinor = *current - '0'; //! [NOTE] 
+					request.versionMinor = *current - '0';
 					_state = HTTP_VERSION_MINOR; 
 				}
 				else
@@ -197,7 +197,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 				if (*current == '\r')
 					_state = HTTP_VERSION_CR;
 				else if (isDigit(*current))
-					request.versionMinor = request.versionMinor * 10 + (*current - '0'); //! [NOTE]
+					request.versionMinor = request.versionMinor * 10 + (*current - '0');
 				else
 					return PARSE_ERROR;
 				break;
@@ -207,9 +207,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 				else
 					return PARSE_ERROR;
 				break;
-			// Example of the whole request: GET / HTTP/1.1\r\nHost: example.com\r\n\r\n
-			//								 GET / HTTP/1.1\r\n\n
-			case HEADER_LINE_START: // see https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers
+			case HEADER_LINE_START:
 				if (*current == '\r')
 					_state = EXPECTING_NEWLINE_3;
 				else if (!request.headers.empty() && (*current == ' ' || *current == '\t'))
@@ -218,7 +216,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 					return PARSE_ERROR;
 				else
 				{
-					request.headers.push_back(Header("", "")); //! TESTING
+					request.headers.push_back(Header("", ""));
 					request.headers.back().key.push_back(*current);
 					_state = HEADER_KEY;
 				}
@@ -227,7 +225,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 				if (*current == '\r')
 					_state = EXPECTING_NEWLINE_2;
 				else if (*current == ' ' || *current == '\t')
-					; // this is because we don't care about LWS (Linear White Space) in the header value
+					;
 				else if (isCtl(*current))
 					return PARSE_ERROR;
 				else
@@ -254,7 +252,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 			case HEADER_VALUE:
 				if (*current == '\r')
 				{
-					if (request.method == "POST") // example of the whole request: POST / HTTP/1.1\r\nHost: example.com\r\nContent-Type: text/plain\r\nContent-Length: 13\r\n\r\nHello, World!\r\n
+					if (request.method == "POST")
 					{
 						Header &h = request.headers.back();
 						if (h.key == "Content-Length")
@@ -278,7 +276,7 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 				else
 					return PARSE_ERROR;
 				break;
-			case EXPECTING_NEWLINE_3: // GET / HTTP/1.1\r\n\n
+			case EXPECTING_NEWLINE_3:
 				if (_chunked)
 					_state = CHUNKED_BODY_SIZE;
 				else if (_contentSize == 0)
@@ -357,17 +355,4 @@ ParseResult	RequestParser::parse( Request &request, const char *begin, const cha
 	}
 	return PARSE_INCOMPLETE;
 }
-
-//  g++ -std=c++98 -I include srcs/core/RequestParser.cpp srcs/home/RequestParse.cpp srcs/core/Request.cpp -o requestParseTest
-
-/*
-	 const char text[] = "GET /uri.cgi HTTP/1.1\r\n"
-                        "User-Agent: Mozilla/5.0\r\n"
-                        "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8\r\n"
-                        "Host: 127.0.0.1\r\n"
-                        "\r\n";
-*/
-
-// example for a complex query string: POST /inception/?user=fury#art HTTP/1.0\r\nHost: example.com\r\nContent-Type: text/plain\r\nTransfer-Encoding: chunked\r\nContent-Length: 0\r\n\r\n4\r\nWiki\r\n5\r\npedia\r\n2\r\nin\r\n7\r\nchunks.\r\n0\r\n\r\n
-
-// # means fragment identifier it means that the browser will scroll to the element with the id "art" in the page, there is also a query string in the url: ?user=fury, we stop read query string when we encounter # or 
+ 

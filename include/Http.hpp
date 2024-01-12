@@ -21,7 +21,7 @@
 class Http
 {
 	public:
-		static std::map<int, Client>	fd_client_map; // TODO: Handle client connection []
+		static std::map<int, Client>	fd_client_map;
 		static fd_set					read_set;
 		static fd_set					write_set;
 		static int						max_fd;

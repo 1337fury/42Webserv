@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/09 17:37:46 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:45:18 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@ class Location
 	// Properties
 		std::string 						_path;
 		std::vector<std::string>			_acceptedMethods;
-		std::vector<std::string> 			_redirection; //! change type to std::vector<std::string>
+		std::vector<std::string> 			_redirection;
 		std::string 						_rootDirectory;
 		std::string 						_defaultFile;
 		std::string 						_cgiPath;
 		bool								_autoindex;
 		std::string 						_alias;
-		bool 								_acceptUploads; //! New for upload
-		std::string 						_uploadDirectory; //! New for upload
+		bool 								_acceptUploads;
+		std::string 						_uploadDirectory;
 		bool								_isRederecting;
 		bool								_isCgi;
 
@@ -62,7 +62,7 @@ class Location
 	// Setters
 		void		setPath( std::string path );
 		void		setAcceptedMethods( std::vector<std::string> acceptedMethods );
-		void		setRedirection( std::vector<std::string> red ); //! change arg type to std::vector<std::string>
+		void		setRedirection( std::vector<std::string> red );
 		void		setRootDirectory( std::string rootDirectory );
 		void		setDefaultFile( std::string defaultFile );
 		void		setAutoindex( bool autoindex );

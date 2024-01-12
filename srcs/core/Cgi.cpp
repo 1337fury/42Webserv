@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:56:25 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/10 13:11:53 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:49:38 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 
 CGI::CGI(__unused Server &server, Location &location, std::string &path) : _env(NULL)
 {
-	_file_path = path; // example: /Users/abdeel-o/Desktop/Webserv/cgi-bin/test.py
-	_bin_path = location.getCgiPath(); // example: /bin/python3
+	_file_path = path;
+	_bin_path = location.getCgiPath();
 	_error_msg = "Something went wrong while executing the CGI script";
 	_cgi_prcs = -1;
 	_is_executed = false;
@@ -56,16 +56,13 @@ CGI::~CGI()
 	
 }
 
-// 1- it checks if the cgi script is a directory or not, if it is a directory it returns false and set the errorMsg to "Is a directory"
-// 2- it checks if the cgi script is executable or not, if it is not executable it returns false and set the errorMsg to the error message returned by strerror(errno)
-// 3- it calls _setupCgiEnvs to initialize the envirenement variables
 bool	CGI::validate( void )
 {
-	struct stat		file_stat; // struct stat is a struct that contains information about a file
+	struct stat		file_stat;
 	int				ret;
 
-	memset(&file_stat, 0, sizeof(file_stat)); // memset is used to fill a block of memory with a particular value, here we are filling the file_stat struct with 0
-	ret = stat(_bin_path.c_str(), &file_stat); // using stat to get information about the cgi script, like if it is a directory or not, if it is executable or not, etc...
+	memset(&file_stat, 0, sizeof(file_stat));
+	ret = stat(_bin_path.c_str(), &file_stat);
 	if (ret == -1)
 	{
 		_error_msg = "No such file or directory";
@@ -83,7 +80,6 @@ bool	CGI::validate( void )
 	}
 	return (true);
 }
-// set the cgi envirenement variables is for example the request method, the request uri, the request body, etc... is used by the cgi script to process the request, without these variables the cgi script won't be able to process the request, because it won't know what to do with the request, example of cgi envirenement variables: REQUEST_METHOD, REQUEST_URI, QUERY_STRING, CONTENT_LENGTH, CONTENT_TYPE, etc..
 
 bool	CGI::setCgiEnvs(Request &request)
 {
@@ -102,7 +98,11 @@ bool	CGI::setCgiEnvs(Request &request)
 	_cgi_envs["HTTP_ACCEPT"] = request.getHeader("Accept");
 	_cgi_envs["HTTP_VERSION"] = "HTTP/1.1";
 	_cgi_envs["HTTP_COOKIE"] = request.getHeader("Cookie");
-	// init _cgi_envs_str
+	_cgi_envs["SERVER_PROTOCOL"] = "HTTP/1.1";
+	_cgi_envs["SERVER_NAME"] = request.getHeader("Host");
+	_cgi_envs["PATH_INFO"] = request.uri;
+	_cgi_envs["SERVER_SOFTWARE"] = "nginy/1.0";
+
 	for (map_str_str::iterator it = _cgi_envs.begin(); it != _cgi_envs.end(); it++)
 	{
 		_cgi_args.push_back(it->first + "=" + it->second);
@@ -141,7 +141,6 @@ bool	CGI::create_body_file(Request &request)
 	return (true);
 }
 
-// setupFiles is a function that creates a temporary file for the cgi script output and error, to be able to send them to the client later...
 bool	CGI::setupFiles( void )
 {
 	_cgi_stdout = fileno(tmpfile());

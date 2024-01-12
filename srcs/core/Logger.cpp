@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/23 12:36:36 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/06 11:39:54 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:54:38 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,7 @@
 #include "Webserv.hpp"
 
 Logger& Logger::getInstance() {
-	static Logger instance; // Guaranteed to be destroyed because it's a static variable and it's destroyed when main() finishes executing (or when exit() is called). when you call getInstance() for the first time, the instance is created. When you call getInstance() subsequently, the existing instance is returned.
-	// we use a static variable to make sure that only one instance of the class exists at a time. because static variables are allocated storage in static storage area, and only one copy of the static variables exists.
-	// if we don't use a static variable, the instance will be created on the stack, and a new instance will be created each time we call getInstance(). and we will have multiple instances of the class.
+	static Logger instance;
 	return instance;
 }
 
@@ -37,7 +35,7 @@ std::string	Logger::getTimestamp( void )
 {
 	std::time_t	currentTime;
 	std::tm*	localTime;
-	char		buffer[20];
+	char		buffer[21];
 
 	std::time(&currentTime);
 	localTime = std::localtime(&currentTime);

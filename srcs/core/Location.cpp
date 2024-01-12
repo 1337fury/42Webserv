@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/09 16:26:10 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:54:27 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ Location::Location( void ) {
 	this->_redirection = std::vector<std::string>();
 	this->_rootDirectory = "";
 	this->_defaultFile = "";
-	this->_acceptUploads = false; //! New for upload
-	this->_uploadDirectory = ""; //! New for upload
+	this->_acceptUploads = false;
+	this->_uploadDirectory = "";
 	this->_autoindex = false;
 	this->_alias = "";
 	this->_cgiPath = "";
@@ -38,8 +38,8 @@ Location &Location::operator=( Location const &rhs ) {
 		this->_redirection = rhs._redirection;
 		this->_rootDirectory = rhs._rootDirectory;
 		this->_defaultFile = rhs._defaultFile;
-		this->_acceptUploads = rhs._acceptUploads; //! New for upload
-		this->_uploadDirectory = rhs._uploadDirectory; //! New for upload
+		this->_acceptUploads = rhs._acceptUploads;
+		this->_uploadDirectory = rhs._uploadDirectory;
 		this->_autoindex = rhs._autoindex;
 		this->_alias = rhs._alias;
 		this->_cgiPath = rhs._cgiPath;
@@ -66,10 +66,10 @@ Redirection 				Location::getRedirection( void ) const {
 std::string 				Location::getRootDirectory( void ) {
 	if (this->_rootDirectory.back() == '/')
 		this->_rootDirectory.pop_back();
-	return this->_rootDirectory; // root directory is the directory that contains the files that we want to serve, example: /var/www/html
+	return this->_rootDirectory;
 }
 std::string 				Location::getDefaultFile( void ) const {
-	return this->_defaultFile; // default file is the file that we want to serve if the client requests a directory, example: index.html, the directive name is index
+	return this->_defaultFile;
 }
 bool						Location::getAutoindex( void ) const {
 	return this->_autoindex;
@@ -93,8 +93,6 @@ bool						Location::isRederecting( void ) const {
 	return this->_isRederecting;
 }
 
-
-// Setters
 void		Location::setPath( std::string path ) {
 	if (path[0] != '/')
 		path = "/" + path;
@@ -103,7 +101,6 @@ void		Location::setPath( std::string path ) {
 	this->_path = path;
 }
 void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
-	// check if methods are valid
 	check_methods(acceptedMethods);
 	this->_acceptedMethods = acceptedMethods;
 }
@@ -147,6 +144,3 @@ void		Location::setUploadDirectory( std::string uploadDirectory ) {
 void		Location::setCgi( bool isCgi ) {
 	this->_isCgi = isCgi;
 }
-// check if the location is has a root directory if else get the root directory from the server if else throw an exception
-// check if the location has a autoindex if else get the autoindex from the server if else throw an exception
-// check if the location has a index if else get the index from the server if else throw an exception

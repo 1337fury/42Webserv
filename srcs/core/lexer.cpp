@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   lexer.cpp                                          :+:      :+:    :+:   */
+/*   Lexer.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/12 12:15:42 by abdeel-o          #+#    #+#             */
-/*   Updated: 2023/10/31 15:34:00 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/12 18:53:41 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ t_token	Lexer::_newToken( std::string type, std::string literal )
 
 t_token	Lexer::_scanComment( void )
 {
-	this->_read(); // Skip '#'
+	this->_read();
 	std::string comment = "";
 	while (this->_peek() != '\n' && this->_peek() != '\0')
 	{
@@ -85,7 +85,7 @@ t_token	Lexer::_scanKeyword( void )
 
 t_token	Lexer::_scanQuotedString(char delimiter)
 {
-	this->_read(); // Skip delimiter
+	this->_read();
 	std::string str = "";
 	while (this->_peek() != delimiter && this->_peek() != '\0')
 	{
@@ -94,7 +94,7 @@ t_token	Lexer::_scanQuotedString(char delimiter)
 		str += this->_peek();
 		this->_read();
 	}
-	this->_read(); // Skip delimiter
+	this->_read();
 	return this->_newToken("QuotedString", str);
 }
 
@@ -106,7 +106,6 @@ t_token	Lexer::_getNextToken( void )
 		case '\n':
 			this->_read();
 			return this->_getNextToken();
-			// return this->_newToken("EOL", "");
 		case ' ':
 		case '\t':
 			this->_skipWhitespace();
