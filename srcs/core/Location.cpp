@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:54:27 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 18:53:23 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ Location::Location( void ) {
 	this->_cgiPath = "";
 	this->_isRederecting = false;
 	this->_isCgi = false;
+	this->heapAllocated = false;
 }
 
 Location::Location( Location const &rhs ) {
@@ -45,6 +46,7 @@ Location &Location::operator=( Location const &rhs ) {
 		this->_cgiPath = rhs._cgiPath;
 		this->_isRederecting = rhs._isRederecting;
 		this->_isCgi = rhs._isCgi;
+		this->heapAllocated = rhs.heapAllocated;
 	}
 	return *this;
 }
@@ -107,16 +109,16 @@ void		Location::setAcceptedMethods( std::vector<std::string> acceptedMethods ) {
 
 void		Location::setRedirection( std::vector<std::string> redirection) {
 	if (redirection[0].length() != 3 || !isNumber(redirection[0]))
-		throw std::invalid_argument("WebServ: [location] redirection directive invalid value");
+		throw std::invalid_argument("nginy: [location] redirection directive invalid value");
 	if (atoi(redirection[0].c_str()) < 301 || atoi(redirection[0].c_str()) > 302)
-		throw std::invalid_argument("WebServ: [location] the redirection directive only accepts 301 and 302");
+		throw std::invalid_argument("nginy: [location] the redirection directive only accepts 301 and 302");
 	_isRederecting = true;
 	this->_redirection = redirection;
 }
 
 void		Location::setRootDirectory( std::string rootDirectory ) {
 	if (checks_type(rootDirectory) != DIRECTORY)
-		throw std::invalid_argument("WebServ: Invalid root directory");
+		throw std::invalid_argument("nginy: Invalid root directory");
 	this->_rootDirectory = rootDirectory;
 }
 void		Location::setDefaultFile( std::string defaultFile ) {
@@ -130,7 +132,7 @@ void		Location::setAlias( std::string alias ) {
 }
 void		Location::setCgiPath( std::string cgiPath ) {
 	if ( checks_type(cgiPath) != REG_FILE)
-		throw std::invalid_argument("WebServ: cgi path is not valid");
+		throw std::invalid_argument("nginy: cgi path is not valid");
 	this->_cgiPath = cgiPath;
 }
 void		Location::setAcceptUploads( bool acceptUploads ) {
@@ -138,7 +140,7 @@ void		Location::setAcceptUploads( bool acceptUploads ) {
 }
 void		Location::setUploadDirectory( std::string uploadDirectory ) {
 	if ( checks_type(uploadDirectory) != DIRECTORY)
-		throw std::invalid_argument("WebServ: upload directory is not valid");
+		throw std::invalid_argument("nginy: upload directory is not valid");
 	this->_uploadDirectory = uploadDirectory;
 }
 void		Location::setCgi( bool isCgi ) {

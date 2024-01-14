@@ -2,7 +2,6 @@
 
 console.log("Content-type: text/html\r\n\r\n");
 
-// HTML header
 console.log(`
 <!DOCTYPE html>
 <html lang="en">
@@ -21,7 +20,6 @@ console.log(`
   <script>
 `);
 
-// JavaScript animation code
 console.log(`
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext('2d');

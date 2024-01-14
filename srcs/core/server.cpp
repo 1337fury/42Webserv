@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 19:01:28 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 18:53:51 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,13 +114,13 @@ void	Server::setHost( std::string host ) {
 	if (host == "localhost")
 		host = "127.0.0.1";
 	if (host.length() > 9 || !inet_pton(AF_INET, host.c_str(), &addr))
-		throw std::runtime_error("WebServ: Invalid host address");
+		throw std::runtime_error("nginy: Invalid host address");
 	this->_host_string = host;
 	this->_host = inet_addr(host.c_str());
 }
 void	Server::setPort(std::string port) {
     if (port.length() > 5 || !isNumber(port))
-		throw std::runtime_error("WebServ: Invalid port number");
+		throw std::runtime_error("nginy: Invalid port number");
 	this->_port_string = port;
     this->_port = atoi(port.c_str());
 }
@@ -130,7 +130,7 @@ void	Server::setServerNames( std::vector<std::string> serverNames ) {
 
 void	Server::setClientBodySizeLimit( std::string clientBodySizeLimit ) {
 	if (clientBodySizeLimit.length() > 10 || !isNumber(clientBodySizeLimit))
-		throw std::runtime_error("WebServ: client_max_body_size directive invalid value");
+		throw std::runtime_error("nginy: client_max_body_size directive invalid value");
 	this->_clientBodySizeLimit = atoi(clientBodySizeLimit.c_str());
 }
 void	Server::setLocations( std::vector<Location> locations ) {
@@ -152,13 +152,13 @@ void	Server::setErrorPage( std::vector<std::string> parameters ) {
 	std::string path = parameters.back();
 	parameters.pop_back();
 	if (checks_type(path) != REG_FILE)
-		throw std::runtime_error("WebServ: Invalid error page path");
+		throw std::runtime_error("nginy: Invalid error page path");
 	if (checks_type(path) != REG_FILE)
-		throw std::runtime_error("WebServ: Error page not accessible");
+		throw std::runtime_error("nginy: Error page not accessible");
 	while (parameters.size() > 0)
 	{
 		if (parameters.back().length() != 3 || !isNumber(parameters.back()))
-			throw std::runtime_error("WebServ: Invalid error page status code");
+			throw std::runtime_error("nginy: Invalid error page status code");
 		this->_error_pages[atoi(parameters.back().c_str())] = path;
 		parameters.pop_back();
 	}
@@ -207,6 +207,7 @@ Location	*Server::getMatchingLocation( std::string uri ) {
 	if ( location == NULL && this->getRoot().empty() == false )
 	{
 		location = new Location();
+		location->heapAllocated = true;
 		location->setPath("/");
 		location->setRootDirectory(_root);
 		location->setDefaultFile(_index);
@@ -229,28 +230,28 @@ void Server::printErrorPages()
 void	Server::init( void ) {
 	this->_listen_socket = socket(AF_INET, SOCK_STREAM, 0);
 	if (!ISVALIDSOCKET(this->_listen_socket)) {
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket creation failed");
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket creation failed");
 		exit(EXIT_FAILURE);
 	}
 	int opt = 1;
 	if (setsockopt(this->_listen_socket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) == -1) {
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket options failed");
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket options failed");
 		exit(EXIT_FAILURE);
 	}
 	memset(&_server_address, 0, sizeof(_server_address));
-	_server_address.sin_family = AF_INET;
-	_server_address.sin_addr.s_addr = this->_host;
-	_server_address.sin_port = htons(this->_port);
+	_server_address.sin_family = AF_INET; // IPv4
+	_server_address.sin_addr.s_addr = this->_host; // INADDR_ANY
+	_server_address.sin_port = htons(this->_port); // Port
 	if (bind(this->_listen_socket, (struct sockaddr *)&_server_address, sizeof(_server_address)) == -1) {
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket binding failed");
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket binding failed");
 		exit(EXIT_FAILURE);
 	}
-	if (listen(this->_listen_socket, 512) == -1) {
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket listening failed");
+	if (listen(this->_listen_socket, 5) == -1) {
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket listening failed");
 		exit(EXIT_FAILURE);
 	}
 	if (set_non_blocking(this->_listen_socket) == -1) {
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket non-blocking failed");
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket non-blocking failed");
 		exit(EXIT_FAILURE);
 	}
 }
@@ -264,7 +265,7 @@ void   Server::acceptConnection( fd_set &read_set)
 	client_fd = accept(_listen_socket, (struct sockaddr *)&client_addr, &client_addr_len);
 	if (!ISVALIDSOCKET(client_fd))
 	{
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket accept failed");
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket accept failed");
 		exit(EXIT_FAILURE);
 	}
 
@@ -272,7 +273,7 @@ void   Server::acceptConnection( fd_set &read_set)
 	
 	if (set_non_blocking(client_fd) == -1)
 	{
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket non-blocking failed");
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket non-blocking failed");
 		exit(EXIT_FAILURE);
 	}
 	Client client(client_fd, client_addr, *this);
@@ -296,7 +297,7 @@ void	Server::handleRequest( int fd, Client& client ) {
 	}
 	else if (bytes_received == -1)
 	{
-		Logger::getInstance().log(COLOR_RED, "WebServ: Socket recv failed");
+		Logger::getInstance().log(COLOR_RED, "nginy: Socket recv failed");
 		exit(EXIT_FAILURE);
 	}
 	else if (bytes_received > 0)

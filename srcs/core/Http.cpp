@@ -57,7 +57,7 @@ void	Http::run( void )
 		if (select(Http::max_fd + 1, &read_set_copy, &_write_set_copy, NULL, &_timeout) == -1)
 		{
 			Logger::getInstance().log(COLOR_RED, "Error: select() failed");
-			exit(1);
+			continue;
 		}
 		for (int i = 0; i <= Http::max_fd; i++)
 		{

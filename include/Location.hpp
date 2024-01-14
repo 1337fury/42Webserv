@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:45:18 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 18:53:32 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ class Location
 		std::string 						_uploadDirectory;
 		bool								_isRederecting;
 		bool								_isCgi;
+	public:
+		bool								heapAllocated;
 
 
 	public:

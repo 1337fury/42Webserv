@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 19:10:09 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 18:54:29 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -360,6 +360,8 @@ void					Response::reset( void )
 	_version = "";
 	_body = "";
 	_response_string = "";
+	if (_location->heapAllocated)
+		delete _location;
 	_location = nullptr;
 	_error = false;
 	_cgi_pid = -1;
@@ -446,17 +448,17 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 		{
 			Logger::getInstance().log(COLOR_RED, "CGI File extension not supported...");
 			_error = true;
-			sendResponse(clientSock, 500);
+			sendResponse(clientSock, 501);
 			return ;
 		}
 		if (access(path.c_str(), R_OK) == -1)
 		{
 			Logger::getInstance().log(COLOR_GRAY, "CGI File error...");
 			_error = true;
-			sendResponse(clientSock, 404);
+			sendResponse(clientSock, 401);
 			return ;
 		}
-		CGI cgi(_server, *_location, path);
+		CGI cgi(*_location, path);
 		initiate_cgi_response(clientSock, cgi);
 		if (!cgi.execute(_request))
 		{
@@ -600,6 +602,7 @@ void					Response::sendResponse( SOCKET clientSock, u_short sCode )
 		searchForErrorPage();
 	setBody();
 	setResponseString();
+
 	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
 	Http::closeConnection(clientSock);
 	Http::removeFDFromSet(clientSock, &Http::write_set);

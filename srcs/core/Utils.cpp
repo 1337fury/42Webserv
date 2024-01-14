@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/12 19:14:14 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 19:02:21 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 18:46:51 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,7 @@ bool	check_methods(std::vector<std::string>& methods)
 	for (size_t i = 0; i < methods.size(); i++)
 	{
 		if (std::find(validMethods.begin(), validMethods.end(), methods[i]) == validMethods.end())
-			throw std::invalid_argument("WebServ: [location] Invalid or not supported method `" +  methods[i] + "`");
+			throw std::invalid_argument("nginy: [location] Invalid or not supported method `" +  methods[i] + "`");
 	}
 	return true;
 }

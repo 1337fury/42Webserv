@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:52:13 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 18:46:51 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,9 +50,9 @@ std::vector<Server> const& Config::getServers() const {
 	for (size_t i = 0; i < _servers.size(); i++)
 	{
 		if (_servers[i].getPort() == 0)
-			throw std::runtime_error("WebServ: server must have a listen directive");
+			throw std::runtime_error("nginy: server must have a listen directive");
 		if (_servers[i].getRoot() == "")
-			throw std::runtime_error("WebServ: server must have a root directive");
+			throw std::runtime_error("nginy: server must have a root directive");
 	}
 	return _servers;
 }
@@ -147,9 +147,9 @@ Block	Config::_parseBlock()
 			context.directives.push_back(statement);
 		}
 		if (_curTokenIs("EOF"))
-			throw std::runtime_error("WebServ: unexpected end of file, expecting `}`");
+			throw std::runtime_error("nginy: unexpected end of file, expecting `}`");
 		else if (_curTokenIs("BlockStart"))
-			throw std::runtime_error("WebServ: unexpected `{`");
+			throw std::runtime_error("nginy: unexpected `{`");
 		
 		_nextToken();
 	}
@@ -173,15 +173,15 @@ void		Config::parseConfig( void ) {
 void	Config::_syntaxCheck( Block &root )
 {
 	if (root.directives.size() == 0)
-		throw std::runtime_error("WebServ: No server found");
+		throw std::runtime_error("nginy: No server found");
 	for (size_t i = 0; i < root.directives.size(); i++)
 	{
 		if (root.directives[i].name != "server")
-			throw std::runtime_error("WebServ: unknown directive or wrong scope");
+			throw std::runtime_error("nginy: unknown directive or wrong scope");
 		if (!root.directives[i].block.size())
-			throw std::runtime_error("WebServ: Server must have a block");
+			throw std::runtime_error("nginy: Server must have a block");
 		if (root.directives[i].parameters.size() != 0)
-			throw std::runtime_error("WebServ: Server must not have parameters");
+			throw std::runtime_error("nginy: Server must not have parameters");
 	}
 	
 }
@@ -198,88 +198,88 @@ void Config::_parseServer( Block &block )
 		if (blockDirectives[i].name == "listen")
 		{
 			if (server.getPort() != 0)
-				throw std::runtime_error("WebServ: listen directive is duplicate");
+				throw std::runtime_error("nginy: listen directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `listen`");
+				throw std::runtime_error("nginy: invalid number of arguments in `listen`");
 			server.setPort(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "host")
 		{
 			if (server.getHost() != 0)
-				throw std::runtime_error("WebServ: host directive is duplicate");
+				throw std::runtime_error("nginy: host directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `host`");
+				throw std::runtime_error("nginy: invalid number of arguments in `host`");
 			server.setHost(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "root")
 		{
 			if (server.getRoot() != "")
-				throw std::runtime_error("WebServ: root directive is duplicate");
+				throw std::runtime_error("nginy: root directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `root`");
+				throw std::runtime_error("nginy: invalid number of arguments in `root`");
 			server.setRoot(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "error_page")
 		{
 			if (blockDirectives[i].parameters.size() < 2)
-				throw std::runtime_error("WebServ: invalid number of arguments in `error_page`");
+				throw std::runtime_error("nginy: invalid number of arguments in `error_page`");
 			server.setErrorPage(blockDirectives[i].parameters);
 		}
 		else if (blockDirectives[i].name == "client_max_body_size")
 		{
 			if (bodySizeDone)
-				throw std::runtime_error("WebServ: client_max_body_size directive is duplicate");
+				throw std::runtime_error("nginy: client_max_body_size directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `client_max_body_size`");
+				throw std::runtime_error("nginy: invalid number of arguments in `client_max_body_size`");
 			server.setClientBodySizeLimit(blockDirectives[i].parameters[0]);
 			bodySizeDone = true;
 		}
 		else if (blockDirectives[i].name == "server_name")
 		{
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `server_name`");
+				throw std::runtime_error("nginy: invalid number of arguments in `server_name`");
 			if (server.getServerNames().size() != 0)
-				throw std::runtime_error("WebServ: server_name directive is duplicate");
+				throw std::runtime_error("nginy: server_name directive is duplicate");
 			server.setServerNames(blockDirectives[i].parameters);
 		}
 		else if (blockDirectives[i].name == "index")
 		{
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `index`");
+				throw std::runtime_error("nginy: invalid number of arguments in `index`");
 			if (server.getIndex() != "")
-				throw std::runtime_error("WebServ: index directive must be unique");
+				throw std::runtime_error("nginy: index directive must be unique");
 			server.setIndex(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "autoindex")
 		{
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `autoindex`");
+				throw std::runtime_error("nginy: invalid number of arguments in `autoindex`");
 			if (indexDone)
-				throw std::runtime_error("WebServ: autoindex directive is duplicate");
+				throw std::runtime_error("nginy: autoindex directive is duplicate");
 			if (blockDirectives[i].parameters[0] == "on")
 				server.setAutoindex(true);
 			else if (blockDirectives[i].parameters[0] == "off")
 				server.setAutoindex(false);
 			else
-				throw std::runtime_error("WebServ: invalid argument in `autoindex`");
+				throw std::runtime_error("nginy: invalid argument in `autoindex`");
 			indexDone = true;
 		}
 		else if (blockDirectives[i].name == "method")
 		{
 			if (blockDirectives[i].parameters.size() < 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `methods`");
+				throw std::runtime_error("nginy: invalid number of arguments in `methods`");
 			if (server.getAcceptedMethods().size() != 0)
-				throw std::runtime_error("WebServ: methods directive is duplicate");
+				throw std::runtime_error("nginy: methods directive is duplicate");
 			server.setAcceptedMethods(blockDirectives[i].parameters);
 		}
 		else if (blockDirectives[i].name == "location")
 		{
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: invalid number of arguments in `location`");
+				throw std::runtime_error("nginy: invalid number of arguments in `location`");
 			_parseLocation(blockDirectives[i].parameters[0] ,blockDirectives[i].block[0], server);
 		}
 		else
-			throw std::runtime_error("WebServ: unknown directive `" + blockDirectives[i].name + "`");
+			throw std::runtime_error("nginy: unknown directive `" + blockDirectives[i].name + "`");
 	}
 	
 	_servers.push_back(server);
@@ -296,86 +296,75 @@ void		Config::_parseLocation( std::string& path, Block &block, Server &server )
 	{
 		if (blockDirectives[i].name == "root")
 		{
-			
 			if (location.getRootDirectory() != "")
-				throw std::runtime_error("WebServ: [location] root directive is duplicate");
+				throw std::runtime_error("nginy: [location] root directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `root`");
+				throw std::runtime_error("nginy: [location] invalid number of arguments in `root`");
 			location.setRootDirectory(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "method")
 		{
 			if (location.getAcceptedMethods().size() != 0)
-				throw std::runtime_error("WebServ: [location] methods directive is duplicate");
+				throw std::runtime_error("nginy: [location] methods directive is duplicate");
 			if (blockDirectives[i].parameters.size() < 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `method`");
+				throw std::runtime_error("nginy: [location] invalid number of arguments in `method`");
 			location.setAcceptedMethods(blockDirectives[i].parameters);
 		}
 		else if (blockDirectives[i].name == "autoindex")
 		{
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `autoindex`");
+				throw std::runtime_error("nginy: [location] invalid number of arguments in `autoindex`");
 			if (autoindexDone)
-				throw std::runtime_error("WebServ: [location] autoindex directive is duplicate");
+				throw std::runtime_error("nginy: [location] autoindex directive is duplicate");
 			if (blockDirectives[i].parameters[0] == "on")
 				location.setAutoindex(true);
 			else if (blockDirectives[i].parameters[0] == "off")
 				location.setAutoindex(false);
 			else
-				throw std::runtime_error("WebServ: [location] invalid argument in `autoindex`");
+				throw std::runtime_error("nginy: [location] invalid argument in `autoindex`");
 			autoindexDone = true;
 		}
 		else if (blockDirectives[i].name == "index")
 		{
 			if (location.getDefaultFile() != "")
-				throw std::runtime_error("WebServ: [location] index directive is duplicate");
+				throw std::runtime_error("nginy: [location] index directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `index`");
+				throw std::runtime_error("nginy: [location] invalid number of arguments in `index`");
 			location.setDefaultFile(blockDirectives[i].parameters[0]);
 		}
-		else if (blockDirectives[i].name == "return") 	
+		else if (blockDirectives[i].name == "return")
 		{
 			if (location.isCgi()) 
-				throw std::runtime_error("WebServ: [location] return directive not allowed in cgi-bin"); 
+				throw std::runtime_error("nginy: [location] return directive not allowed in cgi-bin"); 
 			if (location.isRederecting())
-				throw std::runtime_error("WebServ: [location] return directive is duplicate");
+				throw std::runtime_error("nginy: [location] return directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 2) 
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `return`");
+				throw std::runtime_error("nginy: [location] invalid number of arguments in `return`");
 			location.setRedirection(blockDirectives[i].parameters);
-		}
-		else if (blockDirectives[i].name == "alias") //? the alias directive is used to replace the path of the request with the specified path example: /tours/1.html -> docs/fusion_web/1.html, when the request is /tours/1.html the server will return docs/fusion_web/1.html
-		{
-			if (location.isCgi())
-				throw std::runtime_error("WebServ: [location] alias directive not allowed in cgi-bin");
-			if (location.getAlias() != "")
-				throw std::runtime_error("WebServ: [location] alias directive is duplicate");
-			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `alias`");
-			location.setAlias(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "cgi_path")
 		{
 			if (!location.isCgi())
-				throw std::runtime_error("WebServ: [location] cgi_path directive not allowed in this location: " + path);
+				throw std::runtime_error("nginy: [location] cgi_path directive not allowed in this location: " + path);
 			if (location.getCgiPath().size() != 0)
-				throw std::runtime_error("WebServ: [location] cgi_path directive is duplicate");
+				throw std::runtime_error("nginy: [location] cgi_path directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `cgi_path`");
+				throw std::runtime_error("nginy: [location] invalid number of arguments in `cgi_path`");
 			location.setCgiPath(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "upload_path")
 		{
 			if (location.isCgi())
-				throw std::runtime_error("WebServ: [location] upload_path directive not allowed in this location: " + path);
+				throw std::runtime_error("nginy: [location] upload_path directive not allowed in this location: " + path);
 			if (location.getUploadDirectory().size() != 0)
-				throw std::runtime_error("WebServ: [location] upload_path directive is duplicate");
+				throw std::runtime_error("nginy: [location] upload_path directive is duplicate");
 			if (blockDirectives[i].parameters.size() != 1)
-				throw std::runtime_error("WebServ: [location] invalid number of arguments in `upload_path`");
+				throw std::runtime_error("nginy: [location] invalid number of arguments in `upload_path`");
 			location.setAcceptUploads(true);
 			location.setUploadDirectory(blockDirectives[i].parameters[0]);
 		}
 		else
-			throw std::runtime_error("WebServ: [location] unknown directive `" + blockDirectives[i].name + "`");
+			throw std::runtime_error("nginy: [location] unknown directive `" + blockDirectives[i].name + "`");
 	}
 	if (location.getRootDirectory() == "")
 		location.setRootDirectory(server.getRoot());
