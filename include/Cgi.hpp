@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:54:37 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/04 13:04:40 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 15:47:21 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef int									fd_t;
 class CGI
 {
 	public:
-		CGI(Server &server, Location &location, std::string &path);
+		CGI(Location &location, std::string &path);
 		CGI(const CGI &src);
 		CGI &operator=(const CGI &src);
 		~CGI();

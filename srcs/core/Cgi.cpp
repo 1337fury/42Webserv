@@ -6,14 +6,14 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:56:25 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:49:38 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/14 16:16:55 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Cgi.hpp"
 #include "Logger.hpp"
 
-CGI::CGI(__unused Server &server, Location &location, std::string &path) : _env(NULL)
+CGI::CGI(Location &location, std::string &path) : _env(NULL)
 {
 	_file_path = path;
 	_bin_path = location.getCgiPath();
@@ -62,7 +62,7 @@ bool	CGI::validate( void )
 	int				ret;
 
 	memset(&file_stat, 0, sizeof(file_stat));
-	ret = stat(_bin_path.c_str(), &file_stat);
+	ret = stat(_bin_path.c_str(), &file_stat); 
 	if (ret == -1)
 	{
 		_error_msg = "No such file or directory";
@@ -73,7 +73,7 @@ bool	CGI::validate( void )
 		_error_msg = "Is a directory";
 		return (false);
 	}
-	if (!(file_stat.st_mode & S_IXUSR))
+	if (!(file_stat.st_mode & S_IXUSR)) // check if the file is executable	
 	{
 		_error_msg = "Permission denied";
 		return (false);
@@ -133,7 +133,7 @@ bool	CGI::setCgiEnvs(Request &request)
 
 bool	CGI::create_body_file(Request &request)
 {
-	_body_file = tmpfile();
+	_body_file = tmpfile(); //creates a temporary file
 	if (_body_file == NULL)
 		return (false);
 	for (size_t i = 0; i < request.content.size(); i++)
@@ -170,7 +170,7 @@ bool	CGI::execute(__unused Request &request)
 	{
 		if (request.method == "POST")
 		{
-			rewind(_body_file);
+			rewind(_body_file); // sets the file position to the beginning of the file of the given stream
 			if (dup2(fileno(_body_file), STDIN_FILENO) == -1)
 				_exit(EXIT_FAILURE);
 		}
