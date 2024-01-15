@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/14 18:54:29 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 18:25:16 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -294,7 +294,7 @@ void					Response::create( __unused Client& client )
 	switch (requestStatus)
 	{
 		case LOCATION_NOT_FOUND: _error = true;
-			sendResponse(client.getClientSock(), 404);
+			createResponse(client.getClientSock(), 404);
 			break;
 		case LOCATIONS_IS_REDIRECTING:
 			Logger::getInstance().log(COLOR_GRAY, "Location is redirecting...");
@@ -304,13 +304,13 @@ void					Response::create( __unused Client& client )
 			handle_upload(client.getClientSock());
 			break;
 		case METHOD_NOT_ALLOWED:
-			sendResponse(client.getClientSock(), 405);
+			createResponse(client.getClientSock(), 405);
 			break;
 		case REQUEST_TO_LARGE: _error = true;
-			sendResponse(client.getClientSock(), 413);
+			createResponse(client.getClientSock(), 413);
 			break;
 		case PATH_NOT_EXISTING: _error = true;
-			sendResponse(client.getClientSock(), 404);
+			createResponse(client.getClientSock(), 404);
 			break;
 		case PATH_IS_DIRECTORY:
 			work_with_directory(client.getClientSock());
@@ -346,7 +346,7 @@ void					Response::handleRedircetiveLocation( __unused SOCKET clientSock, __unus
 		url += "/" + redirection.url;
 		this->setHeader("Location", url);
 	}
-	sendResponse(clientSock, redirection.statusCode);
+	createResponse(clientSock, redirection.statusCode);
 }
 
 void					Response::reset( void )
@@ -357,9 +357,9 @@ void					Response::reset( void )
 	_content.clear();
 	_request = Request();
 	_keepAlive = false;
-	_version = "";
-	_body = "";
-	_response_string = "";
+	_version.clear();
+	_body.clear();
+	_response_string.clear();
 	if (_location->heapAllocated)
 		delete _location;
 	_location = nullptr;
@@ -384,12 +384,11 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 	if (_location->getDefaultFile() != "")
 	{
 		std::string path = _location->getRootDirectory() + _request.uri + _location->getDefaultFile();
-		Logger::getInstance().log(COLOR_GRAY, "Path requested: %s" ,path.c_str());
 		if (access(path.c_str(), F_OK) == -1)
 		{
 			Logger::getInstance().log(COLOR_GRAY, "File not found...");
 			_error = true;
-			sendResponse(clientSock, 404);
+			createResponse(clientSock, 404);
 			return ;
 		}
 		else
@@ -414,20 +413,20 @@ void					Response::work_with_directory(__unused SOCKET clientSock)
 			setHeader("Content-Length", std::to_string(_page.str().length()));
 			content = _page.str();
 			_content = std::vector<char>(content.begin(), content.end());
-			sendResponse(clientSock, 200);
+			createResponse(clientSock, 200);
 		}
 		else
 		{
 			Logger::getInstance().log(COLOR_GRAY, "File not found...");
 			_error = true;
-			sendResponse(clientSock, 404);
+			createResponse(clientSock, 404);
 			return ;
 		}
 	}
 	else
 	{
 		_error = true;
-		sendResponse(clientSock, 403);
+		createResponse(clientSock, 403);
 		return ;
 	}
 }
@@ -438,7 +437,7 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 	{
 		Logger::getInstance().log(COLOR_GRAY, "File not found...");
 		_error = true;
-		sendResponse(clientSock, 404);
+		createResponse(clientSock, 404);
 	}
 	else if (_location->isCgi())
 	{
@@ -448,14 +447,14 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 		{
 			Logger::getInstance().log(COLOR_RED, "CGI File extension not supported...");
 			_error = true;
-			sendResponse(clientSock, 501);
+			createResponse(clientSock, 501);
 			return ;
 		}
 		if (access(path.c_str(), R_OK) == -1)
 		{
 			Logger::getInstance().log(COLOR_GRAY, "CGI File error...");
 			_error = true;
-			sendResponse(clientSock, 401);
+			createResponse(clientSock, 401);
 			return ;
 		}
 		CGI cgi(*_location, path);
@@ -464,14 +463,14 @@ void					Response::work_with_file(SOCKET clientSock, std::string path)
 		{
 			Logger::getInstance().log(COLOR_RED, "CGI Not executed: `%s`", cgi.getErrorMsg().c_str());
 			_error = true;
-			sendResponse(clientSock, 404);
+			createResponse(clientSock, 404);
 			return ;
 		}
 		if (cgi.wait() < 0)
 		{
 			Logger::getInstance().log(COLOR_RED, "CGI Process error: `%s`", cgi.getErrorMsg().c_str());
 			_error = true;
-			sendResponse(clientSock, 500);
+			createResponse(clientSock, 500);
 			return ;
 		}
 		Logger::getInstance().log(COLOR_GRAY, "CGI Is executed...");
@@ -490,21 +489,21 @@ void					Response::initiate_cgi_response( SOCKET clientSock, CGI &cgi )
 	{
 		Logger::getInstance().log(COLOR_RED, "CGI Not validated: `%s`", cgi.getErrorMsg().c_str());
 		_error = true;
-		sendResponse(clientSock, 404);
+		createResponse(clientSock, 404);
 		return ;
 	}
 	if (!cgi.setCgiEnvs(_request))
 	{
 		Logger::getInstance().log(COLOR_RED, "CGI Not set: `%s`", cgi.getErrorMsg().c_str());
 		_error = true;
-		sendResponse(clientSock, 404);
+		createResponse(clientSock, 404);
 		return ;
 	}
 	if (!cgi.setupFiles())
 	{
 		Logger::getInstance().log(COLOR_RED, "CGI Not setup: `%s`", cgi.getErrorMsg().c_str());
 		_error = true;
-		sendResponse(clientSock, 404);
+		createResponse(clientSock, 404);
 		return ;
 	}
 }
@@ -516,20 +515,20 @@ void					Response::handleFileRequest( SOCKET clientSock, std::string path )
 	if (_request.method == "DELETE")
 	{
 		if (remove(path.c_str()) != 0)
-			_error = true, sendResponse(clientSock, 404);
+			_error = true, createResponse(clientSock, 404);
 		else
 		{
 			setHeader("Content-Type", _server.getMimeType("html"));
 			setHeader("Content-Length", std::to_string(_page.str().length()));
 			content = _page.str();
 			_content = std::vector<char>(content.begin(), content.end());
-			sendResponse(clientSock, 204);
+			createResponse(clientSock, 204);
 		}
 	}
 	else if (_request.method == "POST")
 	{
 		if (access(path.c_str(), F_OK) == -1)
-			_error = true, sendResponse(clientSock, 404);
+			_error = true, createResponse(clientSock, 404);
 		else
 		{
 			std::ofstream file(path);
@@ -537,10 +536,10 @@ void					Response::handleFileRequest( SOCKET clientSock, std::string path )
 			{
 				file << std::string(_request.content.begin(), _request.content.end());
 				file.close();
-				sendResponse(clientSock, 204);
+				createResponse(clientSock, 204);
 			}
 			else
-				_error = true, sendResponse(clientSock, 500);
+				_error = true, createResponse(clientSock, 500);
 		}
 	}
 	else
@@ -557,10 +556,10 @@ void					Response::handleFileRequest( SOCKET clientSock, std::string path )
 			setHeader("Content-Type", mime_type);
 			setHeader("Content-Length", std::to_string(content.length()));
 			_content = std::vector<char>(content.begin(), content.end());
-			sendResponse(clientSock, 200);
+			createResponse(clientSock, 200);
 		}
 		else
-			_error = true, sendResponse(clientSock, 404);
+			_error = true, createResponse(clientSock, 404);
 	}
 }
 
@@ -577,7 +576,7 @@ void					Response::cgiHandler( SOCKET clientSock )
 			Logger::getInstance().log(COLOR_RED, "Error reading from CGI stdout");
 			close(_cgi_stdout);
 			close(_cgi_stderr);
-			sendResponse(clientSock, 500);
+			createResponse(clientSock, 500);
 			return ;
 		}
 		else if (ret == 0)
@@ -586,12 +585,12 @@ void					Response::cgiHandler( SOCKET clientSock )
 	}
 	std::string content = buffer.str();
 	_content = std::vector<char>(content.begin(), content.end());
-	sendResponse(clientSock, 200);
+	createResponse(clientSock, 200);
 	close(_cgi_stdout);
 	close(_cgi_stderr);
 }
 
-void					Response::sendResponse( SOCKET clientSock, u_short sCode )
+void					Response::createResponse( __unused SOCKET clientSock, u_short sCode )
 {
 	setVersion(1, 1);
 	setStatusCode(sCode);
@@ -602,11 +601,6 @@ void					Response::sendResponse( SOCKET clientSock, u_short sCode )
 		searchForErrorPage();
 	setBody();
 	setResponseString();
-
-	send(clientSock, _response_string.c_str(), _response_string.length(), 0);
-	Http::closeConnection(clientSock);
-	Http::removeFDFromSet(clientSock, &Http::write_set);
-	reset();
 }
 
 void					Response::handle_upload( __unused SOCKET clientsock )
@@ -627,7 +621,7 @@ void					Response::handle_upload( __unused SOCKET clientsock )
 	{
 		Logger::getInstance().log(COLOR_RED, "Error opening file...");
 		_error = true;
-		sendResponse(clientsock, 500);
+		createResponse(clientsock, 500);
 		return ;
 	}
 	std::string uploads_dir = _location->getUploadDirectory();
@@ -636,11 +630,11 @@ void					Response::handle_upload( __unused SOCKET clientsock )
 	{
 		Logger::getInstance().log(COLOR_RED, "Error moving file...");
 		_error = true;
-		sendResponse(clientsock, 500);
+		createResponse(clientsock, 500);
 		return ;
 	}
 	Logger::getInstance().log(COLOR_YELLOW, "Sending upload response...");
-	sendResponse(clientsock, 204);
+	createResponse(clientsock, 204);
 }
 
 std::pair<std::string, std::string>	Response::getData( __unused std::vector<char> content, __unused std::string boundary )
@@ -706,4 +700,7 @@ std::pair<std::string, std::string>	Response::getData( __unused std::vector<char
 	return std::pair<std::string, std::string>(clean_body, filename);
 }
 
-							 
+void	Response::update(int bytes_sent )
+{
+	_response_string.erase(0, bytes_sent);
+}

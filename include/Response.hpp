@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:47:23 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:46:50 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 12:28:31 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,13 +94,14 @@ class Response
 		reqStatus				analyzeRequest( std::string &path );
 		void					create(  Client& client );
 		void					reset( void );
+		void					update( int bytes_sent );
 
 	// Response
 		void handleRedircetiveLocation( SOCKET clientSock, Redirection red );
 
 		void work_with_directory( SOCKET clientSock );
 		void work_with_file( SOCKET clientSock, std::string path );
-		void sendResponse( SOCKET clientSock, u_short sCode );
+		void createResponse( SOCKET clientSock, u_short sCode );
 		void initiate_cgi_response( SOCKET clientSock, CGI &cgi );
 		void cgiHandler( SOCKET clientSock );
 		void handleFileRequest( SOCKET clientSock, std::string path );
