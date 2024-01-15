@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/14 18:53:23 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 19:01:05 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ Location::Location( void ) {
 	this->_acceptUploads = false;
 	this->_uploadDirectory = "";
 	this->_autoindex = false;
-	this->_alias = "";
 	this->_cgiPath = "";
 	this->_isRederecting = false;
 	this->_isCgi = false;
@@ -42,7 +41,6 @@ Location &Location::operator=( Location const &rhs ) {
 		this->_acceptUploads = rhs._acceptUploads;
 		this->_uploadDirectory = rhs._uploadDirectory;
 		this->_autoindex = rhs._autoindex;
-		this->_alias = rhs._alias;
 		this->_cgiPath = rhs._cgiPath;
 		this->_isRederecting = rhs._isRederecting;
 		this->_isCgi = rhs._isCgi;
@@ -75,9 +73,6 @@ std::string 				Location::getDefaultFile( void ) const {
 }
 bool						Location::getAutoindex( void ) const {
 	return this->_autoindex;
-}
-std::string 				Location::getAlias( void ) const {
-	return this->_alias;
 }
 std::string					Location::getCgiPath( void ) const {
 	return this->_cgiPath;
@@ -126,9 +121,6 @@ void		Location::setDefaultFile( std::string defaultFile ) {
 }
 void		Location::setAutoindex( bool autoindex ) {
 	this->_autoindex = autoindex;
-}
-void		Location::setAlias( std::string alias ) {
-	this->_alias = alias;
 }
 void		Location::setCgiPath( std::string cgiPath ) {
 	if ( checks_type(cgiPath) != REG_FILE)

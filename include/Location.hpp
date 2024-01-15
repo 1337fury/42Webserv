@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 11:02:29 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/14 18:53:32 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 19:01:11 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ class Location
 		std::string 						_defaultFile;
 		std::string 						_cgiPath;
 		bool								_autoindex;
-		std::string 						_alias;
 		bool 								_acceptUploads;
 		std::string 						_uploadDirectory;
 		bool								_isRederecting;

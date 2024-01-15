@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/15 18:36:13 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 19:14:24 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -246,7 +246,7 @@ void	Server::init( void ) {
 		Logger::getInstance().log(COLOR_RED, "nginy: Socket binding failed");
 		exit(EXIT_FAILURE);
 	}
-	if (listen(this->_listen_socket, 5) == -1) {
+	if (listen(this->_listen_socket, 510) == -1) {
 		Logger::getInstance().log(COLOR_RED, "nginy: Socket listening failed");
 		exit(EXIT_FAILURE);
 	}
