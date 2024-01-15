@@ -69,9 +69,7 @@ void	Http::run( void )
 					_fd_server_map[GET(i)].handleRequest(i, fd_client_map[i]);
 			}
 			else if (FD_ISSET(i, &_write_set_copy))
-			{
-				_fd_server_map[GET(i)].handleResponse(i, fd_client_map[i]);
-			}
+				_fd_server_map[GET(i)].sendResponse(i, fd_client_map[i]);
 		}
 	}
 }
@@ -101,8 +99,11 @@ void 	Http::removeFDFromSet( int fd, fd_set *set)
 
 void 	Http::closeConnection( int fd )
 {
+	if (FD_ISSET(fd, &read_set))
+		removeFDFromSet(fd, &read_set);
+	if (FD_ISSET(fd, &write_set))
+		removeFDFromSet(fd, &write_set);
 	close(fd);
-	removeFDFromSet(fd, &read_set);
 	Http::fd_client_map.erase(fd);
 }
 

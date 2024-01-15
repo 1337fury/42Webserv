@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/12/28 10:56:25 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/14 16:16:55 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 18:24:18 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -173,7 +173,7 @@ bool	CGI::execute(__unused Request &request)
 			rewind(_body_file); // sets the file position to the beginning of the file of the given stream
 			if (dup2(fileno(_body_file), STDIN_FILENO) == -1)
 				_exit(EXIT_FAILURE);
-		}
+		} 
 		if (dup2(_cgi_stdout, STDOUT_FILENO) == -1)
 			_exit(EXIT_FAILURE);
 		if (dup2(_cgi_stderr, STDERR_FILENO) == -1)
