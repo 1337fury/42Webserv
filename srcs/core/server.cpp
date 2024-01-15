@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:52:40 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/14 18:53:51 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 18:36:13 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -266,15 +266,17 @@ void   Server::acceptConnection( fd_set &read_set)
 	if (!ISVALIDSOCKET(client_fd))
 	{
 		Logger::getInstance().log(COLOR_RED, "nginy: Socket accept failed");
-		exit(EXIT_FAILURE);
+		return ;
 	}
 
-	Http::addFDToSet(client_fd, &read_set); //? Can be better
+	Http::addFDToSet(client_fd, &read_set);
 	
 	if (set_non_blocking(client_fd) == -1)
 	{
 		Logger::getInstance().log(COLOR_RED, "nginy: Socket non-blocking failed");
-		exit(EXIT_FAILURE);
+		Http::removeFDFromSet(client_fd, &read_set);
+		close(client_fd);
+		return ;
 	}
 	Client client(client_fd, client_addr, *this);
 	client.setClientAddrLen(client_addr_len);
@@ -294,11 +296,13 @@ void	Server::handleRequest( int fd, Client& client ) {
 	{
 		Logger::getInstance().log(COLOR_YELLOW, "Connection closed by peer");
 		Http::closeConnection(fd);
+		return ;
 	}
-	else if (bytes_received == -1)
+	else if (bytes_received < 0)
 	{
 		Logger::getInstance().log(COLOR_RED, "nginy: Socket recv failed");
-		exit(EXIT_FAILURE);
+		Http::closeConnection(fd);
+		return ;
 	}
 	else if (bytes_received > 0)
 	{
@@ -313,18 +317,31 @@ void	Server::handleRequest( int fd, Client& client ) {
 			send_400(fd, client);
 			return ;
 		}
+		Response *response = new Response(client.request, *this);
+		response->create(client);
+		client.response = response;
 		Http::removeFDFromSet(fd, &Http::read_set);
 		Http::addFDToSet(fd, &Http::write_set);
 	}
 }
 
-void	Server::handleResponse( __unused int fd, __unused Client& client )
+void	Server::sendResponse( __unused int fd, __unused Client& client )
 {
-	Request Req;
-	Req = client.getRequest();
-
-	Response response(Req, *this);
-	response.create(client);
+	std::string response = client.response->getResponseString();
+	int bytes_sent = send(client.getClientSock(), response.c_str(), response.length(), 0);
+	if (bytes_sent < 0)
+		Http::closeConnection(fd);
+	else if (bytes_sent == 0 || (size_t)bytes_sent == response.length())
+	{
+		Http::removeFDFromSet(fd, &Http::write_set);
+		Http::addFDToSet(fd, &Http::read_set);
+		client.response->reset();
+		client.request.reset();
+		delete client.response;
+		Http::closeConnection(fd);
+	}
+	else
+		client.response->update(bytes_sent);
 }
 
 void	Server::send_400( int fd, Client& client )

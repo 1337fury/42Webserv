@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/28 12:45:55 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:47:36 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 12:27:46 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,7 @@ class Server
 	void init( void );
 	void acceptConnection( fd_set &set );
 	void handleRequest( int fd, Client& client );
-	void handleResponse( int fd, Client& client );
+	void sendResponse( int fd, Client& client );
 	void send_400( int fd, Client& client );
 	void printErrorPages() ;
 };
