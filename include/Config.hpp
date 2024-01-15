@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:29:30 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:44:54 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 18:39:10 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class Config
 		t_token 					_currentToken;
     	t_token 					_followingToken;
 		std::vector<Server>			_servers;
+		std::vector<std::string>	_reservedPorts;
 	// Methods
 		std::string	_getFileContent(std::string const &filename) const;
 		Directive 	_parseStatement( void );

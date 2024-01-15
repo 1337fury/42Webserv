@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/26 13:40:10 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/14 18:46:51 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 18:41:09 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ _content(_getFileContent(filename)),
 _lexer(Lexer(_content)),
 _tockens(_lexer.all()),
 _currentToken(),
-_followingToken()
+_followingToken(),
+_reservedPorts()
 {
 }
 
@@ -202,6 +203,9 @@ void Config::_parseServer( Block &block )
 			if (blockDirectives[i].parameters.size() != 1)
 				throw std::runtime_error("nginy: invalid number of arguments in `listen`");
 			server.setPort(blockDirectives[i].parameters[0]);
+			if (std::find(_reservedPorts.begin(), _reservedPorts.end(), blockDirectives[i].parameters[0]) != _reservedPorts.end())
+				throw std::runtime_error("nginy: port " + blockDirectives[i].parameters[0] + " is reserved");
+			_reservedPorts.push_back(blockDirectives[i].parameters[0]);
 		}
 		else if (blockDirectives[i].name == "host")
 		{
