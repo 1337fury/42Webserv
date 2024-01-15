@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:43:53 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:43:00 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 18:44:47 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,13 @@ class Client
 	public:
 		RequestParser	reqParser;
 		Request			request;
+		Response		*response;
 		
 	private:
 		SOCKET			_clientSock;
 		sockaddr_in		_clientAddr;
 		socklen_t		_addrLen;
 		Server			_server;
-		Response		_response;
 	public:
 		Client( void );
 	// Constructors & Destructors
@@ -43,7 +43,6 @@ class Client
 		socklen_t		getClientAddrLen( void ) const;
 		Request&		getRequest( void );
 		Server			getServer( void ) const;
-		Response		getResponse( void ) const;
 		RequestParser	getRequestParser( void ) const;
 	// Setters
 		void			setClientSock( SOCKET );
@@ -51,5 +50,4 @@ class Client
 		void			setClientAddrLen( socklen_t );
 		void			setRequest( Request& );
 		void			setServer( Server& );
-		void			setResponse( Response& );
 };

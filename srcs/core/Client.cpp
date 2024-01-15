@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:12 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:50:06 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 17:03:38 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ Client::Client( void ) {
 	this->_clientAddr = sockaddr_in();
 	this->_addrLen = 0;
 	this->_server = Server();
-	this->_response = Response();
+	this->response = NULL;
 	this->reqParser = RequestParser();
 }
 
@@ -28,7 +28,7 @@ Client::Client( SOCKET clientSock, sockaddr_in clientAddr, Server& server ) {
 	this->_clientAddr = clientAddr;
 	this->_addrLen = sizeof(this->_clientAddr);
 	this->_server = server;
-	this->_response = Response();
+	this->response = NULL;
 	this->reqParser = RequestParser();
 }
 
@@ -46,7 +46,7 @@ Client & Client::operator=( const Client & rhs ) {
 		this->_addrLen = rhs._addrLen;
 		this->request = rhs.request;
 		this->_server = rhs._server;
-		this->_response = rhs._response;
+		this->response = rhs.response;
 		this->reqParser = rhs.reqParser;
 	}
 	return *this;
@@ -73,10 +73,6 @@ Server			Client::getServer( void ) const {
 	return this->_server;
 }
 
-Response		Client::getResponse( void ) const {
-	return this->_response;
-}
-
 // Setters
 void			Client::setClientSock( SOCKET clientSock ) {
 	this->_clientSock = clientSock;
@@ -94,6 +90,3 @@ void			Client::setServer( Server& server ) {
 	this->_server = server;
 }
 
-void			Client::setResponse( Response& response ) {
-	this->_response = response;
-}
