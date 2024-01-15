@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/26 16:28:11 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/09 12:21:35 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 11:46:42 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,18 @@ std::string Request::getHeader( const std::string& key ) const {
 		if (this->headers[i].key == key)
 			return this->headers[i].value;
 	return "";
+}
+
+void	Request::reset( void ) {
+	this->method = "";
+	this->uri = "";
+	this->versionMajor = 1;
+	this->versionMinor = 1;
+	this->headers.clear();
+	this->content.clear();
+	this->keepAlive = false;
+	this->query_string = "";
+	this->fragment = "";
 }
 
 std::ostream &operator<<( std::ostream &o, Request const &i ) {

@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:46:52 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/12 18:46:04 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/15 11:46:13 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ class Request
 		std::vector<char> 		content;
 		bool 					keepAlive;
 		std::string				getHeader( const std::string& key ) const;
+		void					reset( void );
 };
 
 std::ostream &operator<<( std::ostream &o, Request const &rhs );
