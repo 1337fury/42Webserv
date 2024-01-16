@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/16 15:58:56 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/16 16:02:04 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -671,7 +671,6 @@ std::pair<std::string, std::string>	Response::getData( __unused std::vector<char
 				{
 					filename = line.substr(pos + 10);
 					filename = filename.substr(0, filename.find("\""));
-					std::cout << "Filename: " << filename << std::endl;
 				}
 			}
 			else if (!line.compare(0, 1, "\r") && !filename.empty())
