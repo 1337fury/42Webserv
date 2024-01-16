@@ -6,7 +6,7 @@
 /*   By: abdeel-o <abdeel-o@student.1337.ma>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 11:48:07 by abdeel-o          #+#    #+#             */
-/*   Updated: 2024/01/15 18:25:16 by abdeel-o         ###   ########.fr       */
+/*   Updated: 2024/01/16 15:58:56 by abdeel-o         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -303,7 +303,7 @@ void					Response::create( __unused Client& client )
 		case LOCATION_IS_UPLOADING:
 			handle_upload(client.getClientSock());
 			break;
-		case METHOD_NOT_ALLOWED:
+		case METHOD_NOT_ALLOWED: _error = true;
 			createResponse(client.getClientSock(), 405);
 			break;
 		case REQUEST_TO_LARGE: _error = true;
