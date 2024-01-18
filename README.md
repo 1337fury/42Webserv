@@ -27,6 +27,7 @@ In a client-server setting, `HTTP messages` are the requests and responses objec
 * Message body: An optional sequence of bytes. The message body is often present in response messages from the server, and sometimes in requests sent by the client, depending on the HTTP method. An HTTP message body can have any format, as long as both client and server have no issue understanding it.
   
 Some examples of HTTP messages:
+
 **HTTP Request**
 ```
 GET /index.html HTTP/1.1
@@ -35,3 +36,93 @@ Connection: keep-alive
 User-Agent: Mozilla/5.0
 ```
 
+**HTTP Response**
+```
+HTTP/1.1 200 OK
+Server: Hello
+Content-Length: 13
+Content-Type: text/plain
+
+Hello, world
+```
+
+The classes that represent HTTP messages in my program looks as follows:
+
+**HTTP class**
+```C++
+class Http
+{
+	public:
+		static std::map<int, Client>	fd_client_map;
+		static fd_set					read_set;
+		static fd_set					write_set;
+		static int						max_fd;
+	private:
+	// Properties
+		std::vector<Server> 	_servers;
+		std::map<int, Server>	_fd_server_map;
+		struct timeval			_timeout;
+		fd_set					read_set_copy;
+		fd_set					_write_set_copy;
+	// Methods
+		
+		Http( void );
+	public:
+	// ...
+};
+```
+**Request class**
+```C++
+class Request
+{
+	public:
+	// constructors
+		Request( void );
+		Request( Request const &rhs );
+		Request &operator=( Request const &rhs );
+		~Request( void );
+
+	// Properties
+		std::string				query_string;
+		std::string				fragment;
+		std::string				method;
+		std::string				uri;
+		int 					versionMajor;
+		int 					versionMinor;
+		std::vector<Header> 	headers;
+		std::vector<char> 		content;
+		bool 					keepAlive;
+	//...
+};
+```
+**Response class**
+```C++
+class Response
+{
+	private:
+	// Properties
+		Server					_server;
+		u_short					_statusCode;
+		std::string				_status;
+		std::vector<Header> 	_headers;
+		std::vector<char> 		_content;
+		std::string				_body;
+		Request					_request;
+		bool					_keepAlive;
+		std::string				_version;
+		
+		std::string				_response_string;
+		
+		std::stringstream		_page;
+		
+		Location				*_location;
+		bool					_error;
+		pid_t					_cgi_pid;
+		int						_cgi_stdout;
+		int						_cgi_stderr;
+		bool					_cgi;
+
+	public:
+	//...
+};
+```
