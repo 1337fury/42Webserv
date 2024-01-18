@@ -222,3 +222,4 @@ More information on CGI is available here <a href="http://www.mnuwer.dbasedevelo
 `HTTP cookies` are small pieces of data stored on a user's device by web browsers to retain information about their interactions with a website. This information, in the form of key-value pairs, is sent between the client and the server with each HTTP request. Cookies serve various purposes, such as session management, user authentication, and personalization. For instance, they can store user preferences, track login sessions, or remember items in a shopping cart. Cookies are essential for creating a personalized and seamless user experience by allowing websites to recognize and remember users across visits.
 Additionally, my server incorporates a straightforward HTTP cookie mechanism, enabling basic functionalities like simple user state management.
 
+<img src="https://dl.dropbox.com/scl/fi/sr99fsigr0i0qbsq3eoc6/cookies.png?rlkey=1agghnphfsw25944z3mk7zfu9&dl=0"></img>
