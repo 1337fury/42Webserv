@@ -127,7 +127,7 @@ The first line of an HTTP request is called the Request line. It consists of 4 p
 * `HTTP` version is the version of HTTP the client supports or wants the server to use for the response. The most widely used version of HTTP is 1.1.
 * `Line break` - this tells the server that the request line has ended and the request headers follow after this line.
 
-# My Request Parser
+## My Request Parser
 
 My parser follows the structure of an HTTP request, distinguishing different parts such as the request method, `URI`, `HTTP version`, `headers`, and `request body`. It uses a state machine with various states to keep track of the parsing progress.
 
@@ -184,5 +184,26 @@ enum RequestState
 };
 ```
 
+## Http Response
 
+An HTTP response is the server's reply to your request (like when you open a website). It carries the requested information (webpage, data) and status codes (success, error) like a waiter bringing your order and telling you if it went well. Think of it as the other half of the conversation with the server!
+
+My webserver builds the appropriate HTTP response based on the return value from the HTTP request analyzer. The analyzeRequest method examines key elements of the incoming request, such as the `request method`, `URI`, `headers`, and `content size`, to determine the appropriate response status. The response status is then used to guide the creation of the corresponding HTTP response. This ensures that the server follows the HTTP protocol standards, responding with status codes like `404 (Not Found)`, `405 (Method Not Allowed)`, or `413 (Request Entity Too Large)` when necessary. Additionally, the server handles specific cases, such as redirects or file uploads, by generating responses tailored to the analyzed request. By aligning the response with the nature of the request, the webserver effectively communicates with clients, providing accurate and meaningful feedback about the success or failure of their requests.
+
+```C++
+enum reqStatus
+{
+	LOCATION_NOT_FOUND,
+	LOCATIONS_IS_REDIRECTING,
+	LOCATION_IS_UPLOADING,
+	METHOD_NOT_ALLOWED,
+	REQUEST_TO_LARGE,
+	PATH_NOT_EXISTING,
+	PATH_IS_DIRECTORY,
+	PATH_IS_FILE,
+	OK
+};
+
+reqStatus				analyzeRequest( std::string &path );
+```
 
