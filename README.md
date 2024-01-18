@@ -17,7 +17,7 @@ To create a server you need to follow this steps:
 1. Receive messages, process them and sends some responses to the client. This is where HTTP message exchange happens.
 1. When one party wants to close the connection, it will do that by sending an EOF character and closing the socket file descriptor.
 
-In order to get a good start with socket programming, I recommend this guide [ Beej’s Guide to Network Programming](#https://beej.us/guide/bgnet/html/#client-server-background)
+In order to get a good start with socket programming, I recommend this guide <a href="https://beej.us/guide/bgnet/html/#client-server-background">Beej’s Guide to Network Programming</a>
 
 ## Http messages
 In a client-server setting, `HTTP messages` are the requests and responses objects exchanged between the two parties. An HTTP client sends a HTTP request to an HTTP server, and the server will reply with an HTTP response. The messages must follow some format specified in the RFCs. For the small scope of my project, I picked out the most basic components to implement in my program. In short, an HTTP message should consist of:
