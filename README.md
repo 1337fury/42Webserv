@@ -48,29 +48,6 @@ Hello, world
 
 The classes that represent HTTP messages in my program looks as follows:
 
-**HTTP class**
-```C++
-class Http
-{
-	public:
-		static std::map<int, Client>	fd_client_map;
-		static fd_set					read_set;
-		static fd_set					write_set;
-		static int						max_fd;
-	private:
-	// Properties
-		std::vector<Server> 	_servers;
-		std::map<int, Server>	_fd_server_map;
-		struct timeval			_timeout;
-		fd_set					read_set_copy;
-		fd_set					_write_set_copy;
-	// Methods
-		
-		Http( void );
-	public:
-	// ...
-};
-```
 **Request class**
 ```C++
 class Request
