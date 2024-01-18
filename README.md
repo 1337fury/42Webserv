@@ -211,7 +211,7 @@ reqStatus				analyzeRequest( std::string &path );
 
 `CGI` (Common Gateway Interface) is a way for web servers and server-side programs to interact. CGI is completely independent of programming language, operating system and web server. Currently it is the most common server-side programming technique and it's also supported by almost every web server in existence. Moreover, all servers implement it in (nearly) the same way, so that you can make a CGI script for one server and then distribute it to be run on any web server.
 
-The server needs a way to know which URLs map to scripts and which URLs just map to ordinary HTML files. For my CGI i start by creating CGI directories on the server. This is done in the server setup and tells the server that all files in a cgi-bin directory are CGI scripts to be executed when requested. so one can tell that URLs like this: `http://www.varsity.edu/cgi-bin/search` point to a CGI script.
+The server needs a way to know which URLs map to scripts and which URLs just map to ordinary HTML files. For my CGI i start by creating CGI directories on the server. This is done in the server setup and tells the server that all files in a cgi-bin directory are CGI scripts to be executed when requested. so one can tell that URLs like this: `http://localhost/cgi-bin/anim.js` point to a CGI script.
 
 <img src="https://dl.dropbox.com/scl/fi/a69e7swor5gnvluf9w12f/CGI-1.png?rlkey=jb9n1wp1k3ostvm5ph3o6veka&dl=0"></img>
 
