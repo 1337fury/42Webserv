@@ -10,7 +10,7 @@
 ## Socket
 HTTP communication usually takes place over TCP. A typical HTTP session often consists of three steps: The client and server establish a TCP connection stream, the client sends HTTP request over TCP connection, and then the server processes that request and sends back a reply. The second and third step can be repeated any number of times, until both client and server decide to close the underlying TCP connection. To put it in a simple diagram, this is how the process looks like in the perspective of TCP.
 
-<img src="https://dl.dropbox.com/scl/fi/vlfsd1xpsev03z2q9j0gl/socket.png?rlkey=iueejqzkr0stqa2q2m27yx5jw&dl=0">
+<img src="https://dl.dropbox.com/scl/fi/vlfsd1xpsev03z2q9j0gl/socket.png?rlkey=iueejqzkr0stqa2q2m27yx5jw&dl=0"></img>
 
 To create a server you need to follow this steps:
 1. Create a socket and listen for new connections.
@@ -207,3 +207,12 @@ enum reqStatus
 reqStatus				analyzeRequest( std::string &path );
 ```
 
+## CGI Program
+
+`CGI` (Common Gateway Interface) is a way for web servers and server-side programs to interact. CGI is completely independent of programming language, operating system and web server. Currently it is the most common server-side programming technique and it's also supported by almost every web server in existence. Moreover, all servers implement it in (nearly) the same way, so that you can make a CGI script for one server and then distribute it to be run on any web server.
+
+The server needs a way to know which URLs map to scripts and which URLs just map to ordinary HTML files. For my CGI i start by creating CGI directories on the server. This is done in the server setup and tells the server that all files in a cgi-bin directory are CGI scripts to be executed when requested. so one can tell that URLs like this: http://www.varsity.edu/cgi-bin/search point to a CGI script.
+
+<img href="https://dl.dropbox.com/scl/fi/a69e7swor5gnvluf9w12f/CGI-1.png?rlkey=jb9n1wp1k3ostvm5ph3o6veka&dl=0"></img>
+
+More information on CGI is available here <a href="http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm">Getting Started with CGI Programs</a>
