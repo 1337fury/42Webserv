@@ -224,4 +224,4 @@ Additionally, my server incorporates a straightforward HTTP cookie mechanism, en
 
 <img src="https://dl.dropbox.com/scl/fi/sr99fsigr0i0qbsq3eoc6/cookies.png?rlkey=1agghnphfsw25944z3mk7zfu9&dl=0"></img>
 
-<video src="https://www.dropbox.com/scl/fi/n4rmlcbllxaqrb9w4d14b/cookies.mov?rlkey=eguiz14lhal9f0u2c2vvk0iay&dl=0"></video>
+[<img src="https://dl.dropbox.com/scl/fi/n4rmlcbllxaqrb9w4d14b/cookies.mov?rlkey=eguiz14lhal9f0u2c2vvk0iay&dl=0" width="50%">](https://www.youtube.com/watch?v=Hc79sDi3f0U "Now in Android: 55")
