@@ -216,3 +216,12 @@ The server needs a way to know which URLs map to scripts and which URLs just map
 <img href="https://dl.dropbox.com/scl/fi/a69e7swor5gnvluf9w12f/CGI-1.png?rlkey=jb9n1wp1k3ostvm5ph3o6veka&dl=0"></img>
 
 More information on CGI is available here <a href="http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm">Getting Started with CGI Programs</a>
+
+## Cookie
+
+`HTTP cookies` are small pieces of data stored on a user's device by web browsers to retain information about their interactions with a website. This information, in the form of key-value pairs, is sent between the client and the server with each HTTP request. Cookies serve various purposes, such as session management, user authentication, and personalization. For instance, they can store user preferences, track login sessions, or remember items in a shopping cart. Cookies are essential for creating a personalized and seamless user experience by allowing websites to recognize and remember users across visits.
+Additionally, my server incorporates a straightforward HTTP cookie mechanism, enabling basic functionalities like simple user state management.
+
+<img src="https://dl.dropbox.com/scl/fi/sr99fsigr0i0qbsq3eoc6/cookies.png?rlkey=1agghnphfsw25944z3mk7zfu9&dl=0"></img>
+
+<video src="https://www.dropbox.com/scl/fi/n4rmlcbllxaqrb9w4d14b/cookies.mov?rlkey=eguiz14lhal9f0u2c2vvk0iay&dl=0"></video>
