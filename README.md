@@ -4,8 +4,18 @@
 <img src="https://dl.dropbox.com/scl/fi/gozmten888oibjlxh321x/webserv.png?rlkey=qa3tts18lxi562eczgu1p4dyg&dl=0"></img>
 
 ## Table of contents
-- [Socket](#Socket Programming)
-- [Http messages](#Http messages)
+- [42Webserv](#42webserv)
+	- [Table of contents](#table-of-contents)
+	- [Socket](#socket)
+	- [Http messages](#http-messages)
+	- [Http Request](#http-request)
+	- [My Request Parser](#my-request-parser)
+	- [Http Response](#http-response)
+	- [CGI Program](#cgi-program)
+	- [Cookies](#cookies)
+	- [Resources](#resources)
+
+<a name="Socket"></a>
 
 ## Socket
 HTTP communication usually takes place over TCP. A typical HTTP session often consists of three steps: The client and server establish a TCP connection stream, the client sends HTTP request over TCP connection, and then the server processes that request and sends back a reply. The second and third step can be repeated any number of times, until both client and server decide to close the underlying TCP connection. To put it in a simple diagram, this is how the process looks like in the perspective of TCP.
@@ -19,6 +29,8 @@ To create a server you need to follow this steps:
 1. When one party wants to close the connection, it will do that by sending an EOF character and closing the socket file descriptor.
 
 In order to get a good start with socket programming, I recommend this guide <a href="https://beej.us/guide/bgnet/html/#client-server-background">Beej’s Guide to Network Programming</a>
+
+<a name="Http_messages"></a>
 
 ## Http messages
 In a client-server setting, `HTTP messages` are the requests and responses objects exchanged between the two parties. An HTTP client sends a HTTP request to an HTTP server, and the server will reply with an HTTP response. The messages must follow some format specified in the RFCs. For the small scope of my project, I picked out the most basic components to implement in my program. In short, an HTTP message should consist of:
@@ -106,6 +118,8 @@ class Response
 };
 ```
 
+<a name="Http_request"></a>
+
 ## Http Request
 
 An HTTP request is essentially a message your app (like a browser) sends to a server asking for something (like a website page). Think of it like ordering pizza: you tell the server what you want (website address) and they send it back (page content).
@@ -184,6 +198,8 @@ enum RequestState
 };
 ```
 
+<a name="Http_response"></a>
+
 ## Http Response
 
 An HTTP response is the server's reply to your request (like when you open a website). It carries the requested information (webpage, data) and status codes (success, error) like a waiter bringing your order and telling you if it went well. Think of it as the other half of the conversation with the server!
@@ -207,6 +223,8 @@ enum reqStatus
 reqStatus				analyzeRequest( std::string &path );
 ```
 
+<a name="cgi_program"></a>
+
 ## CGI Program
 
 `CGI` (Common Gateway Interface) is a way for web servers and server-side programs to interact. CGI is completely independent of programming language, operating system and web server. Currently it is the most common server-side programming technique and it's also supported by almost every web server in existence. Moreover, all servers implement it in (nearly) the same way, so that you can make a CGI script for one server and then distribute it to be run on any web server.
@@ -217,7 +235,9 @@ The server needs a way to know which URLs map to scripts and which URLs just map
 
 More information on CGI is available here <a href="http://www.mnuwer.dbasedeveloper.co.uk/dlearn/web/session01.htm">Getting Started with CGI Programs</a>
 
-## Cookie
+<a name="cookies"></a>
+
+## Cookies
 
 `HTTP cookies` are small pieces of data stored on a user's device by web browsers to retain information about their interactions with a website. This information, in the form of key-value pairs, is sent between the client and the server with each HTTP request. Cookies serve various purposes, such as session management, user authentication, and personalization. For instance, they can store user preferences, track login sessions, or remember items in a shopping cart. Cookies are essential for creating a personalized and seamless user experience by allowing websites to recognize and remember users across visits.
 Additionally, my server incorporates a straightforward HTTP cookie mechanism, enabling basic functionalities like simple user state management.
@@ -225,6 +245,8 @@ Additionally, my server incorporates a straightforward HTTP cookie mechanism, en
 <img src="https://dl.dropbox.com/scl/fi/sr99fsigr0i0qbsq3eoc6/cookies.png?rlkey=1agghnphfsw25944z3mk7zfu9&dl=0"></img>
 
 https://github.com/1337fury/42Webserv/assets/107589431/091cdcaa-33a8-4ec3-8497-c54ddf8ddf02
+
+<a name="resources"></a>
 
 ## Resources
 
@@ -237,3 +259,6 @@ https://github.com/1337fury/42Webserv/assets/107589431/091cdcaa-33a8-4ec3-8497-c
 <a href="https://www.garshol.priv.no/download/text/http-tut.html#app">HTTP and CGI explained</a>
 <a href="https://www.youtube.com/watch?v=gSQoA4SYhJY">What happens before the Backend gets the Request</a>
 
+
+
+[def]: #42webserv
