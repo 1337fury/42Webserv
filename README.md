@@ -5,7 +5,6 @@
 
 ## Table of contents
 - [42Webserv](#42webserv)
-	- [Table of contents](#table-of-contents)
 	- [Socket](#socket)
 	- [Http messages](#http-messages)
 	- [Http Request](#http-request)
