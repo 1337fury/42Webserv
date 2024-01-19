@@ -250,14 +250,14 @@ https://github.com/1337fury/42Webserv/assets/107589431/091cdcaa-33a8-4ec3-8497-c
 
 ## Resources
 
-<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Session">HTTP Session</a>
-<a href="https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms">Nginx Server and Location</a>
-<a href="https://osasazamegbe.medium.com/showing-building-an-http-server-from-scratch-in-c-2da7c0db6cb7">Building an HTTP Server From Scratch in C++</a>
-<a href="https://www.benmandrew.com/articles/unix-select-syscall">Using the select System Call in Unix</a>
-<a href="https://www.baeldung.com/cs/tcp-protocol-syn-ack">SYN/ACK in the TCP Protocolk</a>
-<a href="https://robotecture.com/http-topics/http-headers/">Understanding HTTP Headers</a>
-<a href="https://www.garshol.priv.no/download/text/http-tut.html#app">HTTP and CGI explained</a>
-<a href="https://www.youtube.com/watch?v=gSQoA4SYhJY">What happens before the Backend gets the Request</a>
+<a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Session">HTTP Session</a> <br>
+<a href="https://www.digitalocean.com/community/tutorials/understanding-nginx-server-and-location-block-selection-algorithms">Nginx Server and Location</a> <br>
+<a href="https://osasazamegbe.medium.com/showing-building-an-http-server-from-scratch-in-c-2da7c0db6cb7">Building an HTTP Server From Scratch in C++</a> <br>
+<a href="https://www.benmandrew.com/articles/unix-select-syscall">Using the select System Call in Unix</a> <br>
+<a href="https://www.baeldung.com/cs/tcp-protocol-syn-ack">SYN/ACK in the TCP Protocolk</a> <br>
+<a href="https://robotecture.com/http-topics/http-headers/">Understanding HTTP Headers</a> <br>
+<a href="https://www.garshol.priv.no/download/text/http-tut.html#app">HTTP and CGI explained</a> <br>
+<a href="https://www.youtube.com/watch?v=gSQoA4SYhJY">What happens before the Backend gets the Request</a> <br>
 
 
 
