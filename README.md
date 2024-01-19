@@ -223,3 +223,7 @@ More information on CGI is available here <a href="http://www.mnuwer.dbasedevelo
 Additionally, my server incorporates a straightforward HTTP cookie mechanism, enabling basic functionalities like simple user state management.
 
 <img src="https://dl.dropbox.com/scl/fi/sr99fsigr0i0qbsq3eoc6/cookies.png?rlkey=1agghnphfsw25944z3mk7zfu9&dl=0"></img>
+
+https://github.com/1337fury/42Webserv/assets/107589431/091cdcaa-33a8-4ec3-8497-c54ddf8ddf02
+
+
